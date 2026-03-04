@@ -10,77 +10,77 @@
 
   /* -- Light theme (default) -- */
   :root {
-    --background: 220 16% 96%;
-    --foreground: 224 20% 14%;
+    --background: 214 32% 95%;
+    --foreground: 220 25% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 224 20% 14%;
+    --card-foreground: 220 25% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 20% 14%;
+    --popover-foreground: 220 25% 12%;
 
-    --primary: 187 68% 40%;
+    --primary: 219 82% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 92%;
-    --secondary-foreground: 224 20% 20%;
+    --secondary: 214 20% 90%;
+    --secondary-foreground: 220 20% 20%;
 
-    --muted: 220 14% 92%;
-    --muted-foreground: 224 10% 46%;
+    --muted: 214 20% 90%;
+    --muted-foreground: 220 12% 44%;
 
-    --accent: 262 60% 52%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 38 95% 50%;
+    --accent-foreground: 220 25% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 89%;
-    --input: 220 13% 89%;
-    --ring: 187 68% 40%;
+    --border: 214 18% 87%;
+    --input: 214 18% 87%;
+    --ring: 219 82% 52%;
 
     --radius: 0.75rem;
 
-    --cyan: 187 68% 40%;
-    --violet: 262 60% 52%;
-    --emerald: 160 55% 38%;
-    --amber: 38 92% 50%;
+    --blue: 219 82% 52%;
+    --violet: 258 65% 58%;
+    --emerald: 152 58% 38%;
+    --amber: 38 95% 50%;
     --rose: 346 72% 52%;
   }
 
   /* -- Dark theme -- */
   .dark {
-    --background: 224 24% 10%;
-    --foreground: 220 15% 93%;
+    --background: 222 28% 9%;
+    --foreground: 218 18% 92%;
 
-    --card: 224 22% 13%;
-    --card-foreground: 220 15% 93%;
+    --card: 222 26% 12%;
+    --card-foreground: 218 18% 92%;
 
-    --popover: 224 22% 13%;
-    --popover-foreground: 220 15% 93%;
+    --popover: 222 26% 12%;
+    --popover-foreground: 218 18% 92%;
 
-    --primary: 187 72% 48%;
-    --primary-foreground: 224 24% 10%;
+    --primary: 219 88% 62%;
+    --primary-foreground: 222 28% 9%;
 
-    --secondary: 224 20% 17%;
-    --secondary-foreground: 220 15% 75%;
+    --secondary: 222 22% 17%;
+    --secondary-foreground: 218 15% 72%;
 
-    --muted: 224 18% 16%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 222 20% 15%;
+    --muted-foreground: 218 12% 48%;
 
-    --accent: 262 65% 58%;
-    --accent-foreground: 224 24% 10%;
+    --accent: 38 98% 56%;
+    --accent-foreground: 222 28% 9%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 224 18% 18%;
-    --input: 224 18% 18%;
-    --ring: 187 72% 48%;
+    --border: 222 20% 18%;
+    --input: 222 20% 18%;
+    --ring: 219 88% 62%;
 
-    --cyan: 187 72% 48%;
-    --violet: 262 65% 58%;
-    --emerald: 160 60% 44%;
-    --amber: 38 92% 54%;
+    --blue: 219 88% 62%;
+    --violet: 258 68% 64%;
+    --emerald: 152 62% 46%;
+    --amber: 38 98% 56%;
     --rose: 346 77% 58%;
   }
 
@@ -155,8 +155,8 @@
     background-clip: text;
   }
 
-  .gradient-text-cyan {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--cyan)));
+  .gradient-text-blue {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--blue)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

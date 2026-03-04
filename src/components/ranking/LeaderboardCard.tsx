@@ -20,7 +20,7 @@ export default function LeaderboardCard({ sellers }: LeaderboardCardProps) {
             className="glass-card rounded-2xl p-5 relative overflow-hidden animate-fade-in"
             style={{ animationDelay: '400ms', opacity: 0 }}
         >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-5">
                 Classificação Geral
@@ -36,7 +36,7 @@ export default function LeaderboardCard({ sellers }: LeaderboardCardProps) {
                             className={cn(
                                 'flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:-translate-y-px animate-fade-in',
                                 i < 3
-                                    ? 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.05] hover:border-cyan-500/20'
+                                    ? 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.05] hover:border-blue-500/20'
                                     : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
                             )}
                             style={{ animationDelay: `${450 + i * 50}ms`, opacity: 0 }}
@@ -56,7 +56,7 @@ export default function LeaderboardCard({ sellers }: LeaderboardCardProps) {
                             )}
 
                             {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                                 {s.avatar}
                             </div>
 
@@ -64,13 +64,13 @@ export default function LeaderboardCard({ sellers }: LeaderboardCardProps) {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1.5">
                                     <span className="text-sm font-semibold truncate">{s.name}</span>
-                                    <span className="text-sm font-bold gradient-text-cyan ml-2 shrink-0">
+                                    <span className="text-sm font-bold gradient-text-blue ml-2 shrink-0">
                                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(s.salesValue)}
                                     </span>
                                 </div>
                                 <div className="h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-teal-400"
+                                        className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
                                         style={{ width: `${pct}%`, transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)' }}
                                     />
                                 </div>

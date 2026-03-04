@@ -9,9 +9,9 @@ const typeConfig = {
     venda: {
         label: 'Venda',
         icon: ShoppingCart,
-        color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-        dot: 'bg-cyan-400',
-        glow: 'shadow-cyan-500/10',
+        color: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+        dot: 'bg-blue-400',
+        glow: 'shadow-blue-500/10',
     },
     reativacao: {
         label: 'Reativação',
@@ -36,7 +36,7 @@ function NotifCard({ notif }: { notif: SaleNotification }) {
             <div className="flex items-start gap-3">
                 {/* Avatar */}
                 <div className="relative shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-xs font-bold text-white">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white">
                         {notif.sellerName.split(' ').map(w => w[0]).slice(0, 2).join('')}
                     </div>
                     <div className={cn('absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card flex items-center justify-center', cfg.dot)}>
@@ -84,7 +84,7 @@ export default function Notificacoes() {
             {/* Header */}
             <div className="animate-fade-in">
                 <div className="flex items-center gap-3 mb-1">
-                    <Bell className="w-6 h-6 text-cyan-400" />
+                    <Bell className="w-6 h-6 text-blue-400" />
                     <h1 className="text-2xl font-extrabold tracking-tight">Notificações de Vendas</h1>
                 </div>
                 <p className="text-muted-foreground text-sm">Feed em tempo real das vendas da equipe</p>
@@ -93,7 +93,7 @@ export default function Notificacoes() {
             {/* Stats rápidos */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: '100ms' }}>
                 {[
-                    { label: 'Total de Vendas', value: notifs.length, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+                    { label: 'Total de Vendas', value: notifs.length, color: 'text-blue-400', bg: 'bg-blue-500/10' },
                     { label: 'Reativações', value: reativacoes.length, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                     { label: '1ºs Pedidos', value: primeiros.length, color: 'text-blue-400', bg: 'bg-blue-500/10' },
                     { label: 'Receita Total', value: `R$ ${(totalValue / 1000).toFixed(1)}k`, color: 'text-amber-400', bg: 'bg-amber-500/10' },
@@ -112,7 +112,7 @@ export default function Notificacoes() {
                         <TabsTrigger value="todas" className="text-xs">Todas ({notifs.length})</TabsTrigger>
                         <TabsTrigger value="reativacao" className="text-xs text-emerald-400">Reativações ({reativacoes.length})</TabsTrigger>
                         <TabsTrigger value="primeiro_pedido" className="text-xs text-blue-400">1ªs Compras ({primeiros.length})</TabsTrigger>
-                        <TabsTrigger value="venda" className="text-xs text-cyan-400">Vendas ({vendas.length})</TabsTrigger>
+                        <TabsTrigger value="venda" className="text-xs text-blue-400">Vendas ({vendas.length})</TabsTrigger>
                     </TabsList>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

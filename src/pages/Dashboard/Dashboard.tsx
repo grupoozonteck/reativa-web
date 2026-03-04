@@ -23,10 +23,10 @@ export default function Dashboard() {
             {/* Header */}
             <div className="animate-fade-in" style={{ animationDelay: '0ms', opacity: 0 }}>
                 <div className="flex items-center gap-2 mb-1">
-                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-500 to-cyan-500" />
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-500 to-blue-500" />
                     <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
                         {getGreeting()},{' '}
-                        <span className="gradient-text-cyan">{name.split(' ')[0]}</span>
+                        <span className="gradient-text-blue">{name.split(' ')[0]}</span>
                         <Award className="w-5 h-5 text-violet-500" />
                     </h1>
                 </div>
@@ -42,7 +42,6 @@ export default function Dashboard() {
                     icon={UserX}
                     colorClass="text-rose-500"
                     bgClass="bg-rose-500/10"
-                    glowClass="card-glow-rose"
                     delay={80}
                 />
                 <StatCard
@@ -50,9 +49,8 @@ export default function Dashboard() {
                     rawValue={dashboardStats.totalSalesMonth}
                     displayFn={v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(v)}
                     icon={DollarSign}
-                    colorClass="text-cyan-500"
-                    bgClass="bg-cyan-500/10"
-                    glowClass="card-glow-cyan"
+                    colorClass="text-blue-500"
+                    bgClass="bg-blue-500/10"
                     trend="+18%"
                     delay={160}
                 />
@@ -63,7 +61,6 @@ export default function Dashboard() {
                     icon={Users}
                     colorClass="text-violet-500"
                     bgClass="bg-violet-500/10"
-                    glowClass="card-glow-violet"
                     delay={240}
                 />
                 <StatCard
@@ -73,7 +70,6 @@ export default function Dashboard() {
                     icon={TrendingUp}
                     colorClass="text-amber-500"
                     bgClass="bg-amber-500/10"
-                    glowClass="card-glow-amber"
                     trend="+5%"
                     delay={320}
                 />

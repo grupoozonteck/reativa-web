@@ -39,14 +39,12 @@ export const authService = {
         try {
             await api.post('/api/logout');
         } catch {
-            // Mesmo se falhar no servidor, limpamos no local
+            // Mesmo se falhar no servidor, limpamos no local no context
         }
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
     },
 
     getUser: async (): Promise<User> => {
         const response = await api.get<User>('/api/user');
-        return response.data;
+        return response.data.user as unknown as User;
     },
 };

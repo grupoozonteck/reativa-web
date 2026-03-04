@@ -17,11 +17,11 @@ const MOUSE_REPEL_FORCE = 0.35;
 const BASE_SPEED = 0.28;
 
 const PALETTE = [
-    'rgba(6,  182, 212',    // cyan-500
-    'rgba(20, 184, 166',    // teal-500
+    'rgba(6,  182, 212',    // blue-500
+    'rgba(20, 184, 166',    // blue-500
     'rgba(14, 165, 233',    // sky-500
-    'rgba(34, 211, 238',    // cyan-400
-    'rgba(45, 212, 191',    // teal-400
+    'rgba(34, 211, 238',    // blue-400
+    'rgba(45, 212, 191',    // blue-400
 ];
 
 function randomColor() {

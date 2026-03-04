@@ -277,13 +277,13 @@ export default function Ranking() {
                             animate={{ scale: [1, 1.25, 1], opacity: [1, 0.7, 1] }}
                             transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
                         >
-                            <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                            <Zap className="w-3.5 h-3.5 text-blue-400" />
                         </motion.div>
-                        <span className="font-bold text-cyan-400 tracking-wide">NÍVEL {currentSellerStats.level}</span>
+                        <span className="font-bold text-blue-400 tracking-wide">NÍVEL {currentSellerStats.level}</span>
                     </div>
                     <div className="w-44 h-2.5 bg-white/5 rounded-full overflow-hidden">
                         <motion.div
-                            className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-teal-400 relative"
+                            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 relative"
                             initial={{ width: 0 }}
                             animate={{ width: `${xpPct}%` }}
                             transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
@@ -488,7 +488,7 @@ export default function Ranking() {
                 >
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                            <Medal className="w-3.5 h-3.5 text-cyan-400" />
+                            <Medal className="w-3.5 h-3.5 text-blue-400" />
                             Leaderboard Completo
                         </h3>
                         <span className="text-[10px] text-muted-foreground">Março 2026</span>
@@ -575,7 +575,7 @@ export default function Ranking() {
                                                         'h-full rounded-full',
                                                         i === 0
                                                             ? 'bg-gradient-to-r from-amber-400 to-yellow-500'
-                                                            : 'bg-gradient-to-r from-cyan-500 to-teal-400'
+                                                            : 'bg-gradient-to-r from-blue-500 to-blue-400'
                                                     )}
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${xpPctBar}%` }}
@@ -623,13 +623,13 @@ export default function Ranking() {
                         variants={fadeUp} initial="hidden" animate="show" custom={0.42}
                     >
                         <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 self-start flex items-center gap-2">
-                            <Target className="w-3.5 h-3.5 text-cyan-400" /> Meta Mensal
+                            <Target className="w-3.5 h-3.5 text-blue-400" /> Meta Mensal
                         </h3>
                         <ProgressRing value={salesPct} size={120} stroke={9} color="cyan">
                             <AnimatedNumber
                                 value={salesPct}
                                 suffix="%"
-                                className="text-2xl font-black text-cyan-400"
+                                className="text-2xl font-black text-blue-400"
                                 duration={1.8}
                             />
                             <span className="text-[9px] text-muted-foreground">completo</span>
@@ -641,7 +641,7 @@ export default function Ranking() {
                             duration={1.8}
                         />
                         <p className="text-[10px] text-muted-foreground mt-0.5 text-center">
-                            Faltam <span className="text-cyan-400 font-semibold">R$ {monthlyGoals.bonusThreshold.toLocaleString('pt-BR')}</span> para o bônus
+                            Faltam <span className="text-blue-400 font-semibold">R$ {monthlyGoals.bonusThreshold.toLocaleString('pt-BR')}</span> para o bônus
                         </p>
                         <div className="w-full mt-3 pt-3 border-t border-white/[0.05] grid grid-cols-2 gap-2">
                             <div className="text-center">
@@ -673,7 +673,7 @@ export default function Ranking() {
                             <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                 <Zap className="w-3.5 h-3.5 text-amber-400" /> Missões
                             </h3>
-                            <Badge variant="outline" className="text-[9px] px-1.5 border-cyan-500/20 text-cyan-400">
+                            <Badge variant="outline" className="text-[9px] px-1.5 border-blue-500/20 text-blue-400">
                                 {activeMissions.filter(m => !m.completed).length} ativas
                             </Badge>
                         </div>
@@ -685,7 +685,7 @@ export default function Ranking() {
                                         'rounded-xl p-3 border transition-all',
                                         m.completed
                                             ? 'bg-emerald-500/[0.05] border-emerald-500/15'
-                                            : 'bg-white/[0.02] border-white/[0.05] hover:border-cyan-500/15'
+                                            : 'bg-white/[0.02] border-white/[0.05] hover:border-blue-500/15'
                                     )}
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -705,7 +705,7 @@ export default function Ranking() {
                                             {m.title}
                                         </p>
                                         <motion.span
-                                            className="text-[10px] font-bold text-cyan-400 shrink-0"
+                                            className="text-[10px] font-bold text-blue-400 shrink-0"
                                             animate={m.completed ? {} : { opacity: [1, 0.5, 1] }}
                                             transition={{ repeat: Infinity, duration: 2.2 }}
                                         >
@@ -715,7 +715,7 @@ export default function Ranking() {
                                     {!m.completed && (
                                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                                             <motion.div
-                                                className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-teal-400 relative"
+                                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 relative"
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${m.progress}%` }}
                                                 transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.7 + mi * 0.1 }}
@@ -744,7 +744,7 @@ export default function Ranking() {
                     variants={fadeUp} initial="hidden" animate="show" custom={0.6}
                 >
                     <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <Star className="w-3.5 h-3.5 text-cyan-400" /> Conquistas Recentes
+                        <Star className="w-3.5 h-3.5 text-blue-400" /> Conquistas Recentes
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                         {recentAchievements.map((a, ai) => (
@@ -757,16 +757,16 @@ export default function Ranking() {
                                 whileHover={{ scale: 1.03, borderColor: 'rgba(6,182,212,0.15)' }}
                             >
                                 <motion.div
-                                    className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/15 flex items-center justify-center shrink-0"
+                                    className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/15 flex items-center justify-center shrink-0"
                                     whileHover={{ rotate: [0, -10, 10, 0] }}
                                     transition={{ duration: 0.4 }}
                                 >
-                                    <DynamicIcon name={a.iconName} className="w-4 h-4 text-cyan-400" />
+                                    <DynamicIcon name={a.iconName} className="w-4 h-4 text-blue-400" />
                                 </motion.div>
                                 <div className="min-w-0">
                                     <p className="text-xs leading-snug">
                                         <span className="text-muted-foreground">{a.text} </span>
-                                        <span className="text-cyan-400 font-semibold">{a.highlight}</span>
+                                        <span className="text-blue-400 font-semibold">{a.highlight}</span>
                                     </p>
                                     <p className="text-[9px] text-muted-foreground/50 flex items-center gap-1 mt-1">
                                         <Clock className="w-2.5 h-2.5" /> {a.time}
@@ -805,11 +805,11 @@ export default function Ranking() {
                                 whileHover={b.unlocked ? { scale: 1.12, y: -3 } : {}}
                             >
                                 <motion.div
-                                    className={cn('w-9 h-9 rounded-xl flex items-center justify-center', b.unlocked ? 'bg-cyan-500/10' : 'bg-white/5')}
+                                    className={cn('w-9 h-9 rounded-xl flex items-center justify-center', b.unlocked ? 'bg-blue-500/10' : 'bg-white/5')}
                                     animate={b.unlocked ? { boxShadow: ['0 0 0px rgba(6,182,212,0)', '0 0 10px rgba(6,182,212,0.25)', '0 0 0px rgba(6,182,212,0)'] } : {}}
                                     transition={{ repeat: Infinity, duration: 3, delay: bi * 0.4 }}
                                 >
-                                    <DynamicIcon name={b.iconName} className={cn('w-4 h-4', b.unlocked ? 'text-cyan-400' : 'text-muted-foreground')} />
+                                    <DynamicIcon name={b.iconName} className={cn('w-4 h-4', b.unlocked ? 'text-blue-400' : 'text-muted-foreground')} />
                                 </motion.div>
                                 <span className="text-[8px] text-center leading-tight font-medium text-muted-foreground">{b.label}</span>
                                 {!b.unlocked && <Lock className="w-2.5 h-2.5 text-muted-foreground/40" />}

@@ -47,7 +47,7 @@ export default function Login() {
 
                 {/* Orb 1 — cyan large, top-right */}
                 <div
-                    className="absolute rounded-full bg-cyan-500 opacity-[0.35]"
+                    className="absolute rounded-full bg-blue-500 opacity-[0.35]"
                     style={{
                         width: 560, height: 560,
                         top: -180, right: -120,
@@ -58,7 +58,7 @@ export default function Login() {
 
                 {/* Orb 2 — teal, bottom-left */}
                 <div
-                    className="absolute rounded-full bg-teal-500 opacity-[0.2]"
+                    className="absolute rounded-full bg-blue-500 opacity-[0.2]"
                     style={{
                         width: 420, height: 420,
                         bottom: -160, left: -100,
@@ -80,7 +80,7 @@ export default function Login() {
 
                 {/* Orb 4 — cyan dim, top-left */}
                 <div
-                    className="absolute rounded-full bg-cyan-600 opacity-[0.15]"
+                    className="absolute rounded-full bg-blue-600 opacity-[0.15]"
                     style={{
                         width: 320, height: 320,
                         top: -60, left: -80,
@@ -120,10 +120,10 @@ export default function Login() {
 
                 {/* Live badge */}
                 <div className="flex justify-center mb-6">
-                    <div className="flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-cyan-500/20 text-xs text-cyan-300 font-medium">
+                    <div className="flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-blue-500/20 text-xs text-blue-300 font-medium">
                         <div className="relative flex items-center justify-center">
-                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                            <span className="absolute w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse-ring" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            <span className="absolute w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse-ring" />
                         </div>
                         Sistema de Reativação Comercial
                     </div>
@@ -132,8 +132,8 @@ export default function Login() {
                 {/* Brand */}
                 <div className="text-center mb-8">
                     <div className="relative inline-flex items-center justify-center mb-5">
-                        <div className="absolute w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 blur-xl opacity-50 animate-pulse" />
-                        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600 flex items-center justify-center shadow-2xl glow">
+                        <div className="absolute w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 blur-xl opacity-50 animate-pulse" />
+                        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-2xl glow">
                             <Zap className="w-7 h-7 text-white" strokeWidth={2.5} />
                         </div>
                     </div>
@@ -144,7 +144,7 @@ export default function Login() {
                 {/* Card */}
                 <div className="glass-card rounded-2xl p-8 shadow-2xl shadow-black/50 relative overflow-hidden">
                     {/* Top gradient border */}
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/60 to-transparent" />
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
 
                     <form id="login-form" onSubmit={handleSubmit} className="space-y-5">
                         {error && (
@@ -165,7 +165,7 @@ export default function Login() {
                                 value={login}
                                 onChange={e => setLogin(e.target.value)}
                                 autoFocus
-                                className="bg-white/[0.04] border-white/[0.08] focus:border-cyan-500/60 focus-visible:ring-cyan-500/20 h-11 placeholder:text-muted-foreground/40"
+                                className="bg-white/[0.04] border-white/[0.08] focus:border-blue-500/60 focus-visible:ring-blue-500/20 h-11 placeholder:text-muted-foreground/40"
                             />
                         </div>
 
@@ -180,13 +180,13 @@ export default function Login() {
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
-                                    className="bg-white/[0.04] border-white/[0.08] focus:border-cyan-500/60 focus-visible:ring-cyan-500/20 h-11 pr-11 placeholder:text-muted-foreground/40"
+                                    className="bg-white/[0.04] border-white/[0.08] focus:border-blue-500/60 focus-visible:ring-blue-500/20 h-11 pr-11 placeholder:text-muted-foreground/40"
                                 />
                                 <button
                                     type="button"
                                     id="toggle-password"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-cyan-300 transition-colors"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-blue-300 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
@@ -199,9 +199,9 @@ export default function Login() {
                             disabled={isLoading}
                             className={cn(
                                 'w-full h-12 mt-2 font-bold text-sm tracking-wide relative overflow-hidden',
-                                'bg-gradient-to-r from-cyan-500 via-teal-500 to-cyan-600',
-                                'hover:from-cyan-400 hover:via-teal-400 hover:to-cyan-500',
-                                'shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40',
+                                'bg-gradient-to-r from-blue-500 via-blue-500 to-blue-600',
+                                'hover:from-blue-400 hover:via-blue-400 hover:to-blue-500',
+                                'shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40',
                                 'transition-all duration-300 hover:-translate-y-0.5',
                                 'disabled:opacity-60 disabled:translate-y-0'
                             )}

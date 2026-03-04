@@ -9,14 +9,13 @@ interface StatCardProps {
     icon: LucideIcon;
     colorClass: string;
     bgClass: string;
-    glowClass: string;
     trend?: string;
     delay?: number;
 }
 
 export default function StatCard({
     label, rawValue, displayFn, icon: Icon,
-    colorClass, bgClass, glowClass, trend, delay,
+    colorClass, bgClass, trend, delay,
 }: StatCardProps) {
     const count = useCountUp(rawValue, 1400);
     const display = displayFn(parseInt(count.replace(/\D/g, '')) || 0);
@@ -24,8 +23,7 @@ export default function StatCard({
     return (
         <div
             className={cn(
-                'glass-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 cursor-default animate-fade-in',
-                glowClass
+                'solid-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 cursor-default animate-fade-in'
             )}
             style={{ animationDelay: `${delay ?? 0}ms`, opacity: 0 }}
         >

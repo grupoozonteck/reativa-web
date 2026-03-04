@@ -79,10 +79,10 @@ export default function AppLayout() {
                         <Menu className="w-5 h-5" />
                     </Button>
                     <div className="flex items-center gap-2.5 flex-1">
-                        <div className="w-7 h-7 shrink-0 rounded-lg bg-teal-600 flex items-center justify-center">
+                        <div className="w-7 h-7 shrink-0 rounded-lg bg-blue-600 flex items-center justify-center">
                             <Zap className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                         </div>
-                        <span className="font-black text-sm gradient-text-cyan">Reativa</span>
+                        <span className="font-black text-sm gradient-text-blue">Reativa</span>
                     </div>
                     <ThemeToggleButton />
                 </header>

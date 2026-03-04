@@ -21,13 +21,13 @@ export default function SidebarShell({ name, email, initials, onLogout, onNav }:
                 <div className="flex items-center gap-3">
                     <div className="relative w-9 h-9 shrink-0">
                         <div
-                            className="relative w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center"
+                            className="relative w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center"
                         >
                             <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
                         </div>
                     </div>
                     <div>
-                        <p className="font-black text-sm gradient-text-cyan tracking-wide">Reativa</p>
+                        <p className="font-black text-sm gradient-text-blue tracking-wide">Reativa</p>
                         <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-widest">Comercial</p>
                     </div>
                 </div>
@@ -45,7 +45,7 @@ export default function SidebarShell({ name, email, initials, onLogout, onNav }:
             <div className="px-3 py-4 border-t border-border">
                 <div className="flex items-center gap-2 px-2.5 py-2.5 rounded-xl bg-muted">
                     <Avatar className="w-8 h-8 shrink-0">
-                        <AvatarFallback className="bg-teal-600 text-white text-xs font-bold">
+                        <AvatarFallback className="bg-blue-600 text-white text-xs font-bold">
                             {initials}
                         </AvatarFallback>
                     </Avatar>

@@ -21,14 +21,14 @@ const rows = [
         label: 'Já atribuídos',
         val: assigned,
         total: dashboardStats.totalInactive,
-        color: 'from-emerald-500 to-cyan-500',
+        color: 'from-emerald-500 to-blue-500',
     },
 ];
 
 export default function InativosCard() {
     return (
         <div
-            className="glass-card rounded-2xl p-5 relative overflow-hidden animate-fade-in"
+            className="solid-card rounded-2xl p-5 relative overflow-hidden animate-fade-in"
             style={{ animationDelay: '450ms', opacity: 0 }}
         >
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />

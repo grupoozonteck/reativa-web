@@ -1,12 +1,12 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
     Search,
     Filter,
     X,
     Headphones,
     RefreshCcw,
-    TrendingUp,
     Users,
     ChevronLeft,
     ChevronRight,
@@ -16,6 +16,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
     Table,
     TableHeader,
@@ -25,178 +26,106 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import {
-    customerService,
-    type ReengagementUser,
-    type ReengagementMetrics,
-} from '@/services/customer.service';
+import { getInitials, getAvatarColor } from '@/lib/client-utils';
+import { customerService, type ReengagementUser } from '@/services/customer.service';
+import { useDebounce } from '@/hooks/useDebounce';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
 
-/* ── Helpers ── */
-
-function getInitials(name: string): string {
-    return name
-        .split(' ')
-        .map(p => p[0])
-        .filter(Boolean)
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
+function buildParams(page: number, search: string, status: FilterStatus) {
+    const params: Record<string, number | string> = { page };
+    if (search) params.search = search;
+    if (status === 'sem_pedidos') params.without_orders = 1;
+    if (status === 'com_pedidos') params.has_orders = 1;
+    if (status === 'com_pagos') params.has_paid_orders = 1;
+    return params;
 }
 
-function getAvatarColor(name: string): string {
-    const colors = [
-        'bg-teal-600',
-        'bg-violet-600',
-        'bg-amber-600',
-        'bg-emerald-600',
-        'bg-rose-600',
-        'bg-blue-600',
-    ];
-    const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    return colors[hash % colors.length];
+// ─── Skeleton ────────────────────────────────────────────────────────────────
+function SkeletonRow() {
+    return (
+        <TableRow className="border-border">
+            <TableCell className="py-3">
+                <div className="h-3.5 w-12 rounded bg-muted animate-pulse" />
+            </TableCell>
+            <TableCell className="py-3">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-muted animate-pulse shrink-0" />
+                    <div className="space-y-1.5">
+                        <div className="h-3.5 w-32 rounded bg-muted animate-pulse" />
+                        <div className="h-3 w-44 rounded bg-muted animate-pulse" />
+                    </div>
+                </div>
+            </TableCell>
+            <TableCell className="py-3 text-center">
+                <div className="h-3.5 w-6 rounded bg-muted animate-pulse mx-auto" />
+            </TableCell>
+            <TableCell className="py-3 text-center">
+                <div className="h-3.5 w-6 rounded bg-muted animate-pulse mx-auto" />
+            </TableCell>
+            <TableCell className="py-3 text-right">
+                <div className="h-7 w-36 rounded-lg bg-muted animate-pulse ml-auto" />
+            </TableCell>
+        </TableRow>
+    );
 }
 
-
-
-/* ── Main Component ── */
-
+// ─── Main ────────────────────────────────────────────────────────────────────
 export default function Clientes() {
     const navigate = useNavigate();
+
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState<FilterStatus>('todos');
-    const [showDiasDropdown, setShowDiasDropdown] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [page, setPage] = useState(1);
 
-    const [clients, setClients] = useState<ReengagementUser[]>([]);
-    const [metrics, setMetrics] = useState<ReengagementMetrics>({ totalInProgress: 0, totalReactivated: 0 });
-    const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
-    const [prevPageUrl, setPrevPageUrl] = useState<string | null>(null);
-    const [totalShowing, setTotalShowing] = useState({ from: 0, to: 0 });
+    // Debounce só no search — filtros de status respondem imediatamente
+    const debouncedSearch = useDebounce(search, 400);
 
-    const fetchClients = useCallback(async (page: number = 1) => {
-        setLoading(true);
-        try {
-            const response = await customerService.getReengagements(page);
-            if (response.success) {
-                setClients(response.data.users.data);
-                setMetrics(response.data.metrics);
-                setCurrentPage(response.data.users.current_page);
-                setNextPageUrl(response.data.users.next_page_url);
-                setPrevPageUrl(response.data.users.prev_page_url);
-                setTotalShowing({
-                    from: response.data.users.from,
-                    to: response.data.users.to,
-                });
-            }
-        } catch (error) {
-            console.error('Erro ao carregar clientes:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const params = buildParams(page, debouncedSearch, filterStatus);
 
-    useEffect(() => {
-        fetchClients(1);
-    }, [fetchClients]);
+    const { data, isFetching, isLoading, refetch } = useQuery({
+        queryKey: ['reengagements', params],
+        queryFn: () => customerService.getReengagements(params),
+        placeholderData: keepPreviousData, // mantém dados anteriores enquanto carrega nova página
+        select: (res) => res.data.users,
+    });
 
-    useEffect(() => {
-        if (!showDiasDropdown) return;
-        function handleClickOutside(e: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-                setShowDiasDropdown(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showDiasDropdown]);
+    const clients = data?.data ?? [];
+    const totalItems = data?.total ?? data?.to ?? 0;
+    const currentPage = data?.current_page ?? page;
+    const nextPageUrl = data?.next_page_url ?? null;
+    const prevPageUrl = data?.prev_page_url ?? null;
+    const showingFrom = data?.from ?? 0;
+    const showingTo = data?.to ?? 0;
 
-    const stats = useMemo(() => {
-        const total = clients.length;
-        const taxa = total > 0 ? Math.round((metrics.totalReactivated / (metrics.totalInProgress + metrics.totalReactivated || 1)) * 100) : 0;
-        return {
-            emAtendimento: metrics.totalInProgress,
-            reativados: metrics.totalReactivated,
-            taxa,
-            disponiveis: total,
-        };
-    }, [clients, metrics]);
-
-    const filteredClients = useMemo(() => {
-        let list = [...clients];
-
-        if (search) {
-            const q = search.toLowerCase();
-            list = list.filter(
-                c =>
-                    c.name.toLowerCase().includes(q) ||
-                    c.email.toLowerCase().includes(q) ||
-                    c.login.toLowerCase().includes(q) ||
-                    (c.personal_data?.whatsapp || '').includes(q)
-            );
-        }
-
-        if (filterStatus === 'sem_pedidos') {
-            list = list.filter(c => c.total_orders === 0);
-        } else if (filterStatus === 'com_pedidos') {
-            list = list.filter(c => c.total_orders > 0);
-        } else if (filterStatus === 'com_pagos') {
-            list = list.filter(c => c.paid_orders > 0);
-        }
-
-        return list;
-    }, [clients, search, filterStatus]);
+    const loading = isLoading;
+    const hasActiveFilters = search !== '' || filterStatus !== 'todos';
 
     const handleClearFilters = () => {
         setSearch('');
         setFilterStatus('todos');
+        setPage(1);
     };
 
     const handleNextPage = () => {
-        if (nextPageUrl) fetchClients(currentPage + 1);
+        if (nextPageUrl) {
+            const url = new URL(nextPageUrl, window.location.origin);
+            setPage(Number(url.searchParams.get('page')));
+        }
     };
 
     const handlePrevPage = () => {
-        if (prevPageUrl) fetchClients(currentPage - 1);
+        if (prevPageUrl) {
+            const url = new URL(prevPageUrl, window.location.origin);
+            setPage(Number(url.searchParams.get('page')));
+        }
     };
 
-    const statsCards = [
-        {
-            label: 'Em Atendimento',
-            value: stats.emAtendimento,
-            icon: Headphones,
-            color: 'text-teal-500 dark:text-teal-400',
-            bg: 'bg-teal-50 dark:bg-teal-500/10',
-            iconBg: 'bg-teal-500',
-        },
-        {
-            label: 'Reativados',
-            value: stats.reativados,
-            icon: RefreshCcw,
-            color: 'text-emerald-500 dark:text-emerald-400',
-            bg: 'bg-emerald-50 dark:bg-emerald-500/10',
-            iconBg: 'bg-emerald-500',
-        },
-        {
-            label: 'Taxa de Conversão',
-            value: `${stats.taxa}%`,
-            icon: TrendingUp,
-            color: 'text-amber-500 dark:text-amber-400',
-            bg: 'bg-amber-50 dark:bg-amber-500/10',
-            iconBg: 'bg-amber-500',
-        },
-        {
-            label: 'Disponíveis',
-            value: stats.disponiveis,
-            icon: Users,
-            color: 'text-violet-500 dark:text-violet-400',
-            bg: 'bg-violet-50 dark:bg-violet-500/10',
-            iconBg: 'bg-violet-500',
-        },
-    ];
+    // Reset para página 1 ao trocar filtros
+    const handleStatusToggle = (key: FilterStatus) => {
+        setFilterStatus(prev => prev === key ? 'todos' : key);
+        setPage(1);
+    };
 
     const filterOptions: { key: FilterStatus; label: string }[] = [
         { key: 'sem_pedidos', label: 'Sem pedidos' },
@@ -218,44 +147,23 @@ export default function Clientes() {
                 </div>
                 <Button
                     onClick={() => navigate('/meus-atendimentos')}
-                    className="bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-500 text-white gap-2"
+                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-2"
                 >
                     <Headphones className="w-4 h-4" />
                     Meus atendimentos
                 </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
-                {statsCards.map((card, i) => (
-                    <div
-                        key={card.label}
-                        className="solid-card p-4 sm:p-5 animate-fade-in hover:scale-[1.01] transition-transform"
-                        style={{ animationDelay: `${i * 50}ms`, opacity: 0 }}
-                    >
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                                {card.label}
-                            </p>
-                            <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', card.iconBg)}>
-                                <card.icon className="w-4 h-4 text-white" />
-                            </div>
-                        </div>
-                        <p className={cn('text-2xl sm:text-3xl font-black tracking-tight', card.color)}>
-                            {loading ? '...' : card.value}
-                        </p>
-                    </div>
-                ))}
-            </div>
-
             {/* Filtros */}
-            <div
-                className="solid-card p-4 animate-fade-in"
-                style={{ animationDelay: '200ms', opacity: 0 }}
-            >
+            <div className="solid-card p-4 animate-fade-in">
                 <div className="flex items-center gap-2 mb-3">
                     <Filter className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm font-semibold">Filtros</span>
+                    {hasActiveFilters && (
+                        <Badge variant="outline" className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
+                            ativo
+                        </Badge>
+                    )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -265,54 +173,51 @@ export default function Clientes() {
                         <Input
                             placeholder="Pesquisar por nome, email ou WhatsApp..."
                             value={search}
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => { setSearch(e.target.value); setPage(1); }}
                             className="pl-9 h-9 text-sm"
+                            disabled={loading}
                         />
                     </div>
 
                     <div className="w-px h-6 bg-border hidden sm:block" />
 
-                    {/* Toggle filters */}
+                    {/* Switch filters */}
                     {filterOptions.map(opt => (
-                        <button
+                        <label
                             key={opt.key}
-                            onClick={() =>
-                                setFilterStatus(prev => (prev === opt.key ? 'todos' : opt.key))
-                            }
                             className={cn(
-                                'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
+                                'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border cursor-pointer select-none',
                                 filterStatus === opt.key
-                                    ? 'bg-teal-50 dark:bg-teal-500/15 border-teal-300 dark:border-teal-500/30 text-teal-700 dark:text-teal-400'
-                                    : 'bg-secondary/50 border-border text-muted-foreground hover:bg-secondary hover:text-foreground'
+                                    ? 'bg-blue-50 dark:bg-blue-500/15 border-blue-300 dark:border-blue-500/30 text-blue-700 dark:text-blue-400'
+                                    : 'bg-secondary/50 border-border text-muted-foreground hover:bg-secondary hover:text-foreground',
+                                isFetching && 'opacity-60 pointer-events-none'
                             )}
                         >
-                            <div
-                                className={cn(
-                                    'w-3 h-3 rounded-full border-2 transition-colors',
-                                    filterStatus === opt.key
-                                        ? 'border-teal-500 bg-teal-500'
-                                        : 'border-muted-foreground/30'
-                                )}
+                            <Switch
+                                checked={filterStatus === opt.key}
+                                onCheckedChange={() => handleStatusToggle(opt.key)}
+                                disabled={isFetching}
                             />
                             {opt.label}
-                        </button>
+                        </label>
                     ))}
 
                     <div className="flex-1" />
 
-                    {/* Actions */}
                     <Button
                         size="sm"
-                        onClick={() => fetchClients(currentPage)}
-                        className="bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-500 text-white gap-1.5 h-9 text-xs"
+                        onClick={() => refetch()}
+                        disabled={isFetching}
+                        className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-1.5 h-9 text-xs"
                     >
-                        <RefreshCcw className={cn('w-3.5 h-3.5', loading && 'animate-spin')} />
-                        Atualizar
+                        <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
+                        {isFetching ? 'Carregando...' : 'Atualizar'}
                     </Button>
                     <Button
                         size="sm"
                         variant="outline"
                         onClick={handleClearFilters}
+                        disabled={loading || !hasActiveFilters}
                         className="gap-1.5 h-9 text-xs"
                     >
                         <X className="w-3.5 h-3.5" />
@@ -321,72 +226,74 @@ export default function Clientes() {
                 </div>
             </div>
 
-            {/* Tabela de Clientes */}
-            <div
-                className="solid-card overflow-hidden animate-fade-in"
-                style={{ animationDelay: '280ms', opacity: 0 }}
-            >
+            {/* Tabela */}
+            <div className="solid-card overflow-hidden animate-fade-in">
                 <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-muted-foreground" />
                         <h2 className="text-sm font-semibold">Clientes</h2>
-                        <Badge variant="outline" className="text-[10px] bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-200 dark:border-teal-500/20">
-                            {filteredClients.length}
+                        <Badge variant="outline" className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
+                            {loading ? '...' : (totalItems > 0 ? `${totalItems} total` : clients.length)}
                         </Badge>
                     </div>
-                    {totalShowing.from > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                            Exibindo {totalShowing.from} - {totalShowing.to}
-                        </span>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {isFetching && !isLoading && (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                Buscando...
+                            </div>
+                        )}
+                        {showingFrom > 0 && !loading && (
+                            <span className="text-xs text-muted-foreground">
+                                Exibindo {showingFrom}–{showingTo}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
-                {loading ? (
-                    <div className="flex items-center justify-center py-20">
-                        <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
-                        <span className="ml-3 text-sm text-muted-foreground">Carregando clientes...</span>
-                    </div>
-                ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-border hover:bg-transparent">
-                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[80px]">
-                                    ID
-                                </TableHead>
-                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
-                                    Cliente
-                                </TableHead>
-
-                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[100px]">
-                                    Pedidos
-                                </TableHead>
-                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[100px]">
-                                    Pagos
-                                </TableHead>
-                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right w-[110px]">
-                                    Ações
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredClients.map((client) => (
-                                <ClientRow key={client.id} client={client} />
-                            ))}
-                            {filteredClients.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-12">
+                <Table>
+                    <TableHeader>
+                        <TableRow className="border-border hover:bg-transparent">
+                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[80px]">ID</TableHead>
+                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Cliente</TableHead>
+                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[100px]">Pedidos</TableHead>
+                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[100px]">Pagos</TableHead>
+                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right w-[180px]">Ações</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+                        {loading ? (
+                            Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+                        ) : clients.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center py-16">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <Users className="w-8 h-8 text-muted-foreground/30" />
                                         <p className="text-muted-foreground text-sm">
                                             Nenhum cliente encontrado
+                                            {hasActiveFilters && ' com os filtros aplicados'}
                                         </p>
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                )}
+                                        {hasActiveFilters && (
+                                            <button
+                                                onClick={handleClearFilters}
+                                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                            >
+                                                Limpar filtros
+                                            </button>
+                                        )}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            clients.map(client => (
+                                <ClientRow key={client.id} client={client} />
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
 
                 {/* Paginação */}
-                {!loading && (prevPageUrl || nextPageUrl) && (
+                {(prevPageUrl || nextPageUrl) && !loading && (
                     <div className="px-5 py-3 border-t border-border flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">
                             Página {currentPage}
@@ -396,7 +303,7 @@ export default function Clientes() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handlePrevPage}
-                                disabled={!prevPageUrl}
+                                disabled={!prevPageUrl || isFetching}
                                 className="h-8 w-8 p-0 disabled:opacity-30"
                             >
                                 <ChevronLeft className="w-4 h-4" />
@@ -405,7 +312,7 @@ export default function Clientes() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handleNextPage}
-                                disabled={!nextPageUrl}
+                                disabled={!nextPageUrl || isFetching}
                                 className="h-8 w-8 p-0 disabled:opacity-30"
                             >
                                 <ChevronRight className="w-4 h-4" />
@@ -418,21 +325,17 @@ export default function Clientes() {
     );
 }
 
+// ─── Client Row ──────────────────────────────────────────────────────────────
 function ClientRow({ client }: { client: ReengagementUser }) {
     const navigate = useNavigate();
     const initials = getInitials(client.name);
     const colorClass = getAvatarColor(client.name);
 
     return (
-        <TableRow
-            className="border-border hover:bg-muted/50 transition-colors group"
-        >
-            {/* ID */}
+        <TableRow className="border-border hover:bg-muted/50 transition-colors">
             <TableCell className="py-3">
                 <span className="text-xs text-muted-foreground font-mono">#{client.id}</span>
             </TableCell>
-
-            {/* Cliente */}
             <TableCell className="py-3">
                 <div className="flex items-center gap-3">
                     {client.personal_data?.avatar ? (
@@ -442,12 +345,10 @@ function ClientRow({ client }: { client: ReengagementUser }) {
                             className="w-9 h-9 rounded-full object-cover shrink-0"
                         />
                     ) : (
-                        <div
-                            className={cn(
-                                'w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0',
-                                colorClass
-                            )}
-                        >
+                        <div className={cn(
+                            'w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0',
+                            colorClass
+                        )}>
                             {initials}
                         </div>
                     )}
@@ -457,15 +358,9 @@ function ClientRow({ client }: { client: ReengagementUser }) {
                     </div>
                 </div>
             </TableCell>
-
-   
-
-            {/* Pedidos */}
             <TableCell className="py-3 text-center">
                 <span className="text-sm font-medium">{client.total_orders}</span>
             </TableCell>
-
-            {/* Pagos */}
             <TableCell className="py-3 text-center">
                 <span className={cn(
                     'text-sm font-medium',
@@ -474,13 +369,11 @@ function ClientRow({ client }: { client: ReengagementUser }) {
                     {client.paid_orders}
                 </span>
             </TableCell>
-
-            {/* Ações */}
             <TableCell className="py-3 text-right">
                 <Button
                     size="sm"
                     onClick={() => navigate(`/clientes/${client.id}`)}
-                    className="h-7 text-xs gap-1.5 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-500 text-white"
+                    className="h-7 text-xs gap-1.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white"
                 >
                     <MessageCircle className="w-3 h-3" />
                     Iniciar atendimento

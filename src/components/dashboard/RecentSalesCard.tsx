@@ -7,8 +7,8 @@ const recentNotifs = saleNotifications.slice(0, 6);
 
 const notifTypeConfig = {
     reativacao: { label: 'Reativação', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
-    primeiro_pedido: { label: '1ª Compra', color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20' },
-    venda: { label: 'Venda', color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20' },
+    primeiro_pedido: { label: '1ª Compra', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+    venda: { label: 'Venda', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
 } as const;
 
 type NotifType = keyof typeof notifTypeConfig;
@@ -16,13 +16,13 @@ type NotifType = keyof typeof notifTypeConfig;
 export default function RecentSalesCard() {
     return (
         <div
-            className="glass-card rounded-2xl p-5 flex-1 relative overflow-hidden animate-fade-in"
+            className="solid-card rounded-2xl p-5 flex-1 relative overflow-hidden animate-fade-in"
             style={{ animationDelay: '520ms', opacity: 0 }}
         >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
             <h2 className="font-bold text-sm mb-4 flex items-center gap-2">
-                <Bell className="w-4 h-4 text-cyan-500" />
+                <Bell className="w-4 h-4 text-blue-500" />
                 Últimas Vendas
             </h2>
 
@@ -36,7 +36,7 @@ export default function RecentSalesCard() {
                             style={{ animationDelay: `${600 + i * 60}ms`, opacity: 0 }}
                         >
                             {/* Avatar initials */}
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-[9px] font-bold text-white shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-[9px] font-bold text-white shrink-0">
                                 {n.sellerName.split(' ').map((w: string) => w[0]).slice(0, 2).join('')}
                             </div>
 

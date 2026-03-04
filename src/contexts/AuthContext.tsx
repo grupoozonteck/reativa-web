@@ -53,9 +53,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const logoutFunction = useCallback(async () => {
-        await authService.logout();
-        setToken(null);
-        setUser(null);
+        try {
+            await authService.logout();
+        } finally {
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
     }, []);
 
     return (

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 const roleConfig = {
     gerente: { label: 'Gerente', icon: Crown, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', dot: 'bg-amber-400' },
-    supervisor: { label: 'Supervisor', icon: ShieldCheck, color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20', dot: 'bg-cyan-400' },
+    supervisor: { label: 'Supervisor', icon: ShieldCheck, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', dot: 'bg-blue-400' },
     atendente: { label: 'Atendente', icon: Headphones, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', dot: 'bg-blue-400' },
 };
 
@@ -16,7 +16,7 @@ function MemberCard({ member, compact = false }: { member: TeamMember; compact?:
         <div className={cn('glass-card rounded-xl transition-all duration-200 hover:border-white/[0.12] hover:-translate-y-0.5', compact ? 'p-3' : 'p-4')}>
             <div className="flex items-start gap-3">
                 <div className={cn(
-                    'rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-white font-bold shrink-0',
+                    'rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold shrink-0',
                     compact ? 'w-9 h-9 text-xs' : 'w-11 h-11 text-sm'
                 )}>
                     {member.avatar}
@@ -92,7 +92,7 @@ export default function Equipe() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                     { label: 'Atendentes', value: attendants.length, icon: Headphones, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                    { label: 'Supervisores', value: supervisors.length, icon: ShieldCheck, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+                    { label: 'Supervisores', value: supervisors.length, icon: ShieldCheck, color: 'text-blue-400', bg: 'bg-blue-500/10' },
                     { label: 'Vendas (mês)', value: totalCount, icon: ShoppingCart, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                     { label: 'Receita (mês)', value: `R$ ${(totalSales / 1000).toFixed(0)}k`, icon: TrendingUp, color: 'text-amber-400', bg: 'bg-amber-500/10' },
                 ].map((s, i) => (
@@ -126,7 +126,7 @@ export default function Equipe() {
                         <div className="flex items-center gap-3">
                             <div className="ml-4 w-px h-6 bg-border/50" />
                             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Supervisor
+                                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Supervisor
                             </p>
                         </div>
                         <div className="ml-4 pl-4 border-l border-border/40 space-y-4">

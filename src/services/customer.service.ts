@@ -46,6 +46,7 @@ export interface ReengagementPagination {
     per_page: number;
     prev_page_url: string | null;
     to: number;
+    total?: number;
 }
 
 export interface ReengagementResponse {
@@ -95,11 +96,11 @@ export interface PersonalOrder {
     user_id: number;
     value: string;
     payment_date: string | null;
-    points: string;
+    points?: string | null;
     status: number;
-    delivery_status: number;
+    delivery_status?: number | null;
     delivery_date: string | null;
-    delivery_type: number;
+    delivery_type?: number | null;
     created_at: string;
     updated_at: string;
     personal_order_items: PersonalOrderItem[];
@@ -139,7 +140,7 @@ export interface UserDetail {
     classification: string;
     created_at: string;
     updated_at: string;
-    personal_orders: PersonalOrder | null;
+    personal_orders: PersonalOrder[] | null;
     personal_data: PersonalData;
     personal_address: PersonalAddress | null;
     [key: string]: unknown;
@@ -226,9 +227,9 @@ export interface PersonalReengagementResponse {
 
 export const customerService = {
     /** Lista geral de clientes para reativação */
-    getReengagements: async (page: number = 1) => {
+    getReengagements: async (params: Record<string, unknown> = {}) => {
         const response = await api.get<ReengagementResponse>('/api/reengagements', {
-            params: { page },
+            params,
         });
         return response.data;
     },
@@ -239,10 +240,35 @@ export const customerService = {
         return response.data;
     },
 
+    /** Atualiza dados do usuário (email, data de nascimento) */
+    updateUserData: async (userId: number, data: { email: string; birth_date: string }) => {
+        const response = await api.post(`/api/reengagements/user/${userId}/update-data`, data);
+        console.log('UpdateUserDataResponse:', response); // Log para depuração
+        return response.data;
+    },
+
+    /** Atualiza status do atendimento do usuário */
+    updateUserStatus: async (userId: number, status: number) => {
+        const response = await api.post(`/api/reengagements/user/${userId}/update-status`, { status });
+        return response.data;
+    },
+
     /** Lista de clientes que EU estou atendendo */
-    getPersonalReengagements: async (page: number = 1) => {
+    getPersonalReengagements: async (params: {
+        page?: number;
+        start_date?: string;
+        end_date?: string;
+        search?: string;
+        status?: number;
+    } = {}) => {
         const response = await api.get<PersonalReengagementResponse>('/api/reengagements/personal', {
-            params: { page },
+            params: {
+                page: params.page ?? 1,
+                ...(params.start_date && { start_date: params.start_date }),
+                ...(params.end_date && { end_date: params.end_date }),
+                ...(params.search && { search: params.search }),
+                ...(params.status !== undefined && { status: params.status }),
+            },
         });
         return response.data;
     },

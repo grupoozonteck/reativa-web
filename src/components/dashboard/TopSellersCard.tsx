@@ -24,17 +24,17 @@ export default function TopSellersCard() {
 
     return (
         <div
-            className="lg:col-span-3 glass-card rounded-2xl p-5 animate-fade-in relative overflow-hidden"
+            className="lg:col-span-3 solid-card rounded-2xl p-5 animate-fade-in relative overflow-hidden"
             style={{ animationDelay: '400ms', opacity: 0 }}
         >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
             <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-sm flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-gradient-to-br from-cyan-400 to-teal-500" />
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-br from-blue-400 to-blue-500" />
                     Top Atendentes — Mês
                 </h2>
-                <Badge variant="secondary" className="text-[10px] bg-cyan-500/10 text-cyan-500 border-cyan-500/20">
+                <Badge variant="secondary" className="text-[10px] bg-blue-500/10 text-blue-500 border-blue-500/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse inline-block" />
                     Ao vivo
                 </Badge>
@@ -58,7 +58,7 @@ export default function TopSellersCard() {
                             </span>
 
                             {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md">
                                 {s.avatar}
                             </div>
 
@@ -66,13 +66,13 @@ export default function TopSellersCard() {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1.5">
                                     <span className={cn('text-sm font-semibold truncate', rankColors[i])}>{s.name}</span>
-                                    <span className="text-sm font-bold gradient-text-cyan ml-2 shrink-0">
+                                    <span className="text-sm font-bold gradient-text-blue ml-2 shrink-0">
                                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(s.salesValue)}
                                     </span>
                                 </div>
                                 <div className="relative h-1.5 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
                                     <div
-                                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan-500 to-teal-400"
+                                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
                                         style={{ width: `${pct}%`, transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)' }}
                                     />
                                 </div>

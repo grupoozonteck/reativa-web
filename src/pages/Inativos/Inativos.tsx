@@ -60,7 +60,7 @@ function ClientCard({ client, onAssign }: { client: InactiveClient; onAssign: (c
                         <span className="text-[10px] text-emerald-400 font-medium">{assignedTo.name.split(' ')[0]}</span>
                     </div>
                 ) : (
-                    <Button size="sm" variant="outline" onClick={() => onAssign(client)} className="h-7 text-xs border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
+                    <Button size="sm" variant="outline" onClick={() => onAssign(client)} className="h-7 text-xs border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
                         Atribuir
                     </Button>
                 )}
@@ -154,16 +154,16 @@ export default function Inativos() {
                             <button
                                 key={a.id}
                                 onClick={() => handleAssign(a.id)}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl glass hover:bg-white/[0.08] border-white/10 hover:border-cyan-500/30 transition-all text-left"
+                                className="w-full flex items-center gap-3 p-3 rounded-xl glass hover:bg-white/[0.08] border-white/10 hover:border-blue-500/30 transition-all text-left"
                             >
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                                     {a.avatar}
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm font-semibold">{a.name}</p>
                                     <p className="text-xs text-muted-foreground">{a.activeClients} clientes ativos · {a.conversionRate}% conv.</p>
                                 </div>
-                                <Badge variant="outline" className="text-[10px] bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
+                                <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-400 border-blue-500/20">
                                     {a.salesCount} vendas
                                 </Badge>
                             </button>

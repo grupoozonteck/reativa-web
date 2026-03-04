@@ -9,7 +9,7 @@ export default function ThemeToggleButton() {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="w-7 h-7 text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 shrink-0 transition-colors"
+            className="w-7 h-7 text-muted-foreground hover:text-blue-400 hover:bg-blue-500/10 shrink-0 transition-colors"
             title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
         >
             {theme === 'dark'
