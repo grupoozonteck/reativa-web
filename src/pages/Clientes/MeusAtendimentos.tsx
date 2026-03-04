@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
@@ -15,6 +15,8 @@ import {
     Target,
     Users,
     X,
+    PartyPopper,
+    Trophy,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -108,10 +110,72 @@ function SkeletonStat() {
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
+// ─── Modal de parabéns ──────────────────────────────────────────────────────
+
+function CongratulationsModal({ onClose }: { onClose: () => void }) {
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={onClose}
+        >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <div
+                className="relative z-10 solid-card p-8 max-w-sm w-full text-center animate-fade-in shadow-2xl"
+                onClick={e => e.stopPropagation()}
+                style={{ animationDuration: '0.3s' }}
+            >
+                {/* Confetes animados */}
+                <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute w-2 h-2 rounded-full opacity-80"
+                            style={{
+                                left: `${8 + i * 7}%`,
+                                top: '-8px',
+                                backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#ec4899'][i % 6],
+                                animation: `confetti-fall ${1 + (i % 3) * 0.4}s ease-in ${(i % 5) * 0.15}s forwards`,
+                            }}
+                        />
+                    ))}
+                </div>
+
+                <div className="flex justify-center mb-4">
+                    <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
+                        <Trophy className="w-10 h-10 text-emerald-500" />
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 mb-2">
+                    <PartyPopper className="w-5 h-5 text-amber-500" />
+                    <h2 className="text-2xl font-extrabold tracking-tight">Parabéns!</h2>
+                    <PartyPopper className="w-5 h-5 text-amber-500" />
+                </div>
+
+                <p className="text-muted-foreground text-sm mb-6">
+                    Nova venda realizada! 🎉<br />
+                    Seu número de reativados aumentou.
+                </p>
+
+                <button
+                    onClick={onClose}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-colors"
+                >
+                    Arrasou! 🚀
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// ─── Main ────────────────────────────────────────────────────────────────────
+
 export default function MeusAtendimentos() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
+    const [showCongrats, setShowCongrats] = useState(false);
+    const prevReactivated = useRef<number | null>(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
@@ -144,14 +208,23 @@ export default function MeusAtendimentos() {
     const conversionRate = data?.conversionRate ?? 0;
     const statusRecollection = data?.statusRecollection ?? {};
 
-    // Busca acontece no backend
     const filteredList = allReengagements;
+    console.log('FilteredList:', filteredList);
+
+    useEffect(() => {
+        if (prevReactivated.current !== null && totalReactivated > prevReactivated.current) {
+            const timer = setTimeout(() => setShowCongrats(true), 0);
+            prevReactivated.current = totalReactivated;
+            return () => clearTimeout(timer);
+        }
+        prevReactivated.current = totalReactivated;
+    }, [totalReactivated]);
 
     const handleNextPage = () => { if (nextPageUrl) setPage(p => p + 1); };
     const handlePrevPage = () => { if (prevPageUrl) setPage(p => Math.max(1, p - 1)); };
     const handleSearch = (value: string) => {
         setSearch(value);
-        setPage(1); // Volta para a primeira página ao buscar
+        setPage(1);
     };
     const handleStartDate = (value: string) => {
         setStartDate(value);
@@ -180,207 +253,210 @@ export default function MeusAtendimentos() {
     ];
 
     return (
-        <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
+        <>
+            {showCongrats && <CongratulationsModal onClose={() => setShowCongrats(false)} />}
+            <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
 
-            {/* Header */}
-            <div className="flex items-center justify-between animate-fade-in">
-                <div>
-                    <h1 className="text-2xl font-extrabold tracking-tight">Meus Atendimentos</h1>
-                    <p className="text-muted-foreground text-sm mt-0.5">
-                        Clientes que estou atendendo neste mês
-                    </p>
+                {/* Header */}
+                <div className="flex items-center justify-between animate-fade-in">
+                    <div>
+                        <h1 className="text-2xl font-extrabold tracking-tight">Meus Atendimentos</h1>
+                        <p className="text-muted-foreground text-sm mt-0.5">
+                            Clientes que estou atendendo neste mês
+                        </p>
+                    </div>
+                    <Button
+                        onClick={() => navigate('/clientes')}
+                        className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-2"
+                    >
+                        <Target className="w-4 h-4" />
+                        Lista Geral
+                    </Button>
                 </div>
-                <Button
-                    onClick={() => navigate('/clientes')}
-                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-2"
-                >
-                    <Target className="w-4 h-4" />
-                    Lista Geral
-                </Button>
-            </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 animate-fade-in">
-                {isLoading
-                    ? Array.from({ length: 3 }).map((_, idx) => <SkeletonStat key={idx} />)
-                    : statsCards.map(card => (
-                        <div
-                            key={card.label}
-                            className="solid-card p-4 sm:p-5 hover:scale-[1.01] transition-transform flex items-center gap-4"
-                        >
-                            <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', card.iconBg)}>
-                                <card.icon className="w-5 h-5 text-white" />
+                {/* Stats */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 animate-fade-in">
+                    {isLoading
+                        ? Array.from({ length: 3 }).map((_, idx) => <SkeletonStat key={idx} />)
+                        : statsCards.map(card => (
+                            <div
+                                key={card.label}
+                                className="solid-card p-4 sm:p-5 hover:scale-[1.01] transition-transform flex items-center gap-4"
+                            >
+                                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', card.iconBg)}>
+                                    <card.icon className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">
+                                        {card.label}
+                                    </p>
+                                    <p className={cn('text-2xl font-black tracking-tight tabular-nums', card.color)}>
+                                        {card.value}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">
-                                    {card.label}
-                                </p>
-                                <p className={cn('text-2xl font-black tracking-tight tabular-nums', card.color)}>
-                                    {card.value}
-                                </p>
-                            </div>
+                        ))
+                    }
+                </div>
+
+                {/* Search + refresh */}
+                <div className="solid-card p-4 animate-fade-in">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative flex-1 min-w-[200px] max-w-sm">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Pesquisar por nome, email ou WhatsApp..."
+                                value={search}
+                                onChange={e => handleSearch(e.target.value)}
+                                className="pl-9 h-9 text-sm"
+                            />
+                            {search && (
+                                <button
+                                    onClick={() => handleSearch('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            )}
                         </div>
-                    ))
-                }
-            </div>
-
-            {/* Search + refresh */}
-            <div className="solid-card p-4 animate-fade-in">
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="relative flex-1 min-w-[200px] max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                            placeholder="Pesquisar por nome, email ou WhatsApp..."
-                            value={search}
-                            onChange={e => handleSearch(e.target.value)}
-                            className="pl-9 h-9 text-sm"
+                            type="date"
+                            value={startDate}
+                            onChange={e => handleStartDate(e.target.value)}
+                            className="h-9 w-[160px] text-xs"
+                            aria-label="Data inicial"
                         />
-                        {search && (
-                            <button
-                                onClick={() => handleSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                <X className="w-3.5 h-3.5" />
-                            </button>
-                        )}
-                    </div>
-                    <Input
-                        type="date"
-                        value={startDate}
-                        onChange={e => handleStartDate(e.target.value)}
-                        className="h-9 w-[160px] text-xs"
-                        aria-label="Data inicial"
-                    />
-                    <Input
-                        type="date"
-                        value={endDate}
-                        onChange={e => handleEndDate(e.target.value)}
-                        className="h-9 w-[160px] text-xs"
-                        aria-label="Data final"
-                    />
-                    <select
-                        value={statusFilter}
-                        onChange={e => handleStatusFilter(e.target.value)}
-                        className="h-9 min-w-[180px] rounded-md border border-input bg-background px-3 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        aria-label="Filtrar por status"
-                    >
-                        <option value="">Todos os status</option>
-                        {Object.entries(statusRecollection).map(([key, label]) => (
-                            <option key={key} value={key}>{label}</option>
-                        ))}
-                    </select>
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={clearFilters}
-                        className="h-9 text-xs"
-                        disabled={!search && !startDate && !endDate && !statusFilter}
-                    >
-                        Limpar filtros
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={() => refetch()}
-                        disabled={isFetching}
-                        className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-1.5 h-9 text-xs"
-                    >
-                        <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
-                        {isFetching ? 'Atualizando...' : 'Atualizar'}
-                    </Button>
-                </div>
-            </div>
-
-            {/* Tabela */}
-            <div className="solid-card overflow-hidden animate-fade-in">
-
-                <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                        <h2 className="text-sm font-semibold">Clientes em Atendimento</h2>
-                        <Badge variant="outline" className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
-                            {isLoading ? '...' : filteredList.length}
-                        </Badge>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        {isFetching && !isLoading && (
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                Buscando...
-                            </div>
-                        )}
-                        {showingFrom > 0 && !isLoading && (
-                            <span className="text-xs text-muted-foreground">
-                                Exibindo {showingFrom}–{showingTo}
-                            </span>
-                        )}
+                        <Input
+                            type="date"
+                            value={endDate}
+                            onChange={e => handleEndDate(e.target.value)}
+                            className="h-9 w-[160px] text-xs"
+                            aria-label="Data final"
+                        />
+                        <select
+                            value={statusFilter}
+                            onChange={e => handleStatusFilter(e.target.value)}
+                            className="h-9 min-w-[180px] rounded-md border border-input bg-background px-3 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            aria-label="Filtrar por status"
+                        >
+                            <option value="">Todos os status</option>
+                            {Object.entries(statusRecollection).map(([key, label]) => (
+                                <option key={key} value={key}>{label}</option>
+                            ))}
+                        </select>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={clearFilters}
+                            className="h-9 text-xs"
+                            disabled={!search && !startDate && !endDate && !statusFilter}
+                        >
+                            Limpar filtros
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => refetch()}
+                            disabled={isFetching}
+                            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-1.5 h-9 text-xs"
+                        >
+                            <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
+                            {isFetching ? 'Atualizando...' : 'Atualizar'}
+                        </Button>
                     </div>
                 </div>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow className="border-border hover:bg-transparent">
-                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[80px]">ID</TableHead>
-                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Cliente</TableHead>
-                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">WhatsApp</TableHead>
-                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[130px]">Status</TableHead>
-                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[100px]">Início</TableHead>
-                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right w-[80px]">Ações</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
-                        {isLoading ? (
-                            Array.from({ length: 6 }).map((_, idx) => <SkeletonRow key={idx} />)
-                        ) : filteredList.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={6} className="text-center py-16">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <Users className="w-8 h-8 text-muted-foreground/30" />
-                                        <p className="text-muted-foreground text-sm">
-                                            {search ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
-                                        </p>
-                                        {search && (
-                                            <button
-                                                onClick={() => handleSearch('')}
-                                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
-                                            >
-                                                Limpar pesquisa
-                                            </button>
-                                        )}
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            filteredList.map(r => <PersonalRow key={r.id} reengagement={r} statusRecollection={statusRecollection} />)
-                        )}
-                    </TableBody>
-                </Table>
+                {/* Tabela */}
+                <div className="solid-card overflow-hidden animate-fade-in">
 
-                {/* Paginação */}
-                {(prevPageUrl || nextPageUrl) && !isLoading && (
-                    <div className="px-5 py-3 border-t border-border flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Página {currentPage}</span>
+                    <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Button
-                                size="sm" variant="outline"
-                                onClick={handlePrevPage}
-                                disabled={!prevPageUrl || isFetching}
-                                className="h-8 w-8 p-0 disabled:opacity-30"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </Button>
-                            <Button
-                                size="sm" variant="outline"
-                                onClick={handleNextPage}
-                                disabled={!nextPageUrl || isFetching}
-                                className="h-8 w-8 p-0 disabled:opacity-30"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </Button>
+                            <Users className="w-4 h-4 text-muted-foreground" />
+                            <h2 className="text-sm font-semibold">Clientes em Atendimento</h2>
+                            <Badge variant="outline" className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
+                                {isLoading ? '...' : filteredList.length}
+                            </Badge>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {isFetching && !isLoading && (
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    Buscando...
+                                </div>
+                            )}
+                            {showingFrom > 0 && !isLoading && (
+                                <span className="text-xs text-muted-foreground">
+                                    Exibindo {showingFrom}–{showingTo}
+                                </span>
+                            )}
                         </div>
                     </div>
-                )}
+
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="border-border hover:bg-transparent">
+                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[80px]">ID</TableHead>
+                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Cliente</TableHead>
+                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">WhatsApp</TableHead>
+                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[130px]">Status</TableHead>
+                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[100px]">Início</TableHead>
+                                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right w-[80px]">Ações</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+                            {isLoading ? (
+                                Array.from({ length: 6 }).map((_, idx) => <SkeletonRow key={idx} />)
+                            ) : filteredList.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="text-center py-16">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <Users className="w-8 h-8 text-muted-foreground/30" />
+                                            <p className="text-muted-foreground text-sm">
+                                                {search ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
+                                            </p>
+                                            {search && (
+                                                <button
+                                                    onClick={() => handleSearch('')}
+                                                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                                >
+                                                    Limpar pesquisa
+                                                </button>
+                                            )}
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                filteredList.map(r => <PersonalRow key={r.id} reengagement={r} statusRecollection={statusRecollection} />)
+                            )}
+                        </TableBody>
+                    </Table>
+
+                    {/* Paginação */}
+                    {(prevPageUrl || nextPageUrl) && !isLoading && (
+                        <div className="px-5 py-3 border-t border-border flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Página {currentPage}</span>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    size="sm" variant="outline"
+                                    onClick={handlePrevPage}
+                                    disabled={!prevPageUrl || isFetching}
+                                    className="h-8 w-8 p-0 disabled:opacity-30"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    size="sm" variant="outline"
+                                    onClick={handleNextPage}
+                                    disabled={!nextPageUrl || isFetching}
+                                    className="h-8 w-8 p-0 disabled:opacity-30"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
@@ -410,7 +486,7 @@ function PersonalRow({ reengagement, statusRecollection }: { reengagement: Perso
                     </div>
                     <div className="min-w-0">
                         <p className="text-sm font-semibold truncate">{user.name}</p>
-                        <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
+                        <p className="text-md text-muted-foreground truncate">{user.login}</p>
                     </div>
                 </div>
             </TableCell>

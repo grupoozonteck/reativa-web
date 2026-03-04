@@ -253,6 +253,13 @@ export const customerService = {
         return response.data;
     },
 
+    /** Obtém link de acesso à loja já logado pelo cliente */
+    getAccessStoreLink: async (userId: number) => {
+        const response = await api.get<{ success: boolean; data: { url: string } }>(`/api/reengagements/user/${userId}/access-store`);
+        console.log('AccessStoreLinkResponse:', response); // Log para depuração
+        return response.data;
+    },
+
     /** Lista de clientes que EU estou atendendo */
     getPersonalReengagements: async (params: {
         page?: number;

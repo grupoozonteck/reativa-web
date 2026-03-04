@@ -354,7 +354,7 @@ function ClientRow({ client }: { client: ReengagementUser }) {
                     )}
                     <div className="min-w-0">
                         <p className="text-sm font-semibold truncate">{client.name}</p>
-                        <p className="text-[11px] text-muted-foreground truncate">{client.email}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{client.login}</p>
                     </div>
                 </div>
             </TableCell>

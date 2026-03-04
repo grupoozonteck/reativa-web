@@ -16,6 +16,7 @@ import {
     ShoppingBag,
     AlertCircle,
     Edit,
+    Store,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,8 +38,25 @@ const reengagementStatusMap: Record<number, { label: string; color: string }> = 
 
 export default function ClienteDetalhes() {
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [accessingStore, setAccessingStore] = useState(false);
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+
+    const handleAccessStore = async () => {
+        if (!id) return;
+        setAccessingStore(true);
+        try {
+            const res = await customerService.getAccessStoreLink(Number(id));
+            const url = res?.data?.url;
+            if (url) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+        } catch (err) {
+            console.error('Erro ao obter link da loja:', err);
+        } finally {
+            setAccessingStore(false);
+        }
+    };
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['customer-detail', id],
@@ -118,6 +136,20 @@ export default function ClienteDetalhes() {
                         <p className="text-xs text-muted-foreground">#{user.id} - {user.login}</p>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleAccessStore}
+                            disabled={accessingStore}
+                            className="gap-2"
+                        >
+                            {accessingStore ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Store className="w-4 h-4" />
+                            )}
+                            Acessar conta
+                        </Button>
                         <Button
                             variant="outline"
                             size="sm"

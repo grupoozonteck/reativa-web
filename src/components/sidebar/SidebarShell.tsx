@@ -21,14 +21,13 @@ export default function SidebarShell({ name, email, initials, onLogout, onNav }:
                 <div className="flex items-center gap-3">
                     <div className="relative w-9 h-9 shrink-0">
                         <div
-                            className="relative w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center"
+                            className="relative w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center"
                         >
-                            <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
+                            <img src="/images/logos/logo-white.webp" alt="Reativa Ozonteck Logo" className="w-6 h-6" />
                         </div>
                     </div>
                     <div>
-                        <p className="font-black text-sm gradient-text-blue tracking-wide">Reativa</p>
-                        <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-widest">Comercial</p>
+                        <p className="font-black text-sm gradient-text-blue tracking-wide">Reativa Ozonteck</p>
                     </div>
                 </div>
             </div>

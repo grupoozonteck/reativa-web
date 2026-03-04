@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { navItems } from '@/config/navItems';
 import { filterNavItems } from '@/config/permissions';
@@ -55,9 +54,7 @@ export default function SidebarNav({ onNav }: SidebarNavProps) {
                                     {badge}
                                 </Badge>
                             )}
-                            {isActive && (
-                                <ChevronRight className="w-3 h-3 text-blue-500/60 relative" />
-                            )}
+             
                         </>
                     )}
                 </NavLink>
