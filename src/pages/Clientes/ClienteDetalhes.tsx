@@ -47,9 +47,9 @@ export default function ClienteDetalhes() {
         setAccessingStore(true);
         try {
             const res = await customerService.getAccessStoreLink(Number(id));
-            const url = res?.data?.url;
-            if (url) {
-                window.open(url, '_blank', 'noopener,noreferrer');
+            const token = res?.data?.token;
+            if (token) {
+                window.open(`https://office.grupoozonteck.com/impersonation/${token}`, '_blank', 'noopener,noreferrer');
             }
         } catch (err) {
             console.error('Erro ao obter link da loja:', err);
