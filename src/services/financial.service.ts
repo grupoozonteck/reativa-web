@@ -8,7 +8,6 @@ export interface CommissionFilters {
 }
 
 export const financialService = {
-    /** Lista geral de comissoes - retorna o payload cru da API */
     getCommissions: async (params: CommissionFilters = {}) => {
         const response = await api.get('/api/commissions', {
             params: {
@@ -18,7 +17,7 @@ export const financialService = {
                 ...(params.page && { page: params.page }),
             },
         });
-        return response.data; // Retorna o payload cru da API
+        return response.data; 
 
     },
 };
