@@ -12,6 +12,7 @@ import MeusAtendimentos from '@/pages/Clientes/MeusAtendimentos';
 import Equipe from '@/pages/Equipe/Equipe';
 import Notificacoes from '@/pages/Notificacoes/Notificacoes';
 import { Loader2 } from 'lucide-react';
+import Comissoes from './pages/Comisoes/Comissoes';
 
 function ProtectedApp() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/clientes/:id" element={<ClienteDetalhes />} />
             <Route path="/meus-atendimentos" element={<MeusAtendimentos />} />
+            <Route path="/comissoes" element={<Comissoes />} />
             <Route
               path="/equipe"
               element={

@@ -243,7 +243,6 @@ export const customerService = {
     /** Atualiza dados do usuário (email, data de nascimento) */
     updateUserData: async (userId: number, data: { email: string; birth_date: string }) => {
         const response = await api.post(`/api/reengagements/user/${userId}/update-data`, data);
-        console.log('UpdateUserDataResponse:', response); // Log para depuração
         return response.data;
     },
 
@@ -256,7 +255,6 @@ export const customerService = {
     /** Obtém link de acesso à loja já logado pelo cliente */
     getAccessStoreLink: async (userId: number) => {
         const response = await api.get<{ success: boolean; data: { url: string; token: string } }>(`/api/reengagements/user/${userId}/access-store`);
-        console.log('AccessStoreLinkResponse:', response); // Log para depuração
         return response.data;
     },
 
@@ -277,7 +275,6 @@ export const customerService = {
                 ...(params.status !== undefined && { status: params.status }),
             },
         });
-        console.log('PersonalReengagementsResponse:', response.data); // Log para depuração
         return response.data;
     },
 };
