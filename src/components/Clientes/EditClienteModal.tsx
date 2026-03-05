@@ -78,7 +78,7 @@ export function EditClienteModal({
                     {error && <div className="text-red-500 text-sm">{error}</div>}
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose} disabled={loading}>
+                    <Button variant="destructive" onClick={onClose} disabled={loading}>
                         Cancelar
                     </Button>
                     <Button onClick={handleSave} disabled={loading}>

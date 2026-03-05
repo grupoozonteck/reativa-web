@@ -9,9 +9,7 @@ import {
     Calendar,
     MessageCircle,
     ExternalLink,
-    Package,
     Loader2,
-    Tag,
     User,
     ShoppingBag,
     AlertCircle,
@@ -21,15 +19,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime, formatCurrency } from '@/lib/client-utils';
+import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime } from '@/lib/client-utils';
 import {
     customerService,
     type PersonalOrder,
 } from '@/services/customer.service';
-
-
-import { orderStatusStyleMap, deliveryStatusMap } from '@/config/orderStatus';
 import { EditClienteModal } from '@/components/Clientes/EditClienteModal';
+import { CustomerDetailInfoItem } from '@/components/Clientes/CustomerDetailInfoItem';
+import { CustomerLatestOrderCard } from '@/components/Clientes/CustomerLatestOrderCard';
 
 const reengagementStatusMap: Record<number, { label: string; color: string }> = {
     1: { label: 'Em Atendimento', color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
@@ -106,6 +103,7 @@ export default function ClienteDetalhes() {
     }, null);
     const address = user.personal_address;
     const reengStatus = reengagement ? reengagementStatusMap[reengagement.status] : null;
+    const hasWhatsapp = !!whatsapp;
 
 
     return (
@@ -122,26 +120,29 @@ export default function ClienteDetalhes() {
             />
             <div className="p-4 sm:p-6 space-y-5 max-w-5xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center gap-3 animate-fade-in">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl shrink-0"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                    </Button>
-                    <div className="flex-1">
-                        <h1 className="text-xl font-extrabold tracking-tight">Detalhes do Cliente</h1>
-                        <p className="text-xs text-muted-foreground">#{user.id} - {user.login}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
+                <div className="animate-fade-in space-y-3">
+                    <div className="flex items-start gap-3">
                         <Button
                             variant="outline"
+                            size="icon"
+                            onClick={() => navigate(-1)}
+                            className="w-9 h-9 rounded-xl shrink-0"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                        </Button>
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-xl font-extrabold tracking-tight truncate">Detalhes do Cliente</h1>
+                        
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 flex-row">
+                        <Button
+                            variant="default"
                             size="sm"
                             onClick={handleAccessStore}
                             disabled={accessingStore}
-                            className="gap-2"
+                            className="gap-2 sm:w-auto bg-green-500 hover:bg-green-600 text-white"
                         >
                             {accessingStore ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -151,19 +152,15 @@ export default function ClienteDetalhes() {
                             Acessar conta
                         </Button>
                         <Button
-                            variant="outline"
+                            variant="default"
                             size="sm"
                             onClick={() => setEditModalOpen(true)}
-                            className="gap-2"
+                            className="gap-2 sm:w-auto "
                         >
                             <Edit className="w-4 h-4" />
                             Editar
                         </Button>
-                        {reengStatus && (
-                            <Badge className={cn('text-xs border', reengStatus.color)}>
-                                {reengStatus.label}
-                            </Badge>
-                        )}
+                    
                     </div>
                 </div>
 
@@ -191,28 +188,37 @@ export default function ClienteDetalhes() {
                         <div className="flex-1 min-w-0 space-y-3">
                             <div>
                                 <h2 className="text-lg font-bold">{user.name}</h2>
-                                <p className="text-sm text-muted-foreground">{user.classification}</p>
+                                <p className="text-sm text-muted-foreground truncate">#{user.id} - {user.login}</p>
+                                {reengStatus && (
+                                    <Badge className={cn('text- border w-fit', reengStatus.color)}>
+                                        {reengStatus.label}
+                                    </Badge>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <InfoItem icon={Mail} iconBg="bg-violet-500" label={user.email} />
-                                <InfoItem
+                                <CustomerDetailInfoItem icon={Mail} iconBg="bg-violet-500" label={<span className="truncate block">{user.email || '--'}</span>} />
+                                <CustomerDetailInfoItem
                                     icon={MessageCircle}
                                     iconBg="bg-emerald-500"
                                     label={
-                                        <a
-                                            href={getWhatsAppLink(whatsapp)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 inline-flex items-center gap-1.5"
-                                        >
-                                            {formatWhatsApp(whatsapp)}
-                                            <ExternalLink className="w-3 h-3" />
-                                        </a>
+                                        hasWhatsapp ? (
+                                            <a
+                                                href={getWhatsAppLink(whatsapp)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 inline-flex items-center gap-1.5 min-w-0"
+                                            >
+                                                <span className="truncate">{formatWhatsApp(whatsapp)}</span>
+                                                <ExternalLink className="w-3 h-3 shrink-0" />
+                                            </a>
+                                        ) : (
+                                            <span>--</span>
+                                        )
                                     }
                                 />
-                                <InfoItem icon={Phone} iconBg="bg-blue-500" label={formatWhatsApp(user.phone_number)} />
-                                <InfoItem icon={Calendar} iconBg="bg-amber-500" label={`Cadastro: ${formatDate(user.created_at)}`} />
+                                <CustomerDetailInfoItem icon={Phone} iconBg="bg-blue-500" label={<span className="truncate block">{formatWhatsApp(user.phone_number)}</span>} />
+                                <CustomerDetailInfoItem icon={Calendar} iconBg="bg-amber-500" label={<span className="truncate block">Cadastro: {formatDate(user.created_at)}</span>} />
                             </div>
                         </div>
                     </div>
@@ -273,25 +279,33 @@ export default function ClienteDetalhes() {
                 </div>
 
                 {/* Ultimo Pedido */}
-                {order && <OrderCard order={order} orderStatusCollection={orderStatusCollection} />}
+                {order && <CustomerLatestOrderCard order={order} orderStatusCollection={orderStatusCollection} />}
 
                 {/* Ações rápidas */}
                 <div className="solid-card p-5 animate-fade-in" style={{ animationDelay: '300ms', opacity: 0 }}>
                     <h3 className="text-sm font-semibold mb-4">Ações rápidas</h3>
-                    <div className="flex flex-wrap gap-3">
-                        <a
-                            href={getWhatsAppLink(whatsapp)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {hasWhatsapp ? (
+                            <a
+                                href={getWhatsAppLink(whatsapp)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full"
+                            >
+                                <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white w-full">
+                                    <MessageCircle className="w-4 h-4" />
+                                    Enviar WhatsApp
+                                </Button>
+                            </a>
+                        ) : (
+                            <Button disabled className="gap-2 w-full">
                                 <MessageCircle className="w-4 h-4" />
-                                Enviar WhatsApp
+                                WhatsApp indisponível
                             </Button>
-                        </a>
+                        )}
                         <Button
                             variant="outline"
-                            className="gap-2"
+                            className="gap-2 w-full"
                             onClick={() => navigate('/meus-atendimentos')}
                         >
                             <ShoppingBag className="w-4 h-4" />
@@ -301,90 +315,5 @@ export default function ClienteDetalhes() {
                 </div>
             </div>
         </>
-    );
-}
-
-function InfoItem({ icon: Icon, iconBg, label }: { icon: typeof Mail; iconBg: string; label: React.ReactNode }) {
-    return (
-        <div className="flex items-center gap-2.5 text-sm">
-            <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', iconBg)}>
-                <Icon className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="truncate text-muted-foreground">{label}</span>
-        </div>
-    );
-}
-
-function OrderCard({ order, orderStatusCollection }: { order: PersonalOrder; orderStatusCollection: Record<string, string> }) {
-    const status = orderStatusStyleMap[order.status] || orderStatusStyleMap[1];
-    const statusLabel = orderStatusCollection[String(order.status)] || 'Desconhecido';
-    const deliveryStatus = typeof order.delivery_status === 'number'
-        ? deliveryStatusMap[order.delivery_status]
-        : undefined;
-    const StatusIcon = status.icon;
-
-    return (
-        <div className="solid-card p-5 animate-fade-in" style={{ animationDelay: '240ms', opacity: 0 }}>
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center">
-                        <Package className="w-4 h-4 text-white" />
-                    </div>
-                    <h3 className="text-sm font-semibold">Pedido #{order.code}</h3>
-                </div>
-                <Badge className={cn('text-xs border gap-1.5', status.color)}>
-                    <StatusIcon className="w-3 h-3" />
-                    {statusLabel}
-                </Badge>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
-                <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Valor</p>
-                    <p className="text-lg font-black text-blue-600 dark:text-blue-400">{formatCurrency(order.value)}</p>
-                </div>
-                <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Pontos</p>
-                    <p className="text-lg font-black text-violet-600 dark:text-violet-400">{parseFloat(order.points || '0').toFixed(0)}</p>
-                </div>
-                <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Data</p>
-                    <p className="text-sm font-medium">{formatDate(order.created_at)}</p>
-                </div>
-                <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Entrega</p>
-                    <p className={cn('text-sm font-medium', deliveryStatus?.color || 'text-muted-foreground')}>
-                        {deliveryStatus?.label || '--'}
-                    </p>
-                </div>
-            </div>
-
-            {/* Itens do pedido */}
-            {order.personal_order_items && order.personal_order_items.length > 0 && (
-                <div>
-                    <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                        Itens do pedido
-                    </p>
-                    <div className="space-y-2">
-                        {order.personal_order_items.map(item => (
-                            <div
-                                key={item.id}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border"
-                            >
-                                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center shrink-0">
-                                    <Tag className="w-3.5 h-3.5 text-white" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-sm font-medium truncate">
-                                        {item.internationalization?.product_name || `Produto #${item.product_id}`}
-                                    </p>
-                                    <p className="text-[11px] text-muted-foreground">Item #{item.id}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
     );
 }
