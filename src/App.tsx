@@ -13,6 +13,7 @@ import Notificacoes from '@/pages/Notificacoes/Notificacoes';
 import { Loader2 } from 'lucide-react';
 import Comissoes from './pages/Comisoes/Comissoes';
 import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
+import ManagerPerformance from './pages/Manager/ManagerPerformance';
 
 function ProtectedApp() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -78,6 +79,14 @@ export default function App() {
               element={
                 <RoleGuard route="/supervisor/performance">
                   <SupervisorPerformance />
+                </RoleGuard>
+              }
+            />
+            <Route
+              path="/manager/performance"
+              element={
+                <RoleGuard route="/manager/performance">
+                  <ManagerPerformance />
                 </RoleGuard>
               }
             />

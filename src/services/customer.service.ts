@@ -246,6 +246,7 @@ export const customerService = {
         return response.data;
     },
 
+    
     /** Atualiza status do atendimento do usuário */
     updateUserStatus: async (userId: number, status: number) => {
         const response = await api.post(`/api/reengagements/user/${userId}/update-status`, { status });
