@@ -12,7 +12,8 @@ interface SidebarNavProps {
 export default function SidebarNav({ onNav }: SidebarNavProps) {
     const { userType } = useAuth();
 
- 
+
+
     const visibleItems = filterNavItems(navItems, userType);
 
     return (
@@ -41,22 +42,22 @@ export default function SidebarNav({ onNav }: SidebarNavProps) {
                             {/* Active left indicator */}
                             {isActive && (
                                 <div
-                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full bg-blue-500"
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full bg-primary dark:bg-primary"
                                 />
                             )}
                             <Icon
                                 className={cn(
                                     'w-4 h-4 shrink-0 transition-colors relative',
-                                    isActive ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground group-hover:text-foreground'
+                                    isActive ? 'text-primary dark:text-primary' : 'text-muted-foreground group-hover:text-foreground'
                                 )}
                             />
                             <span className="flex-1 relative">{label}</span>
                             {badge !== undefined && (
-                                <Badge className="bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 text-[9px] px-1.5 h-4 relative">
+                                <Badge className="bg-blue-50 dark:bg-lime-300 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 text-[9px] px-1.5 h-4 relative">
                                     {badge}
                                 </Badge>
                             )}
-             
+
                         </>
                     )}
                 </NavLink>

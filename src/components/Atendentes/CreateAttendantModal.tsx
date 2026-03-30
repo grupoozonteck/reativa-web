@@ -3,12 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { teamService, type Administrator } from '@/services/team.service';
+import { teamService, type SupervisorAttendant } from '@/services/team.service';
+import { Input } from '@/components/ui/input';
 
 interface CreateAttendantModalProps {
     open: boolean;
     onClose: () => void;
-    administrators: Administrator[];
+    supervisors: SupervisorAttendant[];
     types: Record<string, string>;
     graduates: Record<string, string>;
     onCreated?: () => void;
@@ -17,19 +18,21 @@ interface CreateAttendantModalProps {
 export function CreateAttendantModal({
     open,
     onClose,
-    administrators,
+    supervisors,
     types,
     graduates,
     onCreated,
 }: CreateAttendantModalProps) {
-    const [userId, setUserId] = useState('');
+    const [userLogin, setUserLogin] = useState('');
+    const [supervisorId, setSupervisorId] = useState('');
     const [type, setType] = useState('');
     const [graduation, setGraduation] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     function resetForm() {
-        setUserId('');
+        setUserLogin('');
+        setSupervisorId('');
         setType('');
         setGraduation('');
         setError(null);
@@ -43,7 +46,7 @@ export function CreateAttendantModal({
     }
 
     async function handleSubmit() {
-        if (!userId || !type || !graduation) {
+        if (!userLogin || !supervisorId || !type || !graduation) {
             setError('Preencha todos os campos.');
             return;
         }
@@ -52,15 +55,21 @@ export function CreateAttendantModal({
         setError(null);
         try {
             await teamService.createAttendant({
-                user_id: Number(userId),
+                user_login: userLogin,
+                supervisor_id: Number(supervisorId),
                 type: Number(type),
                 graduation: Number(graduation),
             });
             onCreated?.();
             resetForm();
             onClose();
-        } catch {
-            setError('Erro ao criar atendente. Tente novamente.');
+        } catch (err: unknown) {
+            const apiMessage =
+                err instanceof Object &&
+                'response' in err
+                    ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+                    : undefined;
+            setError(apiMessage ?? 'Erro ao criar atendente. Tente novamente.');
         } finally {
             setLoading(false);
         }
@@ -74,17 +83,28 @@ export function CreateAttendantModal({
                 </DialogHeader>
 
                 <div className="space-y-4">
-                    {/* Administrador */}
+                    {/* Login do atendente */}
                     <div className="space-y-1.5">
-                        <Label>Administrador</Label>
-                        <Select value={userId} onValueChange={setUserId} disabled={loading}>
+                        <Label>Login do Atendente</Label>
+                        <Input
+                            value={userLogin}
+                            onChange={(e) => setUserLogin(e.target.value)}
+                            disabled={loading}
+                            placeholder="Digite o login"
+                        />
+                    </div>
+
+                    {/* Supervisor / Líder */}
+                    <div className="space-y-1.5">
+                        <Label>Líder</Label>
+                        <Select value={supervisorId} onValueChange={setSupervisorId} disabled={loading}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Selecione um administrador" />
+                                <SelectValue placeholder="Selecione o líder" />
                             </SelectTrigger>
                             <SelectContent>
-                                {administrators.map(admin => (
-                                    <SelectItem key={admin.id} value={String(admin.id)}>
-                                        {admin.name} — @{admin.login}
+                                {supervisors.map((s) => (
+                                    <SelectItem key={s.user_id} value={String(s.user_id)}>
+                                        {s.name} <span className="text-muted-foreground">@{s.login}</span>
                                     </SelectItem>
                                 ))}
                             </SelectContent>

@@ -1,5 +1,18 @@
 import api from './api';
 
+
+
+
+
+export interface Reengagements {
+    created_at: string
+    deleted_at: string | null
+    id: number
+    personal_order_id: number | null
+    recruiter_id: number
+    status: number
+    updated_at: string
+}
 export interface TeamMemberPerformance {
     id: number;
     user_id: number;
@@ -24,8 +37,9 @@ export interface TeamMemberPerformance {
     };
 }
 
-export interface Administrator {
+export interface SupervisorAttendant {
     id: number;
+    user_id: number;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -33,12 +47,20 @@ export interface Administrator {
     name: string;
 }
 
+ export interface  ICommissions {
+    id: number;
+    order_value: number | string;
+    value: number | string;
+    status: string;
+    created_at: string;
+}
+
+
 export interface ManagerAttendant {
     id: number;
     user_id: number;
     type: number;
     graduation: number;
-    parent_id: number;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -46,7 +68,7 @@ export interface ManagerAttendant {
     sales: number;
     total_reengagements: number;
     conversion: number;
-    xp: number;
+    xp?: number;
     level: string;
     type_label: string;
     graduation_label: string;
@@ -54,15 +76,41 @@ export interface ManagerAttendant {
         id: number;
         name: string;
         login: string;
-        personal_data: {
+        personal_data?: {
             avatar: string;
             id: string;
             user_id: string;
         };
     };
-
+    parent: {
+        id: number;
+        user_id: number;
+        type: number;
+        type_label: string;
+        user: {
+            id: number;
+            name: string;
+            login: string;
+        }
+    };
+    reengagements: Reengagements[],
+    commissions: ICommissions[]
+   
 }
 
+export interface AttendantShowResponse {
+    metrics: {
+        commissionsReceived: number
+        conversionRate: number
+        totalAttendances: number
+        totalReactivated: number
+        TotalSales: number
+    };
+    attendant: ManagerAttendant;
+    types: Record<string, string>;
+    graduates: Record<string, string>;
+
+}
 
 
 export interface ManagerSupervisor {
@@ -114,6 +162,13 @@ export interface AttendantsPaginationLinks {
     next: string | null;
 }
 
+export interface createAttendantRe {
+    user_login: string;
+    supervisor_id: number;
+    type: number;
+    graduation: number;
+}
+
 export interface AttendantsResponse {
     attendants: {
         data: ManagerAttendant[];
@@ -126,18 +181,19 @@ export interface AttendantsResponse {
         };
     };
     types: Record<string, string>;
-    administrators: Administrator[];
+    supervisors: SupervisorAttendant[];
     graduates: Record<string, string>;
     countries: {
-        acronym: string; code: string; name: string 
-}[];
+        acronym: string; code: string; name: string
+    }[];
 }
+
+
 
 export const teamService = {
     /** Desempenho da equipe do supervisor logado */
     getSupervisorPerformance: async (): Promise<TeamMemberPerformance[]> => {
         const response = await api.get<TeamMemberPerformance[]>('/api/supervisor/performance');
-        console.log('Supervisor Performance Response:', response);
         return response.data;
     },
 
@@ -157,10 +213,16 @@ export const teamService = {
         return response.data.data;
     },
 
-    /** Cria um novo atendente */
-    createAttendant: async (data: { user_id: number; type: number; graduation: number }) => {
 
+    /** Cria um novo atendente */
+    createAttendant: async (data: createAttendantRe) => {
         const response = await api.post('/api/attendants/create', data);
         return response.data;
-    }
+    },
+
+    /** Busca detalhes de um atendente pelo ID */
+    getAttendantById: async (id: number): Promise<{ success: boolean; data: AttendantShowResponse }> => {
+        const response = await api.get<{ success: boolean; data: AttendantShowResponse }>(`/api/attendants/${id}/show`);
+        return response.data;},
+
 };

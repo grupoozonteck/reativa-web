@@ -25,6 +25,7 @@ export default function Atendentes() {
         refetchInterval: 5 * 60 * 1000,
     });
 
+
     const attendants = data?.attendants?.data ?? [];
     const total = data?.attendants?.meta?.total;
 
@@ -86,7 +87,7 @@ export default function Atendentes() {
                 <CreateAttendantModal
                     open={createModalOpen}
                     onClose={() => setCreateModalOpen(false)}
-                    administrators={data?.administrators ?? []}
+                    supervisors={data?.supervisors ?? []}
                     types={data?.types ?? {}}
                     graduates={data?.graduates ?? {}}
                     onCreated={() => refetch()}

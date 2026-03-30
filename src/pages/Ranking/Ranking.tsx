@@ -28,7 +28,7 @@ function RankingSkeleton() {
 
 export default function Ranking() {
     const {
-        data = [],
+        data,
         isLoading,
         isFetching,
         isError,
@@ -40,7 +40,7 @@ export default function Ranking() {
         refetchInterval: 1000 * 60 * 2,
     });
 
-    const sellers = [...data]
+    const sellers = [...(data?.leaderboard ?? [])]
         .filter((item: LeaderboardEntry) => item.type === 3)
         .sort((a, b) => {
             const revenueDiff = Number(b.revenue ?? 0) - Number(a.revenue ?? 0);
@@ -48,7 +48,7 @@ export default function Ranking() {
             return b.sales - a.sales;
         });
 
-    const totalRevenue = sellers.reduce((acc, seller) => acc + Number(seller.revenue ?? 0), 0);
+    const totalRevenue = data?.summary?.total_revenue ?? 0;
 
     if (isLoading) {
         return (

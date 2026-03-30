@@ -26,6 +26,7 @@ export default function Login() {
             await loginFunction({ login, password });
             navigate('/');
         } catch (err: unknown) {
+            console.log(err)
             const e = err as { response?: { data?: { message?: string }; status?: number } };
             if (e.response?.status === 401) setError('E-mail ou senha incorretos');
             else if (e.response?.data?.message) setError(e.response.data.message);

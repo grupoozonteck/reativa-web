@@ -26,7 +26,7 @@ export default function InativosCard({ summary, totalInactive, isLoading = false
             label: 'Já atribuídos',
             val: summary?.already_assigned ?? 0,
             total: totalInactive || 1,
-            color: 'from-emerald-500 to-blue-500',
+            color: 'from-secondary to-primary',
         },
     ];
 
@@ -35,7 +35,7 @@ export default function InativosCard({ summary, totalInactive, isLoading = false
             className="solid-card rounded-2xl p-5 relative overflow-hidden animate-fade-in"
             style={{ animationDelay: '450ms', opacity: 0 }}
         >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
             <h2 className="font-bold text-sm mb-4 flex items-center gap-2">
                 <UserX className="w-4 h-4 text-rose-500" />

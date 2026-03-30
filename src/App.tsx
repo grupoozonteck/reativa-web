@@ -15,6 +15,8 @@ import Comissoes from './pages/Comisoes/Comissoes';
 import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
 import ManagerPerformance from './pages/Manager/ManagerPerformance';
 import Atendentes from './pages/Atendentes/Atendentes';
+import AtendenteDetalhes from './pages/Atendentes/AtendenteDetalhes';
+import * as React from "react";
 
 function ProtectedApp() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -22,7 +24,7 @@ function ProtectedApp() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -96,6 +98,14 @@ export default function App() {
               element={
                 <RoleGuard route="/atendentes">
                   <Atendentes />
+                </RoleGuard>
+              }
+            />
+            <Route
+              path="/atendentes/:id"
+              element={
+                <RoleGuard route="/atendentes">
+                  <AtendenteDetalhes />
                 </RoleGuard>
               }
             />

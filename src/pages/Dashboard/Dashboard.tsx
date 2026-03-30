@@ -37,11 +37,11 @@ export default function Dashboard() {
             <div className="animate-fade-in" style={{ animationDelay: '0ms', opacity: 0 }}>
                 <div className="flex items-center justify-between gap-3 mb-1">
                     <div className="flex items-center gap-2">
-                        <div className="w-1 h-6 rounded-full bg-gradient-to-b from-violet-500 to-blue-500" />
-                        <h1 className="md:text-2xl  font-extrabold tracking-tight flex items-center gap-2">
+                        <div className="w-1 h-6 rounded-full bg-primary" />
+                        <h1 className="md:text-2xl font-extrabold tracking-tight flex items-center gap-2">
                             {getGreeting()},{' '}
-                            <span className="gradient-text-blue">{name.split(' ')[0]}</span>
-                            <Award className="w-5 h-5 text-violet-500" />
+                            <span className="gradient-text">{name.split(' ')[0]}</span>
+                            <Award className="w-5 h-5 text-primary" />
                         </h1>
                     </div>
 
@@ -66,8 +66,8 @@ export default function Dashboard() {
                     rawValue={stats?.inactive_customers ?? 0}
                     displayFn={v => String(v)}
                     icon={UserX}
-                    colorClass="text-rose-500"
-                    bgClass="bg-rose-500/10"
+                    colorClass="text-accent"
+                    bgClass="bg-accent/10"
                     delay={80}
                 />
                 <StatCard
@@ -75,8 +75,8 @@ export default function Dashboard() {
                     rawValue={stats?.monthly_revenue ?? 0}
                     displayFn={v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(v)}
                     icon={DollarSign}
-                    colorClass="text-blue-500"
-                    bgClass="bg-blue-500/10"
+                    colorClass="text-primary"
+                    bgClass="bg-primary/10"
                     trend="+18%"
                     delay={160}
                 />
@@ -85,8 +85,8 @@ export default function Dashboard() {
                     rawValue={stats?.active_attendants ?? 0}
                     displayFn={v => String(v)}
                     icon={Users}
-                    colorClass="text-violet-500"
-                    bgClass="bg-violet-500/10"
+                    colorClass="text-secondary"
+                    bgClass="bg-secondary/10"
                     delay={240}
                 />
                 <StatCard

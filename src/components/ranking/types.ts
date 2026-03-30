@@ -1,3 +1,15 @@
+export interface LeaderboardSummary {
+    total_revenue: number;
+    total_sales: number;
+    total_reengagements: number;
+    conversion_percentage: number;
+}
+
+export interface LeaderboardResponse {
+    leaderboard: LeaderboardEntry[];
+    summary: LeaderboardSummary;
+}
+
 export interface LeaderboardUser {
     id: number;
     name: string;

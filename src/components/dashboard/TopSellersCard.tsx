@@ -32,14 +32,14 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
             className="lg:col-span-3 solid-card rounded-2xl p-5 animate-fade-in relative overflow-hidden"
             style={{ animationDelay: '400ms', opacity: 0 }}
         >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
             <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-sm flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-gradient-to-br from-blue-400 to-blue-500" />
+                    <span className="w-2 h-2 rounded-full bg-primary" />
                     Top Atendentes — Mês
                 </h2>
-                <Badge variant="secondary" className="text-[10px] bg-blue-500/10 text-blue-500 border-blue-500/20">
+                <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse inline-block" />
                     Ao vivo
                 </Badge>
@@ -67,7 +67,7 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                             </span>
 
                             {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md">
+                            <div className="w-9 h-9 rounded-full btn-primary-arena flex items-center justify-center text-xs font-bold shrink-0 shadow-md">
                                 {getInitials(s.user.name)}
                             </div>
 
@@ -81,7 +81,7 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                 </div>
                                 <div className="relative h-1.5 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
                                     <div
-                                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
+                                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-container"
                                         style={{ width: `${pct}%`, transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)' }}
                                     />
                                 </div>
