@@ -1,13 +1,20 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Search,
     Filter,
     X,
     Headphones,
-    RefreshCcw,
     Users,
+    FileDiff,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,20 +30,23 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { customerService } from '@/services/customer.service';
-import { useDebounce } from '@/hooks/useDebounce';
 import { ClientRow } from '@/components/Clientes/ClientRow';
 import { ClientCard } from '@/components/Clientes/ClientCard';
 import { SkeletonRow } from '@/components/Clientes/SkeletonRow';
 import { Pagination } from '@/components/ui/pagination';
+import { getRegions, getStates } from '@/services/filter.service';
+import { Field, FieldLabel } from '@/components/ui/field';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
 
-function buildParams(page: number, search: string, status: FilterStatus) {
+function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string) {
     const params: Record<string, number | string> = { page };
     if (search) params.login = search;
     if (status === 'sem_pedidos') params.without_orders = 1;
     if (status === 'com_pedidos') params.has_orders = 1;
     if (status === 'com_pagos') params.has_paid_orders = 1;
+    if (state) params.state_id = state;
+    if (region) params.region_id = region;
     return params;
 }
 
@@ -44,16 +54,38 @@ function buildParams(page: number, search: string, status: FilterStatus) {
 // ─── Main ────────────────────────────────────────────────────────────────────
 export default function Clientes() {
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    const [search, setSearch] = useState('');
-    const [filterStatus, setFilterStatus] = useState<FilterStatus>('todos');
-    const [page, setPage] = useState(1);
+    // Filtros aplicados (vêm da URL — disparam a requisição)
+    const appliedSearch = searchParams.get('search') ?? '';
+    const appliedStatus = (searchParams.get('status') as FilterStatus) ?? 'todos';
+    const appliedState = searchParams.get('state') ?? '';
+    const appliedRegion = searchParams.get('region') ?? '';
+    const page = Number(searchParams.get('page') ?? 1);
 
-    const debouncedSearch = useDebounce(search, 400);
+    // Rascunho local (o que o usuário está editando antes de clicar em Filtrar)
+    const [search, setSearch] = useState(appliedSearch);
+    const [filterStatus, setFilterStatus] = useState<FilterStatus>(appliedStatus);
+    const [selectedState, setSelectedState] = useState(appliedState);
+    const [selectedRegion, setSelectedRegion] = useState(appliedRegion);
 
-    const params = buildParams(page, debouncedSearch, filterStatus);
+    const setPage = (val: number) => setSearchParams(p => { p.set('page', String(val)); return p; }, { replace: true });
 
-    const { data, isFetching, isLoading, refetch } = useQuery({
+    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion);
+    const { data: statesData } = useQuery({
+        queryKey: ['states'],
+        queryFn: getStates,
+        staleTime: 45 * 60 * 1000,
+    });
+
+
+    const { data: regionsData } = useQuery({
+        queryKey: ['regions'],
+        queryFn: getRegions,
+        staleTime: 45 * 60 * 1000,
+    });
+
+    const { data, isFetching, isLoading } = useQuery({
         queryKey: ['reengagements', params],
         queryFn: () => customerService.getReengagements(params),
         placeholderData: keepPreviousData,
@@ -67,15 +99,33 @@ export default function Clientes() {
     const showingFrom = data?.from ?? 0;
     const showingTo = data?.to ?? 0;
 
-    
 
+
+    const allStates: { id: number; name: string; uf: string; region_id: number }[] = statesData ?? [];
+    const states = selectedRegion
+        ? allStates.filter(s => String(s.region_id) === selectedRegion)
+        : allStates;
     const loading = isLoading;
-    const hasActiveFilters = search !== '' || filterStatus !== 'todos';
+    const hasActiveFilters = appliedSearch !== '' || appliedStatus !== 'todos' || appliedState !== '' || appliedRegion !== '';
+    const hasDraftChanges = search !== appliedSearch || filterStatus !== appliedStatus || selectedState !== appliedState || selectedRegion !== appliedRegion;
+
+    const handleApplyFilters = () => {
+        setSearchParams(p => {
+            if (search) p.set('search', search); else p.delete('search');
+            if (filterStatus !== 'todos') p.set('status', filterStatus); else p.delete('status');
+            if (selectedState) p.set('state', selectedState); else p.delete('state');
+            if (selectedRegion) p.set('region', selectedRegion); else p.delete('region');
+            p.set('page', '1');
+            return p;
+        }, { replace: true });
+    };
 
     const handleClearFilters = () => {
         setSearch('');
         setFilterStatus('todos');
-        setPage(1);
+        setSelectedState('');
+        setSelectedRegion('');
+        setSearchParams(new URLSearchParams(), { replace: true });
     };
 
     const handleNextPage = () => {
@@ -93,8 +143,7 @@ export default function Clientes() {
     };
 
     const handleStatusToggle = (key: FilterStatus) => {
-        setFilterStatus(prev => prev === key ? 'todos' : key);
-        setPage(1);
+        setFilterStatus(filterStatus === key ? 'todos' : key);
     };
 
     const filterOptions: { key: FilterStatus; label: string }[] = [
@@ -141,21 +190,56 @@ export default function Clientes() {
                     )}
                 </div>
 
-                <div className="space-y-3 md:space-y-0 md:flex md:flex-wrap md:items-center md:gap-3">
-                    {/* Search */}
-                    <div className="relative w-full md:flex-1 md:min-w-[200px] md:max-w-xs">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
-                        <Input
-                            placeholder="Pesquisar por nome, email ou WhatsApp..."
-                            value={search}
-                            onChange={e => { setSearch(e.target.value); setPage(1); }}
-                            className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
-                            disabled={loading}
-                        />
-                    </div>
+                {/* Linha 1: inputs */}
+                <div className="flex flex-col md:flex-row md:flex-wrap md:items-end gap-3">
+                    <Field className="flex-1 max-w-md ">
+                        <FieldLabel>Buscar</FieldLabel>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+                            <Input
+                                placeholder="Nome, login ou email..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="pl-9 h-9  w-full bg-surface-highest border-none focus-visible:ring-0"
+                                disabled={loading}
+                            />
+                        </div>
+                    </Field>
 
-                    {/* Switch filters */}
-                    <div className="flex flex-wrap gap-2 md:gap-3">
+                    <Field className="w-full md:w-44">
+                        <FieldLabel>Região</FieldLabel>
+                        <Select value={selectedRegion} onValueChange={(val) => setSelectedRegion(val === 'todos' ? '' : val)}>
+                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                                <SelectValue placeholder="Todas as regiões" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="todos">Todas as regiões</SelectItem>
+                                {regionsData?.data.map((region: { id: string; name: string }) => (
+                                    <SelectItem key={region.id} value={String(region.id)}>{region.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </Field>
+
+                    <Field className="w-full md:w-44">
+                        <FieldLabel>Estado</FieldLabel>
+                        <Select value={selectedState} onValueChange={(val) => setSelectedState(val === 'todos' ? '' : val)} disabled={isFetching}>
+                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                                <SelectValue placeholder="Todos os estados" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="todos">Todos os estados</SelectItem>
+                                {states.map((s) => (
+                                    <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </Field>
+                </div>
+
+                {/* Linha 2: switches + botões */}
+                <div className="flex flex-col md:flex-row md:items-center gap-3 mt-3">
+                    <div className="flex flex-wrap gap-2">
                         {filterOptions.map(opt => (
                             <label
                                 key={opt.key}
@@ -177,24 +261,23 @@ export default function Clientes() {
                         ))}
                     </div>
 
-                    <div className="hidden md:block md:flex-1" />
+                    <div className="md:ml-auto flex flex-col md:flex-row gap-2">
 
-                    <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                         <Button
                             size="sm"
-                            onClick={() => refetch()}
-                            disabled={isFetching}
+                            onClick={handleApplyFilters}
+                            disabled={isFetching || !hasDraftChanges}
                             className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-1.5 h-9 text-xs font-semibold w-full md:w-auto"
                         >
-                            <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
-                            {isFetching ? 'Carregando...' : 'Atualizar'}
+                            <Filter className={cn('w-3.5 h-3.5', isFetching)} />
+                            {isFetching ? 'Carregando...' : 'Filtrar'}
                         </Button>
                         <Button
                             size="sm"
-                            variant="ghost"
+                            variant="destructive"
                             onClick={handleClearFilters}
-                            disabled={loading || !hasActiveFilters}
-                            className="gap-1.5 h-9 text-xs w-full md:w-auto text-on-surface-variant hover:text-primary disabled:opacity-40"
+                            disabled={loading || (!hasActiveFilters && !hasDraftChanges)}
+                            className="gap-1.5 h-9  w-full md:w-auto  disabled:opacity-40"
                         >
                             <X className="w-3.5 h-3.5" />
                             Limpar filtros

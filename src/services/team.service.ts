@@ -1,9 +1,5 @@
 import api from './api';
 
-
-
-
-
 export interface Reengagements {
     created_at: string
     deleted_at: string | null
@@ -187,7 +183,6 @@ export interface AttendantsResponse {
         acronym: string; code: string; name: string
     }[];
 }
-
 
 
 export const teamService = {

@@ -1,5 +1,7 @@
-import { Package, Tag } from 'lucide-react';
+import { useState } from 'react';
+import { Package, Tag, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDateTime } from '@/lib/client-utils';
 import { orderStatusStyleMap, deliveryStatusMap } from '@/config/orderStatus';
@@ -11,6 +13,7 @@ interface CustomerLatestOrderCardProps {
 }
 
 export function CustomerLatestOrderCard({ order, orderStatusCollection }: CustomerLatestOrderCardProps) {
+    const [expanded, setExpanded] = useState(false);
     const status = orderStatusStyleMap[order.status] || orderStatusStyleMap[1];
     const statusLabel = orderStatusCollection[String(order.status)] || 'Desconhecido';
     const deliveryStatus = typeof order.delivery_status === 'number'
@@ -55,27 +58,35 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
 
             {order.personal_order_items && order.personal_order_items.length > 0 && (
                 <div>
-                    <p className="text-xs font-semibold text-on-surface-variant mb-3 uppercase tracking-wider">
-                        Itens do pedido
-                    </p>
-                    <div className="space-y-2">
-                        {order.personal_order_items.map(item => (
-                            <div
-                                key={item.id}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-surface-highest"
-                            >
-                                <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-                                    <Tag className="w-3.5 h-3.5 text-secondary" />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setExpanded(v => !v)}
+                        className="w-full justify-between px-3 h-9 text-xs font-semibold text-on-surface-variant uppercase tracking-wider hover:text-on-surface hover:bg-surface-highest"
+                    >
+                        <span>Itens do pedido ({order.personal_order_items.length})</span>
+                        {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </Button>
+                    {expanded && (
+                        <div className="space-y-2 mt-2">
+                            {order.personal_order_items.map(item => (
+                                <div
+                                    key={item.id}
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-surface-highest"
+                                >
+                                    <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+                                        <Tag className="w-3.5 h-3.5 text-secondary" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium text-on-surface truncate">
+                                            {item.internationalization?.product_name || `Produto #${item.product_id}`}
+                                        </p>
+                                        <p className="text-[11px] text-on-surface-variant font-mono">Item #{item.id}</p>
+                                    </div>
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="text-sm font-medium text-on-surface truncate">
-                                        {item.internationalization?.product_name || `Produto #${item.product_id}`}
-                                    </p>
-                                    <p className="text-[11px] text-on-surface-variant font-mono">Item #{item.id}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

@@ -22,7 +22,6 @@ import { cn } from '@/lib/utils';
 import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime } from '@/lib/client-utils';
 import {
     customerService,
-    type PersonalOrder,
 } from '@/services/customer.service';
 import { EditClienteModal } from '@/components/Clientes/EditClienteModal';
 import { CustomerDetailInfoItem } from '@/components/Clientes/CustomerDetailInfoItem';
@@ -96,14 +95,15 @@ export default function ClienteDetalhes() {
     const whatsapp = user.personal_data?.whatsapp || user.phone_number;
     const initials = getInitials(user.name);
     const avatarColor = getAvatarColor(user.name);
-    const orders = user.personal_orders ?? [];
-    const order = orders.reduce<PersonalOrder | null>((latest, current) => {
-        if (!latest) return current;
-        return new Date(current.created_at).getTime() > new Date(latest.created_at).getTime() ? current : latest;
-    }, null);
+    const orders = (user.personal_orders ?? []).slice().sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
     const address = user.personal_address;
     const reengStatus = reengagement ? reengagementStatusMap[reengagement.status] : null;
     const hasWhatsapp = !!whatsapp;
+
+    console.log('Dados do cliente:', { user });
+
 
 
     return (
@@ -236,7 +236,7 @@ export default function ClienteDetalhes() {
                                 <p>{address.address_line}, {address.number}</p>
                                 {address.complement && <p>{address.complement}</p>}
                                 <p>{address.district}</p>
-                                <p>{address.city?.name} - {address.state?.uf}</p>
+                                <p>{address.city?.name}{address.state?.name ? ` - ${address.state.name}` : ''}</p>
                                 <p>CEP: {address.zip_code}</p>
                             </div>
                         ) : (
@@ -275,8 +275,10 @@ export default function ClienteDetalhes() {
                     </div>
                 </div>
 
-                {/* Ultimo Pedido */}
-                {order && <CustomerLatestOrderCard order={order} orderStatusCollection={orderStatusCollection} />}
+                {/* Pedidos */}
+                {orders.map((order) => (
+                    <CustomerLatestOrderCard key={order.id} order={order} orderStatusCollection={orderStatusCollection} />
+                ))}
 
                 {/* Ações rápidas */}
                 <div className="solid-card p-5 animate-fade-in" style={{ animationDelay: '300ms', opacity: 0 }}>

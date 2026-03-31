@@ -69,7 +69,8 @@ A custom component for the "Sales Arena" that uses `display-md` typography for t
 * **Do** lean into the `rounded-md` and `rounded-lg` scales for a sleek, ergonomic feel.
 * **Do** use `on-surface-variant` for labels to keep the visual noise low.
 
-### Don't
-* **Don't** use pure black (#000000) for backgrounds; it kills the depth. Use the `surface` navy-graphite.
-* **Don't** use high-contrast borders. If you can see the border from a distance, it’s too thick/bright.
-* **Don't** use standard "Material" blue for links. Use the `secondary` or `primary` tokens to keep the brand's unique signature.
+### Don’t
+* **Don’t** use pure black (#000000) for backgrounds; it kills the depth. Use the `surface` navy-graphite.
+* **Don’t** use high-contrast borders. If you can see the border from a distance, it’s too thick/bright.
+* **Don’t** use standard "Material" blue for links. Use the `secondary` or `primary` tokens to keep the brand’s unique signature.
+* **Don’t** use font sizes below `text-sm` (14px) for any visible UI text — labels, placeholders, helper text included. Classes like `text-xs` (12px), `text-[11px]`, `text-[10px]` are forbidden for readable content. The minimum legible size in this dark theme is `text-sm`.

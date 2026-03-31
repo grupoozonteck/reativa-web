@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import SidebarNav from './SidebarNav';
 import ThemeToggleButton from '@/components/ThemeToggleButton';
+import { useTheme } from '@/contexts/useTheme';
 
 interface SidebarShellProps {
     name: string;
@@ -13,14 +14,20 @@ interface SidebarShellProps {
 }
 
 export default function SidebarShell({ name, email, initials, onLogout, onNav }: SidebarShellProps) {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     return (
         <div className="flex flex-col h-full">
 
             {/* ── Brand ── */}
             <div className="px-5 py-5 border-b border-border">
                 <div className="flex items-center gap-3">
-                    <div className="relative bg-lime-900 p-2 rounded-xl">
-                        <img src="/images/logos/logo-closer.png" alt="Reativa Logo" className="object-cover rounded-xl" />
+                    <div className="relative  p-2 rounded-xl">
+                        {isDark ? (
+                            <img src="/images/logos/logo-closer.png" alt="Reativa Logo" className="object-cover rounded-xl" />
+                        ) : (
+                            <img src="/images/logos/logo-closer-white.webp" alt="Reativa Logo" className="object-cover rounded-xl" />
+                        )}
                     </div>
                 </div>
             </div>
