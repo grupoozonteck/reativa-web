@@ -69,7 +69,7 @@ export default function AppLayout() {
                 style={{ position: 'relative', zIndex: 5 }}
             >
                 {/* Mobile top bar */}
-                <header className="lg:hidden flex items-center gap-3 px-4 h-14 border-b border-border bg-card">
+                <header className="lg:hidden flex items-center gap-3 px-4 h-14 border-b border-border bg-card justify-between">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -78,12 +78,7 @@ export default function AppLayout() {
                     >
                         <Menu className="w-5 h-5" />
                     </Button>
-                    <div className="flex items-center gap-2.5 flex-1">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-xl b">
-                            <img src="/images/logos/logo-v2.jpeg" alt="Reativa Logo" className="object-cover rounded-lg" />
-                        </div>
-                        <span className="font-black text-sm gradient-text-blue">Reativa</span>
-                    </div>
+                    <h2 className="text-lg font-bold">Reativa</h2>
                     <ThemeToggleButton />
                 </header>
 

@@ -11,6 +11,8 @@ export default function ManagerPerformance() {
         refetchInterval: 5 * 60 * 1000,
     });
 
+    console.log(data)
+
     const summary = data?.summary;
     const supervisors = data?.supervisors ?? [];
 

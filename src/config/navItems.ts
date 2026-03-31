@@ -1,5 +1,4 @@
 import { LayoutDashboard, Trophy, UsersRound, Headphones, Bell, type LucideIcon, HandCoins, Handshake, UserCog } from 'lucide-react';
-import { saleNotifications } from '@/data/mock';
 
 export interface NavItem {
     to: string;
@@ -18,10 +17,10 @@ export const navItems: NavItem[] = [
     { to: '/manager/performance', label: 'Minha Operação', icon: Handshake },
     { to: '/atendentes', label: 'Atendentes', icon: UserCog },
     { to: '/comissoes', label: 'Comissões', icon: HandCoins },
-    {
-        to: '/notificacoes',
-        label: 'Notificações',
-        icon: Bell,
-        badge: saleNotifications.filter(n => n.type === 'reativacao').length,
-    },
+    // {
+    //     to: '/notificacoes',
+    //     label: 'Notificações',
+    //     icon: Bell,
+    //     badge: saleNotifications.filter(n => n.type === 'reativacao').length,
+    // },
 ];

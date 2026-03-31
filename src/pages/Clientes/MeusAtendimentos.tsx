@@ -59,17 +59,16 @@ export default function MeusAtendimentos() {
         refetchInterval: 5 * 60 * 1000, // 5 minutos
         select: (res) => res.data,
     });
-
-    const allReengagements = data?.customerReengagement.data ?? [];
-    const nextPageUrl = data?.customerReengagement.next_page_url ?? null;
-    const prevPageUrl = data?.customerReengagement.prev_page_url ?? null;
-    const currentPage = data?.customerReengagement.current_page ?? page;
-    const showingFrom = data?.customerReengagement.from ?? 0;
-    const showingTo = data?.customerReengagement.to ?? 0;
-    const totalAttendances = data?.totalAttendances ?? 0;
-    const totalReactivated = data?.totalReactivated ?? 0;
-    const conversionRate = data?.conversionRate ?? 0;
-    const statusRecollection = data?.statusRecollection ?? {};
+    const allReengagements = data?.customer_reengagement.data ?? [];
+    const nextPageUrl = data?.customer_reengagement.next_page_url ?? null;
+    const prevPageUrl = data?.customer_reengagement.prev_page_url ?? null;
+    const currentPage = data?.customer_reengagement.current_page ?? page;
+    const showingFrom = data?.customer_reengagement.from ?? 0;
+    const showingTo = data?.customer_reengagement.to ?? 0;
+    const totalAttendances = data?.total_attendances ?? 0;
+    const totalReactivated = data?.total_reactivated ?? 0;
+    const conversionRate = data?.conversion_rate ?? 0;
+    const statusRecollection = data?.status_recollection ?? {};
 
     const filteredList = allReengagements;
 
@@ -102,9 +101,9 @@ export default function MeusAtendimentos() {
     const isDefaultPeriod = startDate === currentMonthStart && endDate === today;
 
     const statsCards = [
-        { label: 'Meus Atendimentos (no período)', value: totalAttendances, icon: Headphones, color: 'text-blue-600 dark:text-blue-400', iconBg: 'bg-blue-600' },
-        { label: 'Reativados (no período)', value: totalReactivated, icon: RefreshCcw, color: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-600' },
-        { label: 'Taxa de Conversão (no período)', value: `${conversionRate}%`, icon: TrendingUp, color: 'text-amber-500 dark:text-amber-400', iconBg: 'bg-amber-500' },
+        { label: 'Meus Atendimentos (no período)', value: totalAttendances, icon: Headphones, color: 'text-secondary', iconBg: 'bg-secondary/10', iconColor: 'text-secondary' },
+        { label: 'Reativados (no período)', value: totalReactivated, icon: RefreshCcw, color: 'text-primary [text-shadow:0_0_10px_hsl(83_98%_64%_/_0.35)]', iconBg: 'bg-primary/10', iconColor: 'text-primary' },
+        { label: 'Taxa de Conversão (no período)', value: `${conversionRate}%`, icon: TrendingUp, color: 'text-accent', iconBg: 'bg-accent/10', iconColor: 'text-accent' },
     ];
 
     return (
@@ -113,15 +112,19 @@ export default function MeusAtendimentos() {
             {/* Header */}
             <div className="flex items-center justify-between animate-fade-in flex-col sm:flex-row gap-4">
                 <div>
-                    <h1 className="text-2xl font-extrabold tracking-tight">Meus Atendimentos</h1>
-
-                    <p className="text-muted-foreground text-sm mt-0.5 hidden sm:block">
+                    <div className="flex items-center gap-2.5 mb-1">
+                        <div className="bg-secondary/10 rounded-lg p-1.5">
+                            <Headphones className="w-5 h-5 text-secondary" />
+                        </div>
+                        <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">Meus Atendimentos</h1>
+                    </div>
+                    <p className="text-on-surface-variant text-sm mt-0.5 hidden sm:block ml-0.5">
                         Clientes que estou atendendo no período selecionado
                     </p>
                 </div>
                 <Button
                     onClick={() => navigate('/clientes')}
-                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-2"
+                    className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-2 font-semibold"
                 >
                     <Target className="w-4 h-4" />
                     Lista Geral
@@ -135,16 +138,16 @@ export default function MeusAtendimentos() {
                     : statsCards.map(card => (
                         <div
                             key={card.label}
-                            className="solid-card p-4 sm:p-5 hover:scale-[1.01] transition-transform flex items-center gap-4"
+                            className="arena-card p-4 sm:p-5 flex items-center gap-4"
                         >
                             <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', card.iconBg)}>
-                                <card.icon className="w-5 h-5 text-white" />
+                                <card.icon className={cn('w-5 h-5', card.iconColor)} />
                             </div>
                             <div>
-                                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">
+                                <p className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                                     {card.label}
                                 </p>
-                                <p className={cn('text-2xl font-black tracking-tight tabular-nums', card.color)}>
+                                <p className={cn('font-display text-2xl font-black tracking-tight tabular-nums', card.color)}>
                                     {card.value}
                                 </p>
                             </div>
@@ -156,54 +159,53 @@ export default function MeusAtendimentos() {
             {/* Filtros */}
             <div className="solid-card p-4 animate-fade-in">
                 <div className="flex items-center gap-2 mb-3">
-                    <Search className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold">Filtros</span>
+                    <Search className="w-4 h-4 text-on-surface-variant" />
+                    <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
                 </div>
 
                 <div className="space-y-3 md:space-y-0 md:flex md:flex-wrap md:items-center md:gap-3">
-                    {/* Search - Full width on mobile */}
+                    {/* Search */}
                     <div className="relative w-full md:flex-1 md:min-w-[220px] md:max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                         <Input
                             placeholder="Pesquisar por nome, email ou WhatsApp..."
                             value={search}
                             onChange={e => handleSearch(e.target.value)}
-                            className="pl-9 h-9 text-sm w-full"
+                            className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                         {search && (
                             <button
                                 onClick={() => handleSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
                             >
                                 <X className="w-3.5 h-3.5" />
                             </button>
                         )}
                     </div>
 
-                    <div className="w-full h-px bg-border md:hidden" />
-
-                    {/* Date inputs - Wrapper for responsive layout */}
+                    {/* Date inputs */}
                     <div className="flex flex-col md:flex-row gap-2 md:gap-3 w-full md:w-auto">
                         <Input
                             type="date"
                             value={startDate}
                             onChange={e => handleStartDate(e.target.value)}
-                            className="h-9 text-xs flex-1 md:flex-none md:w-[140px]"
+                            className="h-9 text-xs flex-1 md:flex-none md:w-[140px] bg-surface-highest border-none focus-visible:ring-0"
                             aria-label="Data inicial"
                         />
                         <Input
                             type="date"
                             value={endDate}
                             onChange={e => handleEndDate(e.target.value)}
-                            className="h-9 text-xs flex-1 md:flex-none md:w-[140px]"
+                            className="h-9 text-xs flex-1 md:flex-none md:w-[140px] bg-surface-highest border-none focus-visible:ring-0"
                             aria-label="Data final"
                         />
                     </div>
+
                     {/* Select status */}
                     <select
                         value={statusFilter}
                         onChange={e => handleStatusFilter(e.target.value)}
-                        className="h-9 w-full md:w-auto md:min-w-[160px] rounded-md border border-input bg-background px-3 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        className="h-9 w-full md:w-auto md:min-w-[160px] rounded-md bg-surface-highest border-none px-3 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary/50"
                         aria-label="Filtrar por status"
                     >
                         <option value="">Todos os status</option>
@@ -212,8 +214,6 @@ export default function MeusAtendimentos() {
                         ))}
                     </select>
 
-                    {/* Buttons */}
-                    <div className="w-full h-px bg-border md:hidden" />
                     <div className="hidden md:block md:flex-1" />
 
                     <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
@@ -221,16 +221,16 @@ export default function MeusAtendimentos() {
                             size="sm"
                             onClick={() => refetch()}
                             disabled={isFetching}
-                            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-1.5 h-9 text-xs w-full md:w-auto"
+                            className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-1.5 h-9 text-xs font-semibold w-full md:w-auto"
                         >
                             <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
                             {isFetching ? 'Atualizando...' : 'Atualizar'}
                         </Button>
                         <Button
                             size="sm"
-                            variant="outline"
+                            variant="ghost"
                             onClick={clearFilters}
-                            className="h-9 text-xs w-full md:w-auto"
+                            className="h-9 text-xs w-full md:w-auto gap-1.5 text-on-surface-variant hover:text-primary disabled:opacity-40"
                             disabled={!search && isDefaultPeriod && !statusFilter}
                         >
                             <X className="w-3.5 h-3.5" />
@@ -241,18 +241,16 @@ export default function MeusAtendimentos() {
             </div>
 
             {/* Tabela */}
-            <div className="border border-border rounded-lg overflow-hidden animate-fade-in">
+            <div className="solid-card overflow-hidden animate-fade-in">
                 {/* Header Info */}
-                <div className="px-5 py-4 border-b border-border bg-secondary/50 flex items-center justify-between">
+                <div className="px-5 py-4 bg-surface-highest/60 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                        <h2 className="text-sm font-semibold">Clientes em Atendimento</h2>
-                      
+                        <Users className="w-4 h-4 text-on-surface-variant" />
+                        <h2 className="font-display text-sm font-semibold text-on-surface">Clientes em Atendimento</h2>
                     </div>
                     <div className="flex items-center gap-3">
-                       
                         {showingFrom > 0 && !isLoading && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="bg-surface-container rounded-full px-2.5 py-0.5 text-xs text-on-surface-variant">
                                 Exibindo {showingFrom}–{showingTo}
                             </span>
                         )}
@@ -264,13 +262,13 @@ export default function MeusAtendimentos() {
                     <div className="overflow-x-auto">
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-border hover:bg-transparent bg-secondary/80 dark:bg-secondary/90 backdrop-blur-sm">
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[8%] px-3">ID</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground px-3">Cliente</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[18%] px-3">WhatsApp</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[18%] px-3">Status</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[15%] px-3">Início</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[12%] px-3">Ações</TableHead>
+                                <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
+                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[8%] px-3">ID</TableHead>
+                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-3">Cliente</TableHead>
+                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[18%] px-3">WhatsApp</TableHead>
+                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[18%] px-3">Status</TableHead>
+                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[15%] px-3">Início</TableHead>
+                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-3">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                         </Table>
@@ -281,17 +279,17 @@ export default function MeusAtendimentos() {
                                 {isLoading ? (
                                     Array.from({ length: 6 }).map((_, idx) => <SkeletonRow key={idx} />)
                                 ) : filteredList.length === 0 ? (
-                                    <TableRow>
+                                    <TableRow className="border-none">
                                         <TableCell colSpan={6} className="text-center py-16">
                                             <div className="flex flex-col items-center gap-2">
-                                                <Users className="w-8 h-8 text-muted-foreground/30" />
-                                                <p className="text-muted-foreground text-sm">
+                                                <Users className="w-8 h-8 text-on-surface-variant/30" />
+                                                <p className="text-on-surface-variant text-sm">
                                                     {search ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
                                                 </p>
                                                 {search && (
                                                     <button
                                                         onClick={() => handleSearch('')}
-                                                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                                        className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                                     >
                                                         Limpar pesquisa
                                                     </button>
@@ -312,25 +310,25 @@ export default function MeusAtendimentos() {
                     <div className="max-h-[600px] overflow-y-auto p-4 space-y-3">
                         {isLoading ? (
                             Array.from({ length: 6 }).map((_, idx) => (
-                                <div key={idx} className="solid-card p-4 space-y-3 border border-border/50">
-                                    <div className="h-12 w-12 rounded-full bg-muted animate-pulse" />
+                                <div key={idx} className="arena-card p-4 space-y-3">
+                                    <div className="h-12 w-12 rounded-xl bg-surface-container animate-pulse" />
                                     <div className="space-y-2">
-                                        <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-                                        <div className="h-3 w-32 bg-muted animate-pulse rounded" />
+                                        <div className="h-4 w-24 bg-surface-container animate-pulse rounded-md" />
+                                        <div className="h-3 w-32 bg-surface-container animate-pulse rounded-md" />
                                     </div>
                                 </div>
                             ))
                         ) : filteredList.length === 0 ? (
                             <div className="text-center py-16">
                                 <div className="flex flex-col items-center gap-2">
-                                    <Users className="w-8 h-8 text-muted-foreground/30" />
-                                    <p className="text-muted-foreground text-sm">
+                                    <Users className="w-8 h-8 text-on-surface-variant/30" />
+                                    <p className="text-on-surface-variant text-sm">
                                         {search ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
                                     </p>
                                     {search && (
                                         <button
                                             onClick={() => handleSearch('')}
-                                            className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                            className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                         >
                                             Limpar pesquisa
                                         </button>

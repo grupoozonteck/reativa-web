@@ -100,11 +100,11 @@ export interface ManagerAttendant {
 
 export interface AttendantShowResponse {
     metrics: {
-        commissionsReceived: number
-        conversionRate: number
-        totalAttendances: number
-        totalReactivated: number
-        TotalSales: number
+        commissions_received: number
+        conversion_rate: number
+        total_attendances: number
+        total_reactivated: number
+        total_sales: number
     };
     attendant: ManagerAttendant;
     types: Record<string, string>;

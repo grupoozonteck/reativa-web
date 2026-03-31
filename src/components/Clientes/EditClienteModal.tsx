@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { customerService } from '@/services/customer.service';
+import { Field, FieldDescription, FieldLabel } from '../ui/field';
 
 interface EditClienteModalProps {
     open: boolean;
@@ -29,6 +30,7 @@ export function EditClienteModal({
     const [email, setEmail] = useState(initialEmail);
     const [birthDate, setBirthDate] = useState(initialBirthDate);
     const [status, setStatus] = useState(initialStatus);
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +38,7 @@ export function EditClienteModal({
         setLoading(true);
         setError(null);
         try {
-            await customerService.updateUserData(userId, { email, birth_date: birthDate });
+            await customerService.updateUserData(userId, { email, birth_date: birthDate, password });
             await customerService.updateUserStatus(userId, status);
             if (onUpdated) onUpdated();
             onClose();
@@ -54,16 +56,16 @@ export function EditClienteModal({
                     <DialogTitle>Editar dados do cliente</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
-                    <div>
-                        <Label htmlFor="email">E-mail</Label>
+                    <Field>
+                        <FieldLabel htmlFor="email">E-mail</FieldLabel>
                         <Input id="email" value={email} onChange={e => setEmail(e.target.value)} type="email" />
-                    </div>
-                    <div>
-                        <Label htmlFor="birth">Data de nascimento</Label>
-                        <Input id="birth" value={birthDate} onChange={e => setBirthDate(e.target.value)} type="date" />
-                    </div>
-                    <div>
-                        <Label htmlFor="status">Status do atendimento</Label>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor="birth">Data de nascimento</FieldLabel>
+                        <Input className='text' id="birth" value={birthDate} onChange={e => setBirthDate(e.target.value)} type="date" />
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor="status">Status do atendimento</FieldLabel>
                         <select
                             id="status"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -74,7 +76,12 @@ export function EditClienteModal({
                                 <option key={key} value={key}>{label}</option>
                             ))}
                         </select>
-                    </div>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor="text">Nova senha</FieldLabel>
+                        <Input id="password" value={password} onChange={e => setPassword(e.target.value)} type="text" />
+                        <FieldDescription>Deixe em branco para não alterar a senha</FieldDescription>
+                    </Field>
                     {error && <div className="text-red-500 text-sm">{error}</div>}
                 </div>
                 <DialogFooter>

@@ -60,11 +60,13 @@ export default function Comissoes() {
         <div className="p-3 py-6 sm:p-6 sm:py-8 space-y-4 sm:space-y-5 max-w-screen-2xl mx-auto">
             {/* Header */}
             <div className="animate-fade-in">
-                <div className="flex items-center gap-2 mb-1">
-                    <DollarSign className="w-6 h-6 text-emerald-500" />
-                    <h1 className="text-2xl font-extrabold tracking-tight">Comissões</h1>
+                <div className="flex items-center gap-2.5 mb-1">
+                    <div className="bg-primary/10 rounded-lg p-1.5">
+                        <DollarSign className="w-5 h-5 text-primary" />
+                    </div>
+                    <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">Comissões</h1>
                 </div>
-                <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+                <p className="text-on-surface-variant text-xs sm:text-sm mt-1 ml-0.5">
                     Visualize comissões por período e acompanhe os totais da equipe
                 </p>
             </div>
@@ -87,22 +89,22 @@ export default function Comissoes() {
                     label="Total de Comissões"
                     value={formatCurrency(totalCommissions)}
                     icon={DollarSign}
-                    iconColor="text-emerald-500"
-                    valueColor="text-emerald-600 dark:text-emerald-400"
+                    iconColor="text-primary"
+                    valueColor="text-primary [text-shadow:0_0_12px_hsl(83_98%_64%_/_0.35)]"
                 />
                 <CommissionStatCard
                     label="Total em Pedidos"
                     value={formatCurrency(totalOrdersValue)}
                     icon={TrendingUp}
-                    iconColor="text-blue-500"
-                    valueColor="text-blue-600 dark:text-blue-400"
+                    iconColor="text-secondary"
+                    valueColor="text-secondary"
                 />
                 <CommissionStatCard
                     label="Registros"
                     value={String(totalRecords)}
                     icon={FileText}
-                    iconColor="text-purple-500"
-                    valueColor="text-foreground"
+                    iconColor="text-on-surface-variant"
+                    valueColor="text-on-surface"
                 />
             </div>
 

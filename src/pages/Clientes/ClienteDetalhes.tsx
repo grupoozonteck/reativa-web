@@ -71,8 +71,8 @@ export default function ClienteDetalhes() {
         return (
             <div className="p-6 flex items-center justify-center min-h-[60vh]">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                    <p className="text-sm text-muted-foreground">Carregando detalhes do cliente...</p>
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <p className="text-sm text-on-surface-variant">Carregando detalhes do cliente...</p>
                 </div>
             </div>
         );
@@ -82,9 +82,9 @@ export default function ClienteDetalhes() {
         return (
             <div className="p-6 flex items-center justify-center min-h-[60vh]">
                 <div className="flex flex-col items-center gap-3 text-center">
-                    <AlertCircle className="w-8 h-8 text-rose-500" />
-                    <p className="text-sm text-muted-foreground">Erro ao carregar os detalhes do cliente.</p>
-                    <Button variant="outline" onClick={() => navigate('/clientes')} className="gap-2">
+                    <AlertCircle className="w-8 h-8 text-destructive" />
+                    <p className="text-sm text-on-surface-variant">Erro ao carregar os detalhes do cliente.</p>
+                    <Button variant="ghost" onClick={() => navigate('/clientes')} className="gap-2 text-on-surface-variant hover:text-primary">
                         <ArrowLeft className="w-4 h-4" />
                         Voltar
                     </Button>
@@ -123,26 +123,24 @@ export default function ClienteDetalhes() {
                 <div className="animate-fade-in space-y-3">
                     <div className="flex items-start gap-3">
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
                             onClick={() => navigate(-1)}
-                            className="w-9 h-9 rounded-xl shrink-0"
+                            className="w-9 h-9 rounded-xl shrink-0 text-on-surface-variant hover:text-primary hover:bg-primary/10"
                         >
                             <ArrowLeft className="w-4 h-4" />
                         </Button>
                         <div className="flex-1 min-w-0">
-                            <h1 className="text-xl font-extrabold tracking-tight truncate">Detalhes do Cliente</h1>
-                        
+                            <h1 className="font-display text-xl font-black tracking-tight truncate text-on-surface">Detalhes do Cliente</h1>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2 flex-row">
                         <Button
-                            variant="default"
                             size="sm"
                             onClick={handleAccessStore}
                             disabled={accessingStore}
-                            className="gap-2 sm:w-auto bg-green-500 hover:bg-green-600 text-white"
+                            className="gap-2 sm:w-auto bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold"
                         >
                             {accessingStore ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -152,15 +150,14 @@ export default function ClienteDetalhes() {
                             Acessar conta
                         </Button>
                         <Button
-                            variant="default"
+                            variant="ghost"
                             size="sm"
                             onClick={() => setEditModalOpen(true)}
-                            className="gap-2 sm:w-auto "
+                            className="gap-2 sm:w-auto bg-surface-highest text-on-surface-variant hover:text-on-surface"
                         >
                             <Edit className="w-4 h-4" />
                             Editar
                         </Button>
-                    
                     </div>
                 </div>
 
@@ -187,8 +184,8 @@ export default function ClienteDetalhes() {
 
                         <div className="flex-1 min-w-0 space-y-3">
                             <div>
-                                <h2 className="text-lg font-bold">{user.name}</h2>
-                                <p className="text-sm text-muted-foreground truncate">#{user.id} - {user.login}</p>
+                                <h2 className="font-display text-lg font-bold text-on-surface">{user.name}</h2>
+                                <p className="text-sm text-on-surface-variant font-mono truncate">#{user.id} · {user.login}</p>
                                 {reengStatus && (
                                     <Badge className={cn('text- border w-fit', reengStatus.color)}>
                                         {reengStatus.label}
@@ -197,17 +194,17 @@ export default function ClienteDetalhes() {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <CustomerDetailInfoItem icon={Mail} iconBg="bg-violet-500" label={<span className="truncate block">{user.email || '--'}</span>} />
+                                <CustomerDetailInfoItem icon={Mail} iconBg="bg-accent/20 text-accent" label={<span className="truncate block">{user.email || '--'}</span>} />
                                 <CustomerDetailInfoItem
                                     icon={MessageCircle}
-                                    iconBg="bg-emerald-500"
+                                    iconBg="bg-primary/10 text-primary"
                                     label={
                                         hasWhatsapp ? (
                                             <a
                                                 href={getWhatsAppLink(whatsapp)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 inline-flex items-center gap-1.5 min-w-0"
+                                                className="text-primary hover:text-primary/80 inline-flex items-center gap-1.5 min-w-0"
                                             >
                                                 <span className="truncate">{formatWhatsApp(whatsapp)}</span>
                                                 <ExternalLink className="w-3 h-3 shrink-0" />
@@ -217,8 +214,8 @@ export default function ClienteDetalhes() {
                                         )
                                     }
                                 />
-                                <CustomerDetailInfoItem icon={Phone} iconBg="bg-blue-500" label={<span className="truncate block">{formatWhatsApp(user.phone_number)}</span>} />
-                                <CustomerDetailInfoItem icon={Calendar} iconBg="bg-amber-500" label={<span className="truncate block">Cadastro: {formatDate(user.created_at)}</span>} />
+                                <CustomerDetailInfoItem icon={Phone} iconBg="bg-secondary/10 text-secondary" label={<span className="truncate block">{formatWhatsApp(user.phone_number)}</span>} />
+                                <CustomerDetailInfoItem icon={Calendar} iconBg="bg-surface-highest text-on-surface-variant" label={<span className="truncate block">Cadastro: {formatDate(user.created_at)}</span>} />
                             </div>
                         </div>
                     </div>
@@ -229,13 +226,13 @@ export default function ClienteDetalhes() {
                     {/* Endereço */}
                     <div className="solid-card p-5 animate-fade-in" style={{ animationDelay: '120ms', opacity: 0 }}>
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-rose-500 flex items-center justify-center">
-                                <MapPin className="w-4 h-4 text-white" />
+                            <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                                <MapPin className="w-4 h-4 text-accent" />
                             </div>
-                            <h3 className="text-sm font-semibold">Endereço</h3>
+                            <h3 className="font-display text-sm font-semibold text-on-surface">Endereço</h3>
                         </div>
                         {address ? (
-                            <div className="space-y-1.5 text-sm text-muted-foreground">
+                            <div className="space-y-1.5 text-sm text-on-surface-variant">
                                 <p>{address.address_line}, {address.number}</p>
                                 {address.complement && <p>{address.complement}</p>}
                                 <p>{address.district}</p>
@@ -243,37 +240,37 @@ export default function ClienteDetalhes() {
                                 <p>CEP: {address.zip_code}</p>
                             </div>
                         ) : (
-                            <p className="text-sm text-muted-foreground/60">Sem endereço cadastrado</p>
+                            <p className="text-sm text-on-surface-variant/50">Sem endereço cadastrado</p>
                         )}
                     </div>
 
                     {/* Info do Atendimento */}
                     <div className="solid-card p-5 animate-fade-in" style={{ animationDelay: '180ms', opacity: 0 }}>
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                                <User className="w-4 h-4 text-white" />
+                            <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+                                <User className="w-4 h-4 text-secondary" />
                             </div>
-                            <h3 className="text-sm font-semibold">Atendimento</h3>
+                            <h3 className="font-display text-sm font-semibold text-on-surface">Atendimento</h3>
                         </div>
                         {reengagement ? (
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs text-muted-foreground">Status</span>
+                                    <span className="text-xs text-on-surface-variant">Status</span>
                                     <Badge className={cn('text-xs border', reengStatus?.color)}>
                                         {reengStatus?.label || statusMap[String(reengagement.status)] || 'Desconhecido'}
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs text-muted-foreground">Iniciado em</span>
-                                    <span className="text-sm font-medium">{formatDateTime(reengagement.created_at)}</span>
+                                    <span className="text-xs text-on-surface-variant">Iniciado em</span>
+                                    <span className="text-sm font-medium text-on-surface">{formatDateTime(reengagement.created_at)}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs text-muted-foreground">ID Atendimento</span>
-                                    <span className="text-sm font-mono text-muted-foreground">#{reengagement.id}</span>
+                                    <span className="text-xs text-on-surface-variant">ID Atendimento</span>
+                                    <span className="text-sm font-mono text-on-surface-variant">#{reengagement.id}</span>
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-sm text-muted-foreground/60">Sem dados de atendimento</p>
+                            <p className="text-sm text-on-surface-variant/50">Sem dados de atendimento</p>
                         )}
                     </div>
                 </div>
@@ -283,7 +280,7 @@ export default function ClienteDetalhes() {
 
                 {/* Ações rápidas */}
                 <div className="solid-card p-5 animate-fade-in" style={{ animationDelay: '300ms', opacity: 0 }}>
-                    <h3 className="text-sm font-semibold mb-4">Ações rápidas</h3>
+                    <h3 className="font-display text-sm font-semibold text-on-surface mb-4">Ações rápidas</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {hasWhatsapp ? (
                             <a
@@ -292,20 +289,20 @@ export default function ClienteDetalhes() {
                                 rel="noopener noreferrer"
                                 className="w-full"
                             >
-                                <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white w-full">
+                                <Button className="gap-2 w-full bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold">
                                     <MessageCircle className="w-4 h-4" />
                                     Enviar WhatsApp
                                 </Button>
                             </a>
                         ) : (
-                            <Button disabled className="gap-2 w-full">
+                            <Button disabled variant="ghost" className="gap-2 w-full text-on-surface-variant opacity-40">
                                 <MessageCircle className="w-4 h-4" />
                                 WhatsApp indisponível
                             </Button>
                         )}
                         <Button
-                            variant="outline"
-                            className="gap-2 w-full"
+                            variant="ghost"
+                            className="gap-2 w-full bg-surface-highest text-on-surface-variant hover:text-on-surface"
                             onClick={() => navigate('/meus-atendimentos')}
                         >
                             <ShoppingBag className="w-4 h-4" />

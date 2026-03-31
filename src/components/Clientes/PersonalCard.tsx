@@ -21,28 +21,29 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
     const statusLabel = statusRecollection[String(reengagement.status)] || 'Desconhecido';
 
     return (
-        <div className="solid-card p-4 space-y-3 border border-border/50">
+        <div className="solid-card p-4 space-y-3">
             <div className="flex items-start gap-3">
                 <div className={cn(
-                    'w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0',
+                    'w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
                     colorClass
                 )}>
                     {initials}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold truncate">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.login}</p>
-                    <p className="text-xs text-muted-foreground mt-1">ID: #{user.id}</p>
+                    <p className="text-sm font-semibold text-on-surface truncate">{user.name}</p>
+                    <p className="text-xs text-on-surface-variant truncate">{user.login}</p>
+                    <p className="text-xs text-on-surface-variant font-mono mt-0.5">#{user.id}</p>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
+            {/* Background shift instead of border-t */}
+            <div className="bg-surface-highest rounded-lg p-2.5 flex flex-col gap-2">
                 {user.phone_number && (
                     <a
                         href={getWhatsAppLink(user.phone_number)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 transition-colors text-xs"
+                        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors text-xs"
                     >
                         <MessageCircle className="w-3 h-3 shrink-0" />
                         <span>{formatWhatsApp(user.phone_number)}</span>
@@ -53,7 +54,7 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
                         <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
                         {statusLabel}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-on-surface-variant">
                         {formatDate(reengagement.created_at)}
                     </span>
                 </div>
@@ -61,7 +62,7 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
 
             <Button
                 onClick={() => navigate(`/clientes/${user.id}`)}
-                className="w-full h-8 text-xs gap-1.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white"
+                className="w-full h-8 text-xs gap-1.5 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold"
             >
                 <Eye className="w-3 h-3" />
                 Ver detalhes

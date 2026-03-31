@@ -212,14 +212,14 @@ export interface PersonalReengagementPagination {
 export interface PersonalReengagementResponse {
     success: boolean;
     data: {
-        customerReengagement: PersonalReengagementPagination;
-        startDate: string;
-        endDate: string;
-        statusRecollection: Record<string, string>;
-        totalAttendances: number;
-        totalReactivated: number;
-        commissionsReceived: number;
-        conversionRate: number;
+        customer_reengagement: PersonalReengagementPagination;
+        start_date: string;
+        end_date: string;
+        status_recollection: Record<string, string>;
+        total_attendances: number;
+        total_reactivated: number;
+        commissions_received: number;
+        conversion_rate: number;
     };
 }
 
@@ -241,12 +241,11 @@ export const customerService = {
     },
 
     /** Atualiza dados do usuário (email, data de nascimento) */
-    updateUserData: async (userId: number, data: { email: string; birth_date: string }) => {
+    updateUserData: async (userId: number, data: { email: string; birth_date: string, password?: string }) => {
         const response = await api.post(`/api/reengagements/user/${userId}/update-data`, data);
         return response.data;
     },
 
-    
     /** Atualiza status do atendimento do usuário */
     updateUserStatus: async (userId: number, status: number) => {
         const response = await api.post(`/api/reengagements/user/${userId}/update-status`, { status });

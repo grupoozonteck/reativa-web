@@ -106,18 +106,23 @@ export default function Clientes() {
     return (
         <div className="p-4 py-8 sm:p-6 space-y-5 max-w-screen-2xl mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between animate-fade-in  flex-col sm:flex-row gap-4">
+            <div className="flex items-center justify-between animate-fade-in flex-col sm:flex-row gap-4">
                 <div>
-                    <h1 className="text-2xl font-extrabold tracking-tight ">
-                        Reativação de Clientes
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-0.5 hidden sm:block">
+                    <div className="flex items-center gap-2.5 mb-1">
+                        <div className="bg-primary/10 rounded-lg p-1.5">
+                            <Users className="w-5 h-5 text-primary" />
+                        </div>
+                        <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">
+                            Reativação de Clientes
+                        </h1>
+                    </div>
+                    <p className="text-on-surface-variant text-sm mt-0.5 hidden sm:block ml-0.5">
                         Gerencie seus clientes inativos para reativação
                     </p>
                 </div>
                 <Button
                     onClick={() => navigate('/meus-atendimentos')}
-                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-2"
+                    className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-2 font-semibold"
                 >
                     <Headphones className="w-4 h-4" />
                     Meus atendimentos
@@ -127,42 +132,38 @@ export default function Clientes() {
             {/* Filtros */}
             <div className="solid-card p-4 animate-fade-in">
                 <div className="flex items-center gap-2 mb-3">
-                    <Filter className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold">Filtros</span>
+                    <Filter className="w-4 h-4 text-on-surface-variant" />
+                    <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
                     {hasActiveFilters && (
-                        <Badge variant="outline" className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">
+                        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
                             ativo
                         </Badge>
                     )}
                 </div>
 
-                {/* Mobile: Vertical layout, Desktop: Horizontal */}
                 <div className="space-y-3 md:space-y-0 md:flex md:flex-wrap md:items-center md:gap-3">
-                    {/* Search - Full width on mobile, flex on desktop */}
+                    {/* Search */}
                     <div className="relative w-full md:flex-1 md:min-w-[200px] md:max-w-xs">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                         <Input
                             placeholder="Pesquisar por nome, email ou WhatsApp..."
                             value={search}
                             onChange={e => { setSearch(e.target.value); setPage(1); }}
-                            className="pl-9 h-9 text-sm w-full"
+                            className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                             disabled={loading}
                         />
                     </div>
 
-                    <div className="w-full h-px bg-border md:hidden" />
-                    <div className="w-px h-6 bg-border hidden md:block" />
-
-                    {/* Switch filters - Wrap on mobile, inline on desktop */}
+                    {/* Switch filters */}
                     <div className="flex flex-wrap gap-2 md:gap-3">
                         {filterOptions.map(opt => (
                             <label
                                 key={opt.key}
                                 className={cn(
-                                    'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border cursor-pointer select-none',
+                                    'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer select-none',
                                     filterStatus === opt.key
-                                        ? 'bg-blue-50 dark:bg-blue-500/15 border-blue-300 dark:border-blue-500/30 text-blue-700 dark:text-blue-400'
-                                        : 'bg-secondary/50 border-border text-muted-foreground hover:bg-secondary hover:text-foreground',
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-high hover:text-on-surface',
                                     isFetching && 'opacity-60 pointer-events-none'
                                 )}
                             >
@@ -176,8 +177,6 @@ export default function Clientes() {
                         ))}
                     </div>
 
-                    {/* Buttons - Full width stack on mobile, flex on desktop */}
-                    <div className="w-full h-px bg-border md:hidden" />
                     <div className="hidden md:block md:flex-1" />
 
                     <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
@@ -185,17 +184,17 @@ export default function Clientes() {
                             size="sm"
                             onClick={() => refetch()}
                             disabled={isFetching}
-                            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white gap-1.5 h-9 text-xs w-full md:w-auto"
+                            className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-1.5 h-9 text-xs font-semibold w-full md:w-auto"
                         >
                             <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
                             {isFetching ? 'Carregando...' : 'Atualizar'}
                         </Button>
                         <Button
                             size="sm"
-                            variant="outline"
+                            variant="ghost"
                             onClick={handleClearFilters}
                             disabled={loading || !hasActiveFilters}
-                            className="gap-1.5 h-9 text-xs w-full md:w-auto"
+                            className="gap-1.5 h-9 text-xs w-full md:w-auto text-on-surface-variant hover:text-primary disabled:opacity-40"
                         >
                             <X className="w-3.5 h-3.5" />
                             Limpar filtros
@@ -206,34 +205,32 @@ export default function Clientes() {
 
             {/* Tabela */}
             <div className="solid-card overflow-hidden animate-fade-in">
-                <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+                <div className="px-5 py-4 bg-surface-highest/60 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                        <h2 className="text-sm font-semibold">Clientes</h2>
-          
+                        <Users className="w-4 h-4 text-on-surface-variant" />
+                        <h2 className="font-display text-sm font-semibold text-on-surface">Clientes</h2>
                     </div>
                     <div className="flex items-center gap-3">
-                       
                         {showingFrom > 0 && !loading && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="bg-surface-container rounded-full px-2.5 py-0.5 text-xs text-on-surface-variant">
                                 Exibindo {showingFrom}–{showingTo}
                             </span>
                         )}
                     </div>
                 </div>
 
-                <div className="border border-border rounded-lg overflow-hidden">
+                <div className="overflow-hidden">
                     {/* Vista Desktop - Tabela */}
                     <div className="hidden md:block">
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="border-border hover:bg-transparent bg-secondary/80 dark:bg-secondary/90 backdrop-blur-sm">
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground w-[15%] px-4">ID</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground px-4">Cliente</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[12%] px-4">Pedidos</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-center w-[12%] px-4">Pagos</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right w-[20%] px-4">Ações</TableHead>
+                                    <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
+                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
+                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
+                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
+                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
+                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                             </Table>
@@ -244,18 +241,18 @@ export default function Clientes() {
                                     {loading ? (
                                         Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
                                     ) : clients.length === 0 ? (
-                                        <TableRow>
+                                        <TableRow className="border-none">
                                             <TableCell colSpan={5} className="text-center py-16">
                                                 <div className="flex flex-col items-center gap-2">
-                                                    <Users className="w-8 h-8 text-muted-foreground/30" />
-                                                    <p className="text-muted-foreground text-sm">
+                                                    <Users className="w-8 h-8 text-on-surface-variant/30" />
+                                                    <p className="text-on-surface-variant text-sm">
                                                         Nenhum cliente encontrado
                                                         {hasActiveFilters && ' com os filtros aplicados'}
                                                     </p>
                                                     {hasActiveFilters && (
                                                         <button
                                                             onClick={handleClearFilters}
-                                                            className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                                            className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                                         >
                                                             Limpar filtros
                                                         </button>
@@ -278,26 +275,26 @@ export default function Clientes() {
                         <div className="max-h-[600px] overflow-y-auto p-4 space-y-3">
                             {loading ? (
                                 Array.from({ length: 8 }).map((_, i) => (
-                                    <div key={i} className="solid-card p-4 space-y-3 border border-border/50">
-                                        <div className="h-12 w-12 rounded-full bg-muted animate-pulse" />
+                                    <div key={i} className="arena-card p-4 space-y-3">
+                                        <div className="h-12 w-12 rounded-xl bg-surface-container animate-pulse" />
                                         <div className="space-y-2">
-                                            <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-                                            <div className="h-3 w-32 bg-muted animate-pulse rounded" />
+                                            <div className="h-4 w-24 bg-surface-container animate-pulse rounded-md" />
+                                            <div className="h-3 w-32 bg-surface-container animate-pulse rounded-md" />
                                         </div>
                                     </div>
                                 ))
                             ) : clients.length === 0 ? (
                                 <div className="text-center py-16">
                                     <div className="flex flex-col items-center gap-2">
-                                        <Users className="w-8 h-8 text-muted-foreground/30" />
-                                        <p className="text-muted-foreground text-sm">
+                                        <Users className="w-8 h-8 text-on-surface-variant/30" />
+                                        <p className="text-on-surface-variant text-sm">
                                             Nenhum cliente encontrado
                                             {hasActiveFilters && ' com os filtros aplicados'}
                                         </p>
                                         {hasActiveFilters && (
                                             <button
                                                 onClick={handleClearFilters}
-                                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                                                className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                             >
                                                 Limpar filtros
                                             </button>

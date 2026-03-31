@@ -22,21 +22,21 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
     const statusLabel = statusRecollection[String(reengagement.status)] || 'Desconhecido';
 
     return (
-        <TableRow className="border-border hover:bg-muted/50 transition-colors">
+        <TableRow className="border-none even:bg-surface-container/30 hover:bg-surface-high/50 transition-colors">
             <TableCell className="py-3 w-[8%] px-3">
-                <span className="text-xs text-muted-foreground font-mono">#{user.id}</span>
+                <span className="text-xs text-on-surface-variant font-mono">#{user.id}</span>
             </TableCell>
             <TableCell className="py-3 px-3">
                 <div className="flex items-center gap-2">
                     <div className={cn(
-                        'w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0',
+                        'w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0',
                         colorClass
                     )}>
                         {initials}
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold truncate">{user.name}</p>
-                        <p className="text-[11px] text-muted-foreground truncate">{user.login}</p>
+                        <p className="text-sm font-semibold text-on-surface truncate">{user.name}</p>
+                        <p className="text-[11px] text-on-surface-variant truncate">{user.login}</p>
                     </div>
                 </div>
             </TableCell>
@@ -46,23 +46,23 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
                         href={getWhatsAppLink(user.phone_number)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 transition-colors group/wa min-w-0"
+                        className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors min-w-0"
                     >
                         <MessageCircle className="w-3.5 h-3.5 shrink-0" />
                         <span className="text-xs truncate">{formatWhatsApp(user.phone_number)}</span>
                     </a>
                 ) : (
-                    <span className="text-sm text-muted-foreground">--</span>
+                    <span className="text-sm text-on-surface-variant">--</span>
                 )}
             </TableCell>
             <TableCell className="py-3 text-center w-[18%] px-3">
-                <Badge className={cn(' border gap-1 whitespace-nowrap justify-center w-full', statusStyle.color)}>
+                <Badge className={cn('border gap-1 whitespace-nowrap justify-center w-full', statusStyle.color)}>
                     <div className={cn('w-1 h-1 rounded-full shrink-0', statusStyle.dotColor)} />
                     <span className="truncate">{statusLabel}</span>
                 </Badge>
             </TableCell>
             <TableCell className="py-3 text-center w-[15%] px-3">
-                <span className="text-xs text-muted-foreground tabular-nums">
+                <span className="text-xs text-on-surface-variant tabular-nums">
                     {formatDate(reengagement.created_at)}
                 </span>
             </TableCell>
@@ -70,7 +70,7 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
                 <Button
                     size="sm"
                     onClick={() => navigate(`/clientes/${user.id}`)}
-                    className="h-7 text-xs px-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white whitespace-nowrap"
+                    className="h-7 text-xs px-2 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold whitespace-nowrap"
                 >
                     <Eye className="w-3 h-3" />
                     Ver

@@ -19,15 +19,8 @@ export default function SidebarShell({ name, email, initials, onLogout, onNav }:
             {/* ── Brand ── */}
             <div className="px-5 py-5 border-b border-border">
                 <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <div
-                            className="relative  rounded-xl bg-cyan-600 flex items-center justify-center"
-                        >
-                            <img src="/images/logos/logo-v2.jpeg" alt="Reativa Logo" className="w-10 h-10 object-cover rounded-xl" />
-                        </div>
-                    </div>
-                    <div>
-                        <p className="font-black">Reativa</p>
+                    <div className="relative bg-lime-900 p-2 rounded-xl">
+                        <img src="/images/logos/logo-closer.png" alt="Reativa Logo" className="object-cover rounded-xl" />
                     </div>
                 </div>
             </div>

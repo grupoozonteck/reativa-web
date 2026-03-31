@@ -163,10 +163,10 @@ export default function AtendenteDetalhes() {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: '120ms', opacity: 0 }}>
-                <StatCard label="Receita" value={formatCurrency(data.metrics.commissionsReceived)} icon={TrendingUp} iconBg="bg-emerald-500" />
-                <StatCard label="Vendas" value={data.metrics.TotalSales ? data.metrics.TotalSales : '0'} icon={ShoppingCart} iconBg="bg-blue-500" />
-                <StatCard label="Reengajamentos" value={data.metrics.totalAttendances ? data.metrics.totalAttendances : '0'} icon={Users} iconBg="bg-violet-500" />
-                <StatCard label="Conversão" value={`${data.metrics.conversionRate ? data.metrics.conversionRate : '0'}%`} icon={RefreshCcw} iconBg="bg-amber-500" />
+                <StatCard label="Receita" value={formatCurrency(data.metrics.commissions_received)} icon={TrendingUp} iconBg="bg-emerald-500" />
+                <StatCard label="Vendas" value={data.metrics.total_sales ? data.metrics.total_sales : '0'} icon={ShoppingCart} iconBg="bg-blue-500" />
+                <StatCard label="Reengajamentos" value={data.metrics.total_attendances ? data.metrics.total_attendances : '0'} icon={Users} iconBg="bg-violet-500" />
+                <StatCard label="Conversão" value={`${data.metrics.conversion_rate ? data.metrics.conversion_rate : '0'}%`} icon={RefreshCcw} iconBg="bg-amber-500" />
             </div>
 
             {/* Info adicional */}
@@ -214,9 +214,7 @@ export default function AtendenteDetalhes() {
                             <span className="text-muted-foreground">Cadastrado em</span>
                             <span className="font-medium">{formatDate(data.attendant.created_at)}</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">XP total</span>
-                        </div>
+
                         <div className="flex items-center justify-between">
                             <span className="text-muted-foreground">ID interno</span>
                             <span className="text-muted-foreground font-mono">#{data.attendant.user_id}</span>
