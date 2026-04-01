@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { formatCurrency } from '@/lib/client-utils';
+import { formatCurrency } from '@/utils/client-utils';
 import { financialService } from '../../services/financial.service';
 import { CommissionStatCard } from '@/components/Comisoes/CommissionStatCard';
 import { CommissionsTable } from '@/components/Comisoes/CommissionsTable';

@@ -1,6 +1,6 @@
 import { Users, ShoppingCart, TrendingUp, Headphones, BarChart2, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/lib/client-utils';
+import { formatCurrency } from '@/utils/client-utils';
 
 interface PerformanceStatsProps {
     isLoading: boolean;

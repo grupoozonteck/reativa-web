@@ -3,7 +3,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatCurrency, getInitials } from '@/lib/client-utils';
+import { formatCurrency, getInitials } from '@/utils/client-utils';
 import { type ManagerSupervisor, type ManagerAttendant } from '@/services/team.service';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { AvatarImage } from '@radix-ui/react-avatar';

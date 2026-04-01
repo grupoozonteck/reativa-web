@@ -16,7 +16,10 @@ import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
 import ManagerPerformance from './pages/Manager/ManagerPerformance';
 import Atendentes from './pages/Atendentes/Atendentes';
 import AtendenteDetalhes from './pages/Atendentes/AtendenteDetalhes';
+import AtendenteEditar from './pages/Atendentes/AtendenteEditar';
 import * as React from "react";
+import { ToastContainer } from 'react-toastify';
+
 
 function ProtectedApp() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -60,6 +63,7 @@ function RoleGuard({ route, children }: { route: string; children: React.ReactNo
 export default function App() {
   return (
     <ThemeProvider>
+      <ToastContainer position="top-right" autoClose={3000} />
       <BrowserRouter>
         <Routes>
           <Route
@@ -106,6 +110,14 @@ export default function App() {
               element={
                 <RoleGuard route="/atendentes">
                   <AtendenteDetalhes />
+                </RoleGuard>
+              }
+            />
+            <Route
+              path="/atendentes/:id/editar"
+              element={
+                <RoleGuard route="/atendentes">
+                  <AtendenteEditar />
                 </RoleGuard>
               }
             />

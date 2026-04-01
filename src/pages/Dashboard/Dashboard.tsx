@@ -64,7 +64,7 @@ export default function Dashboard() {
                 <StatCard
                     label="Clientes Inativos"
                     rawValue={stats?.inactive_customers ?? 0}
-                    displayFn={v => String(v)}
+                    displayFn={v =>  new Intl.NumberFormat('pt-BR').format(v)}
                     icon={UserX}
                     colorClass="text-accent"
                     bgClass="bg-accent/10"

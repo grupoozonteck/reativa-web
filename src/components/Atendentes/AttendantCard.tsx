@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency } from '@/lib/client-utils';
+import { formatCurrency } from '@/utils/client-utils';
 import { type ManagerAttendant } from '@/services/team.service';
 
 export function AttendantCardSkeleton() {

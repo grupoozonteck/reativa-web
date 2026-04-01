@@ -19,18 +19,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime } from '@/lib/client-utils';
+import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime } from '@/utils/client-utils';
 import {
     customerService,
 } from '@/services/customer.service';
 import { EditClienteModal } from '@/components/Clientes/EditClienteModal';
 import { CustomerDetailInfoItem } from '@/components/Clientes/CustomerDetailInfoItem';
 import { CustomerLatestOrderCard } from '@/components/Clientes/CustomerLatestOrderCard';
+import { reengagementStatusMap } from '@/utils/color-ultis';
 
-const reengagementStatusMap: Record<number, { label: string; color: string }> = {
-    1: { label: 'Em Atendimento', color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' },
-    2: { label: 'Reativado', color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20' },
-};
 
 export default function ClienteDetalhes() {
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -102,7 +99,6 @@ export default function ClienteDetalhes() {
     const reengStatus = reengagement ? reengagementStatusMap[reengagement.status] : null;
     const hasWhatsapp = !!whatsapp;
 
-    console.log('Dados do cliente:', { user });
 
 
 

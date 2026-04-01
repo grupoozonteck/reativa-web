@@ -1,6 +1,18 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, Zap, AlertCircle, Loader2 } from 'lucide-react';
+import {
+    Activity,
+    AlertCircle,
+    Eye,
+    EyeOff,
+    Lock,
+    Loader2,
+    LogIn,
+    Mail,
+    Shield,
+    Trophy,
+    Zap
+} from 'lucide-react';
 import { useAuth } from '@/contexts/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,13 +32,17 @@ export default function Login() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError('');
-        if (!login.trim() || !password.trim()) { setError('Preencha todos os campos'); return; }
+
+        if (!login.trim() || !password.trim()) {
+            setError('Preencha todos os campos');
+            return;
+        }
+
         setIsLoading(true);
         try {
             await loginFunction({ login, password });
             navigate('/');
         } catch (err: unknown) {
-            console.log(err)
             const e = err as { response?: { data?: { message?: string }; status?: number } };
             if (e.response?.status === 401) setError('E-mail ou senha incorretos');
             else if (e.response?.data?.message) setError(e.response.data.message);
@@ -37,192 +53,118 @@ export default function Login() {
     };
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center overflow-hidden p-4">
+        <div className="relative min-h-screen overflow-hidden bg-[#040d22] px-4 py-8 text-slate-200">
+            <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center justify-center rounded-[2.25rem] border border-slate-300/40 bg-[#000f33]/40 p-5 shadow-[0_40px_90px_rgba(0,0,0,0.55)] backdrop-blur-md sm:p-10">
+                <div className="w-full max-w-xl">
+                    <header className="mb-10 text-center">
 
-            {/* ══════════════════════════════════════════════
-          AURORA BACKGROUND
-      ══════════════════════════════════════════════ */}
-            <div className="fixed inset-0 -z-10">
-                {/* Base */}
-                <div className="absolute inset-0 bg-[hsl(238,22%,5%)]" />
+                        <h1 className="text-4xl font-black uppercase italic tracking-tight text-lime-300 sm:text-5xl">
+                            REATIVA
+                        </h1>
+                        <p className="mt-2 text-xs uppercase tracking-[0.32em] text-sky-200/75">
+                            Domine o jogo das vendas
+                        </p>
+                    </header>
 
-                {/* Orb 1 — cyan large, top-right */}
-                <div
-                    className="absolute rounded-full bg-blue-500 opacity-[0.35]"
-                    style={{
-                        width: 560, height: 560,
-                        top: -180, right: -120,
-                        filter: 'blur(90px)',
-                        animation: 'float 14s ease-in-out infinite',
-                    }}
-                />
-
-                {/* Orb 2 — teal, bottom-left */}
-                <div
-                    className="absolute rounded-full bg-blue-500 opacity-[0.2]"
-                    style={{
-                        width: 420, height: 420,
-                        bottom: -160, left: -100,
-                        filter: 'blur(90px)',
-                        animation: 'float 18s ease-in-out infinite reverse',
-                    }}
-                />
-
-                {/* Orb 3 — sky, center */}
-                <div
-                    className="absolute rounded-full bg-sky-500 opacity-[0.13]"
-                    style={{
-                        width: 260, height: 260,
-                        top: '38%', left: '38%',
-                        filter: 'blur(80px)',
-                        animation: 'float 22s ease-in-out infinite',
-                    }}
-                />
-
-                {/* Orb 4 — cyan dim, top-left */}
-                <div
-                    className="absolute rounded-full bg-blue-600 opacity-[0.15]"
-                    style={{
-                        width: 320, height: 320,
-                        top: -60, left: -80,
-                        filter: 'blur(80px)',
-                        animation: 'float 16s ease-in-out infinite 2s',
-                    }}
-                />
-
-                {/* Dot grid */}
-                <div className="absolute inset-0 dot-grid opacity-[0.35]" />
-
-                {/* Vignette — fades edges so content pops */}
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        background: 'radial-gradient(ellipse 75% 75% at 50% 50%, transparent 35%, hsl(238,22%,5%) 100%)',
-                    }}
-                />
-
-                {/* Top + bottom gradient edge fades */}
-                <div className="absolute inset-0"
-                    style={{
-                        background: `linear-gradient(to bottom,
-              hsl(238,22%,5%) 0%,
-              transparent 10%,
-              transparent 90%,
-              hsl(238,22%,5%) 100%
-            )`,
-                    }}
-                />
-            </div>
-
-            {/* ══════════════════════════════════════════════
-          CONTENT
-      ══════════════════════════════════════════════ */}
-            <div className="w-full max-w-md animate-scale-in relative z-10">
-
-                {/* Live badge */}
-                <div className="flex justify-center mb-6">
-                    <div className="flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-blue-500/20 text-xs text-blue-300 font-medium">
-                        <div className="relative flex items-center justify-center">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                            <span className="absolute w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse-ring" />
-                        </div>
-                        Sistema de Reativação Comercial
-                    </div>
-                </div>
-
-                {/* Brand */}
-                <div className="text-center mb-8">
-                    <div className="relative inline-flex items-center justify-center mb-5">
-                        <div className="absolute w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 blur-xl opacity-50 animate-pulse" />
-                        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-2xl glow">
-                            <Zap className="w-7 h-7 text-white" strokeWidth={2.5} />
-                        </div>
-                    </div>
-                    <h1 className="text-4xl font-black tracking-tight gradient-text mb-2">Reativa</h1>
-                    <p className="text-muted-foreground text-sm">Faça login para continuar</p>
-                </div>
-
-                {/* Card */}
-                <div className="glass-card rounded-2xl p-8 shadow-2xl shadow-black/50 relative overflow-hidden">
-                    {/* Top gradient border */}
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
-
-                    <form id="login-form" onSubmit={handleSubmit} className="space-y-5">
-                        {error && (
-                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm animate-fade-in">
-                                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
-                                <span>{error}</span>
-                            </div>
-                        )}
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email-input" className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
-                                E-mail
-                            </Label>
-                            <Input
-                                id="email-input"
-                                type="text"
-                                placeholder="seu@email.com"
-                                value={login}
-                                onChange={e => setLogin(e.target.value)}
-                                autoFocus
-                                className="bg-white/[0.04] border-white/[0.08] focus:border-blue-500/60 focus-visible:ring-blue-500/20 h-11 placeholder:text-muted-foreground/40"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="password-input" className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
-                                Senha
-                            </Label>
-                            <div className="relative">
-                                <Input
-                                    id="password-input"
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    className="bg-white/[0.04] border-white/[0.08] focus:border-blue-500/60 focus-visible:ring-blue-500/20 h-11 pr-11 placeholder:text-muted-foreground/40"
-                                />
-                                <button
-                                    type="button"
-                                    id="toggle-password"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-blue-300 transition-colors"
-                                >
-                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                </button>
+                    <section className="rounded-2xl border border-slate-700/60 bg-[#0a173a]/85 p-6 shadow-[0_24px_60px_rgba(2,8,24,0.7)] sm:p-8">
+                        <div className="mb-6 flex gap-5">
+                            <span className="w-[3px] rounded-full bg-lime-300 shadow-[0_0_20px_rgba(164,255,66,0.65)]" />
+                            <div>
+                                <h2 className="text-2xl font-bold text-slate-100">Bem-vindo!</h2>
+                                <p className="mt-2 text-sm text-slate-300/70">
+                                    Insira suas credenciais para acessar o painel
+                                </p>
                             </div>
                         </div>
 
-                        <Button
-                            id="login-submit"
-                            type="submit"
-                            disabled={isLoading}
-                            className={cn(
-                                'w-full h-12 mt-2 font-bold text-sm tracking-wide relative overflow-hidden',
-                                'bg-gradient-to-r from-blue-500 via-blue-500 to-blue-600',
-                                'hover:from-blue-400 hover:via-blue-400 hover:to-blue-500',
-                                'shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40',
-                                'transition-all duration-300 hover:-translate-y-0.5',
-                                'disabled:opacity-60 disabled:translate-y-0'
+                        <form id="login-form" onSubmit={handleSubmit} className="space-y-5">
+                            {error && (
+                                <div className="flex items-center gap-2 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                                    <AlertCircle className="h-4 w-4 shrink-0" />
+                                    <span>{error}</span>
+                                </div>
                             )}
-                        >
-                            {!isLoading && (
-                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent bg-[length:200%_100%] animate-shimmer" />
-                            )}
-                            <span className="relative flex items-center justify-center gap-2">
-                                {isLoading
-                                    ? <><Loader2 className="w-4 h-4 animate-spin" /> Entrando...</>
-                                    : <>Entrar <LogIn className="w-4 h-4" /></>
-                                }
-                            </span>
-                        </Button>
-                    </form>
-                </div>
 
-                <p className="text-center text-[11px] text-muted-foreground/40 mt-6">
-                    Reativa © 2025 — Sistema Comercial Interno
-                </p>
+                            <div className="space-y-2">
+                                <Label htmlFor="email-input" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/80">
+                                    E-mail
+                                </Label>
+                                <div className="relative">
+                                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                    <Input
+                                        id="email-input"
+                                        type="text"
+                                        placeholder="seu@email.com.br"
+                                        value={login}
+                                        onChange={e => setLogin(e.target.value)}
+                                        autoFocus
+                                        className="h-12 border-slate-700/90 bg-[#121f45] pl-10 text-slate-100 placeholder:text-slate-400/60 focus-visible:ring-lime-300/30"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password-input" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/80">
+                                        Senha
+                                    </Label>
+                                    <button
+                                        type="button"
+                                        className="text-xs font-semibold text-sky-300 transition-colors hover:text-sky-200"
+                                    >
+                                        Esqueci minha senha
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                    <Input
+                                        id="password-input"
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="********"
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        className="h-12 border-slate-700/90 bg-[#121f45] pl-10 pr-11 text-slate-100 placeholder:text-slate-400/60 focus-visible:ring-lime-300/30"
+                                    />
+                                    <button
+                                        type="button"
+                                        id="toggle-password"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-100"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <Button
+                                id="login-submit"
+                                type="submit"
+                                disabled={isLoading}
+                                className={cn(
+                                    'mt-2 h-12 w-full rounded-lg font-bold uppercase tracking-wide text-[#18210a]',
+                                    'bg-gradient-to-r from-lime-300 to-lime-400 hover:from-lime-200 hover:to-lime-300',
+                                    'shadow-[0_0_28px_rgba(164,255,66,0.35)] transition-all duration-200',
+                                    'disabled:cursor-not-allowed disabled:opacity-60'
+                                )}
+                            >
+                                <span className="flex items-center gap-2">
+                                    {isLoading
+                                        ? <><Loader2 className="h-4 w-4 animate-spin" /> Entrando...</>
+                                        : <>Entrar na Arena <LogIn className="h-4 w-4" /></>
+                                    }
+                                </span>
+                            </Button>
+                        </form>
+
+                        <p className="mt-7 text-center text-sm text-slate-300/70">
+                            Nao faz parte da equipe?{' '}
+                            <button type="button" className="font-semibold text-lime-300 hover:text-lime-200">
+                                Solicite acesso
+                            </button>
+                        </p>
+                    </section>
+
+                </div>
             </div>
         </div>
     );

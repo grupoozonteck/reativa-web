@@ -6,7 +6,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { formatCurrency, formatDateTime } from '@/lib/client-utils';
+import { formatCurrency, formatDateTime } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { Pagination } from '@/components/ui/pagination';
 import { CommissionCard } from './CommissionCard';

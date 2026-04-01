@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/lib/client-utils';
+import { formatCurrency } from '@/utils/client-utils';
 import { type TeamMemberPerformance } from '@/services/team.service';
 
 export function MemberCardSkeleton() {

@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { type ManagerAttendant } from '@/services/team.service';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { getInitials } from '@/lib/client-utils';
+import { getInitials } from '@/utils/client-utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Link, useNavigate } from 'react-router-dom';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
