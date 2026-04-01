@@ -54,7 +54,7 @@ export default function Login() {
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#040d22] px-4 py-8 text-slate-200">
-            <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center justify-center rounded-[2.25rem] border border-slate-300/40 bg-[#000f33]/40 p-5 shadow-[0_40px_90px_rgba(0,0,0,0.55)] backdrop-blur-md sm:p-10">
+            <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center justify-center rounded">
                 <div className="w-full max-w-xl">
                     <header className="mb-10 text-center">
 
@@ -128,6 +128,7 @@ export default function Login() {
                                     <button
                                         type="button"
                                         id="toggle-password"
+                                        aria-label={showPassword ? 'Esconder senha' : 'Mostrar senha'}
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-100"
                                     >
@@ -155,13 +156,6 @@ export default function Login() {
                                 </span>
                             </Button>
                         </form>
-
-                        <p className="mt-7 text-center text-sm text-slate-300/70">
-                            Nao faz parte da equipe?{' '}
-                            <button type="button" className="font-semibold text-lime-300 hover:text-lime-200">
-                                Solicite acesso
-                            </button>
-                        </p>
                     </section>
 
                 </div>
