@@ -10,7 +10,6 @@ export default function SupervisorPerformance() {
         queryFn: () => teamService.getSupervisorPerformance(),
         refetchInterval: 5 * 60 * 1000,
     });
-    console.log('Performance data:', data);
 
     const members = data ?? [];
 

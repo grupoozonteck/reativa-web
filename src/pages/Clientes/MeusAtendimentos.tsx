@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     Search,
     Headphones,
     RefreshCcw,
@@ -12,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Table,
     TableHeader,
@@ -43,22 +51,27 @@ export default function MeusAtendimentos() {
     const [startDate, setStartDate] = useState(currentMonthStart);
     const [endDate, setEndDate] = useState(today);
     const [statusFilter, setStatusFilter] = useState('');
-    const effectiveEndDate = startDate && !endDate ? today : (endDate || undefined);
+    const [appliedSearch, setAppliedSearch] = useState('');
+    const [appliedStartDate, setAppliedStartDate] = useState(currentMonthStart);
+    const [appliedEndDate, setAppliedEndDate] = useState(today);
+    const [appliedStatusFilter, setAppliedStatusFilter] = useState('');
+    const effectiveEndDate = appliedStartDate && !appliedEndDate ? today : (appliedEndDate || undefined);
 
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['personal-reengagements', page, search, startDate, effectiveEndDate, statusFilter],
+        queryKey: ['personal-reengagements', page, appliedSearch, appliedStartDate, effectiveEndDate, appliedStatusFilter],
         queryFn: () => customerService.getPersonalReengagements({
             page,
-            login: search || undefined,
-            start_date: startDate || undefined,
+            login: appliedSearch || undefined,
+            start_date: appliedStartDate || undefined,
             end_date: effectiveEndDate,
-            status: statusFilter ? Number(statusFilter) : undefined,
+            status: appliedStatusFilter ? Number(appliedStatusFilter) : undefined,
         }),
         placeholderData: keepPreviousData,
         refetchOnWindowFocus: true,
-        refetchInterval: 5 * 60 * 1000, // 5 minutos
+        refetchInterval: 5 * 60 * 1000, 
         select: (res) => res.data,
     });
+    
     const allReengagements = data?.customer_reengagement.data ?? [];
     const nextPageUrl = data?.customer_reengagement.next_page_url ?? null;
     const prevPageUrl = data?.customer_reengagement.prev_page_url ?? null;
@@ -74,31 +87,32 @@ export default function MeusAtendimentos() {
 
     const handleNextPage = () => { if (nextPageUrl) setPage(p => p + 1); };
     const handlePrevPage = () => { if (prevPageUrl) setPage(p => Math.max(1, p - 1)); };
-    const handleSearch = (value: string) => {
-        setSearch(value);
+    const handleApplyFilters = () => {
+        setAppliedSearch(search);
+        setAppliedStartDate(startDate);
+        setAppliedEndDate(endDate);
+        setAppliedStatusFilter(statusFilter);
         setPage(1);
     };
-    const handleStartDate = (value: string) => {
-        setStartDate(value);
-        setPage(1);
-    };
-    const handleEndDate = (value: string) => {
-        setEndDate(value);
-        setPage(1);
-    };
-    const handleStatusFilter = (value: string) => {
-        setStatusFilter(value);
-        setPage(1);
-    };
+
     const clearFilters = () => {
         setSearch('');
         setStartDate(currentMonthStart);
         setEndDate(today);
         setStatusFilter('');
+        setAppliedSearch('');
+        setAppliedStartDate(currentMonthStart);
+        setAppliedEndDate(today);
+        setAppliedStatusFilter('');
         setPage(1);
     };
 
     const isDefaultPeriod = startDate === currentMonthStart && endDate === today;
+    const hasActiveFilters = appliedSearch !== '' || appliedStartDate !== currentMonthStart || appliedEndDate !== today || appliedStatusFilter !== '';
+    const hasDraftChanges = search !== appliedSearch
+        || startDate !== appliedStartDate
+        || endDate !== appliedEndDate
+        || statusFilter !== appliedStatusFilter;
 
     const statsCards = [
         { label: 'Meus Atendimentos (no período)', value: totalAttendances, icon: Headphones, color: 'text-secondary', iconBg: 'bg-secondary/10', iconColor: 'text-secondary' },
@@ -138,7 +152,7 @@ export default function MeusAtendimentos() {
                     : statsCards.map(card => (
                         <div
                             key={card.label}
-                            className="arena-card p-4 sm:p-5 flex items-center gap-4"
+                            className="solid-card p-4 sm:p-5 flex items-center gap-4"
                         >
                             <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', card.iconBg)}>
                                 <card.icon className={cn('w-5 h-5', card.iconColor)} />
@@ -163,81 +177,115 @@ export default function MeusAtendimentos() {
                     <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
                 </div>
 
-                <div className="space-y-3 md:space-y-0 md:flex md:flex-wrap md:items-center md:gap-3">
-                    {/* Search */}
-                    <div className="relative w-full md:flex-1 md:min-w-[220px] md:max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
-                        <Input
-                            placeholder="Pesquisar por nome, email ou WhatsApp..."
-                            value={search}
-                            onChange={e => handleSearch(e.target.value)}
-                            className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
-                        />
-                        {search && (
-                            <button
-                                onClick={() => handleSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleApplyFilters();
+                    }}
+                    className="space-y-3"
+                >
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1.5fr)_160px_160px_220px]">
+                        <Field>
+                            <FieldLabel htmlFor="meus-atendimentos-search">Buscar</FieldLabel>
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+                                <Input
+                                    id="meus-atendimentos-search"
+                                    placeholder="Pesquisar por nome, email ou WhatsApp..."
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                    className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                                />
+                                {search && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearch('')}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
+                            </div>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="meus-atendimentos-start-date">Data inicial</FieldLabel>
+                            <Input
+                                id="meus-atendimentos-start-date"
+                                type="date"
+                                value={startDate}
+                                onChange={e => setStartDate(e.target.value)}
+                                className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                            />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="meus-atendimentos-end-date">Data final</FieldLabel>
+                            <Input
+                                id="meus-atendimentos-end-date"
+                                type="date"
+                                value={endDate}
+                                onChange={e => setEndDate(e.target.value)}
+                                className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                            />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="meus-atendimentos-status">Status</FieldLabel>
+                            <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
+                                <SelectTrigger id="meus-atendimentos-status" className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                                    <SelectValue placeholder="Todos os status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos os status</SelectItem>
+                                    {Object.entries(statusRecollection).map(([key, label]) => (
+                                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </Field>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                        <div className="text-xs text-on-surface-variant">
+                            {hasActiveFilters ? 'Filtros aplicados na listagem atual.' : 'Nenhum filtro aplicado no momento.'}
+                            {hasDraftChanges && ' Existem alterações pendentes para aplicar.'}
+                        </div>
+
+                        <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                            <Button
+                                size="sm"
+                                type="submit"
+                                disabled={isFetching || !hasDraftChanges}
+                                className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-1.5 h-9 text-xs font-semibold w-full md:w-auto"
+                            >
+                                <Search className="w-3.5 h-3.5" />
+                                Filtrar
+                            </Button>
+                            <Button
+                                size="sm"
+                                type="button"
+                                onClick={() => refetch()}
+                                disabled={isFetching}
+                                className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-1.5 h-9 text-xs font-semibold w-full md:w-auto"
+                            >
+                                <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
+                                {isFetching ? 'Atualizando...' : 'Atualizar'}
+                            </Button>
+                            <Button
+                                size="sm"
+                                type="button"
+                                variant="ghost"
+                                onClick={clearFilters}
+                                className="h-9 text-xs w-full md:w-auto gap-1.5 text-on-surface-variant hover:text-primary disabled:opacity-40"
+                                disabled={!search && isDefaultPeriod && !statusFilter && !hasActiveFilters}
                             >
                                 <X className="w-3.5 h-3.5" />
-                            </button>
-                        )}
+                                Limpar filtros
+                            </Button>
+                        </div>
                     </div>
-
-                    {/* Date inputs */}
-                    <div className="flex flex-col md:flex-row gap-2 md:gap-3 w-full md:w-auto">
-                        <Input
-                            type="date"
-                            value={startDate}
-                            onChange={e => handleStartDate(e.target.value)}
-                            className="h-9 text-xs flex-1 md:flex-none md:w-[140px] bg-surface-highest border-none focus-visible:ring-0"
-                            aria-label="Data inicial"
-                        />
-                        <Input
-                            type="date"
-                            value={endDate}
-                            onChange={e => handleEndDate(e.target.value)}
-                            className="h-9 text-xs flex-1 md:flex-none md:w-[140px] bg-surface-highest border-none focus-visible:ring-0"
-                            aria-label="Data final"
-                        />
-                    </div>
-
-                    {/* Select status */}
-                    <select
-                        value={statusFilter}
-                        onChange={e => handleStatusFilter(e.target.value)}
-                        className="h-9 w-full md:w-auto md:min-w-[160px] rounded-md bg-surface-highest border-none px-3 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary/50"
-                        aria-label="Filtrar por status"
-                    >
-                        <option value="">Todos os status</option>
-                        {Object.entries(statusRecollection).map(([key, label]) => (
-                            <option key={key} value={key}>{label}</option>
-                        ))}
-                    </select>
-
-                    <div className="hidden md:block md:flex-1" />
-
-                    <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                        <Button
-                            size="sm"
-                            onClick={() => refetch()}
-                            disabled={isFetching}
-                            className="bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow gap-1.5 h-9 text-xs font-semibold w-full md:w-auto"
-                        >
-                            <RefreshCcw className={cn('w-3.5 h-3.5', isFetching && 'animate-spin')} />
-                            {isFetching ? 'Atualizando...' : 'Atualizar'}
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={clearFilters}
-                            className="h-9 text-xs w-full md:w-auto gap-1.5 text-on-surface-variant hover:text-primary disabled:opacity-40"
-                            disabled={!search && isDefaultPeriod && !statusFilter}
-                        >
-                            <X className="w-3.5 h-3.5" />
-                            Limpar filtros
-                        </Button>
-                    </div>
-                </div>
+                </form>
             </div>
 
             {/* Tabela */}
@@ -284,11 +332,11 @@ export default function MeusAtendimentos() {
                                             <div className="flex flex-col items-center gap-2">
                                                 <Users className="w-8 h-8 text-on-surface-variant/30" />
                                                 <p className="text-on-surface-variant text-sm">
-                                                    {search ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
+                                                    {appliedSearch ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
                                                 </p>
-                                                {search && (
+                                                {appliedSearch && (
                                                     <button
-                                                        onClick={() => handleSearch('')}
+                                                        onClick={clearFilters}
                                                         className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                                     >
                                                         Limpar pesquisa
@@ -323,11 +371,11 @@ export default function MeusAtendimentos() {
                                 <div className="flex flex-col items-center gap-2">
                                     <Users className="w-8 h-8 text-on-surface-variant/30" />
                                     <p className="text-on-surface-variant text-sm">
-                                        {search ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
+                                        {appliedSearch ? 'Nenhum resultado para a pesquisa' : 'Nenhum atendimento encontrado'}
                                     </p>
-                                    {search && (
+                                    {appliedSearch && (
                                         <button
-                                            onClick={() => handleSearch('')}
+                                            onClick={clearFilters}
                                             className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                         >
                                             Limpar pesquisa

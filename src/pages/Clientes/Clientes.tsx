@@ -14,7 +14,6 @@ import {
     X,
     Headphones,
     Users,
-    FileDiff,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,7 +38,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
 
-function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string) {
+function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number) {
     const params: Record<string, number | string> = { page };
     if (search) params.login = search;
     if (status === 'sem_pedidos') params.without_orders = 1;
@@ -47,6 +46,7 @@ function buildParams(page: number, search: string, status: FilterStatus, state: 
     if (status === 'com_pagos') params.has_paid_orders = 1;
     if (state) params.state_id = state;
     if (region) params.region_id = region;
+    if (minOrders) params.min_orders = minOrders;
     return params;
 }
 
@@ -62,16 +62,18 @@ export default function Clientes() {
     const appliedState = searchParams.get('state') ?? '';
     const appliedRegion = searchParams.get('region') ?? '';
     const page = Number(searchParams.get('page') ?? 1);
+    const appliedMinOrders = Number(searchParams.get('min_orders') ?? 0);
 
     // Rascunho local (o que o usuário está editando antes de clicar em Filtrar)
     const [search, setSearch] = useState(appliedSearch);
     const [filterStatus, setFilterStatus] = useState<FilterStatus>(appliedStatus);
     const [selectedState, setSelectedState] = useState(appliedState);
     const [selectedRegion, setSelectedRegion] = useState(appliedRegion);
+    const [minOrders, setMinOrders] = useState(appliedMinOrders);
 
     const setPage = (val: number) => setSearchParams(p => { p.set('page', String(val)); return p; }, { replace: true });
 
-    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion);
+    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion, appliedMinOrders);
     const { data: statesData } = useQuery({
         queryKey: ['states'],
         queryFn: getStates,
@@ -106,8 +108,16 @@ export default function Clientes() {
         ? allStates.filter(s => String(s.region_id) === selectedRegion)
         : allStates;
     const loading = isLoading;
-    const hasActiveFilters = appliedSearch !== '' || appliedStatus !== 'todos' || appliedState !== '' || appliedRegion !== '';
-    const hasDraftChanges = search !== appliedSearch || filterStatus !== appliedStatus || selectedState !== appliedState || selectedRegion !== appliedRegion;
+    const hasActiveFilters = appliedSearch !== ''
+        || appliedStatus !== 'todos'
+        || appliedState !== ''
+        || appliedRegion !== ''
+        || appliedMinOrders > 0;
+    const hasDraftChanges = search !== appliedSearch
+        || filterStatus !== appliedStatus
+        || selectedState !== appliedState
+        || selectedRegion !== appliedRegion
+        || minOrders !== appliedMinOrders;
 
     const handleApplyFilters = () => {
         setSearchParams(p => {
@@ -115,6 +125,7 @@ export default function Clientes() {
             if (filterStatus !== 'todos') p.set('status', filterStatus); else p.delete('status');
             if (selectedState) p.set('state', selectedState); else p.delete('state');
             if (selectedRegion) p.set('region', selectedRegion); else p.delete('region');
+            if (minOrders > 0) p.set('min_orders', String(minOrders)); else p.delete('min_orders');
             p.set('page', '1');
             return p;
         }, { replace: true });
@@ -125,6 +136,7 @@ export default function Clientes() {
         setFilterStatus('todos');
         setSelectedState('');
         setSelectedRegion('');
+        setMinOrders(0);
         setSearchParams(new URLSearchParams(), { replace: true });
     };
 
@@ -234,6 +246,17 @@ export default function Clientes() {
                                 ))}
                             </SelectContent>
                         </Select>
+                    </Field>
+
+                    <Field className="w-full md:w-44">
+                        <FieldLabel>Mínimo de Pedidos</FieldLabel>
+                        <Input
+                            type="number"
+                            value={minOrders}
+                            onChange={(e) => setMinOrders(Number(e.target.value) || 0)}
+                            className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0"
+                            placeholder="0"
+                        />
                     </Field>
                 </div>
 
@@ -410,4 +433,3 @@ export default function Clientes() {
         </div>
     );
 }
-
