@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Eye, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/lib/client-utils';
-import { statusStyleMap } from '@/lib/status-style-map';
+import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/utils/client-utils';
+import { statusStyleMap } from '@/utils/color-ultis';
 import type { PersonalReengagement } from '@/services/customer.service';
 
 interface PersonalCardProps {

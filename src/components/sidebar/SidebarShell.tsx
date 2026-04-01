@@ -9,11 +9,12 @@ interface SidebarShellProps {
     name: string;
     email: string;
     initials: string;
+    userRole?: string;
     onLogout: () => void;
     onNav?: () => void;
 }
 
-export default function SidebarShell({ name, email, initials, onLogout, onNav }: SidebarShellProps) {
+export default function SidebarShell({ name, email, initials, userRole, onLogout, onNav }: SidebarShellProps) {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     return (
@@ -34,7 +35,7 @@ export default function SidebarShell({ name, email, initials, onLogout, onNav }:
 
             {/* ── Section label ── */}
             <div className="px-5 pt-5 pb-2">
-                <p className="text-[9px] font-bold text-muted-foreground/50 uppercase tracking-[0.15em]">Navegação</p>
+                <p className="font-bold text-muted-foreground/80 uppercase text-sm">Navegação {userRole}</p>
             </div>
 
             {/* ── Nav ── */}

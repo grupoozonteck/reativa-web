@@ -11,12 +11,13 @@ import {
     RefreshCcw,
     Star,
     Calendar,
+    Edit,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { getInitials } from '@/lib/client-utils';
+import { getInitials } from '@/utils/client-utils';
 import { teamService } from '@/services/team.service';
 
 const typeColors: Record<number, string> = {
@@ -71,7 +72,6 @@ export default function AtendenteDetalhes() {
         select: (res) => res.data,
     });
 
-    console.log('Atendente detalhes:', data);
 
     if (isLoading) {
         return (
@@ -121,15 +121,26 @@ export default function AtendenteDetalhes() {
                         <h1 className="text-2xl font-extrabold tracking-tight">Detalhes do Atendente</h1>
                     </div>
                 </div>
-                <Button
-                    onClick={() => refetch()}
-                    disabled={isFetching}
-                    size="lg"
-                    className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                    <RefreshCcw className={cn('w-4 h-4', isFetching && 'animate-spin')} />
-                    {isFetching ? 'Atualizando...' : 'Atualizar'}
-                </Button>
+                <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                        onClick={() => navigate(`/atendentes/${id}/editar`)}
+                        size="lg"
+                        variant="outline"
+                        className="gap-2"
+                    >
+                        <Edit className="w-4 h-4" />
+                        Editar
+                    </Button>
+                    <Button
+                        onClick={() => refetch()}
+                        disabled={isFetching}
+                        size="lg"
+                        className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                        <RefreshCcw className={cn('w-4 h-4', isFetching && 'animate-spin')} />
+                        {isFetching ? 'Atualizando...' : 'Atualizar'}
+                    </Button>
+                </div>
             </div>
 
             {/* Card principal */}

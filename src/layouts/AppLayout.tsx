@@ -15,6 +15,7 @@ export default function AppLayout() {
     const name = user?.name ?? 'Usuário';
     const email = user?.email ?? '';
     const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const userRole = user?.attendant?.type_label ?? 'user';
 
     const handleLogout = async () => { await logoutFunction(); navigate('/login'); };
     const closeSidebar = () => setSidebarOpen(false);
@@ -35,6 +36,7 @@ export default function AppLayout() {
                     email={email}
                     initials={initials}
                     onLogout={handleLogout}
+                    userRole={userRole}
                 />
             </aside>
 
@@ -56,6 +58,7 @@ export default function AppLayout() {
                             name={name}
                             email={email}
                             initials={initials}
+                            userRole={userRole}
                             onLogout={handleLogout}
                             onNav={closeSidebar}
                         />

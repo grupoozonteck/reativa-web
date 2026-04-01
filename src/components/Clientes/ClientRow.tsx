@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor } from '@/lib/client-utils';
+import { getInitials, getAvatarColor } from '@/utils/client-utils';
 import type { ReengagementUser } from '@/services/customer.service';
 
 export function ClientRow({ client }: { client: ReengagementUser }) {

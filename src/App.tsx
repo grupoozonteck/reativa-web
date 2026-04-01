@@ -9,14 +9,16 @@ import Ranking from '@/pages/Ranking/Ranking';
 import Clientes from '@/pages/Clientes/Clientes';
 import ClienteDetalhes from '@/pages/Clientes/ClienteDetalhes';
 import MeusAtendimentos from '@/pages/Clientes/MeusAtendimentos';
-import Notificacoes from '@/pages/Notificacoes/Notificacoes';
 import { Loader2 } from 'lucide-react';
 import Comissoes from './pages/Comisoes/Comissoes';
 import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
 import ManagerPerformance from './pages/Manager/ManagerPerformance';
 import Atendentes from './pages/Atendentes/Atendentes';
 import AtendenteDetalhes from './pages/Atendentes/AtendenteDetalhes';
+import AtendenteEditar from './pages/Atendentes/AtendenteEditar';
 import * as React from "react";
+import { ToastContainer } from 'react-toastify';
+
 
 function ProtectedApp() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -60,6 +62,7 @@ function RoleGuard({ route, children }: { route: string; children: React.ReactNo
 export default function App() {
   return (
     <ThemeProvider>
+      <ToastContainer position="top-right" autoClose={3000} />
       <BrowserRouter>
         <Routes>
           <Route
@@ -109,7 +112,14 @@ export default function App() {
                 </RoleGuard>
               }
             />
-            <Route path="/notificacoes" element={<Notificacoes />} />
+            <Route
+              path="/atendentes/:id/editar"
+              element={
+                <RoleGuard route="/atendentes">
+                  <AtendenteEditar />
+                </RoleGuard>
+              }
+            />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

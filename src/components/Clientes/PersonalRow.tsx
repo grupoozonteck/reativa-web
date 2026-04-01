@@ -4,8 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Eye, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/lib/client-utils';
-import { statusStyleMap } from '@/lib/status-style-map';
+import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/utils/client-utils';
+import { statusStyleMap } from '@/utils/color-ultis';
 import type { PersonalReengagement } from '@/services/customer.service';
 
 interface PersonalRowProps {

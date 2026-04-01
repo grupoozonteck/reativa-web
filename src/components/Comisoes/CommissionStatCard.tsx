@@ -16,7 +16,7 @@ export function CommissionStatCard({
     valueColor,
 }: CommissionStatCardProps) {
     return (
-        <div className="arena-card p-4 sm:p-5 animate-fade-in">
+        <div className="solid-card p-4 sm:p-5 animate-fade-in">
             <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                     <p className="text-[10px] sm:text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-2 truncate">

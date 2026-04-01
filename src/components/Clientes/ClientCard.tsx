@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor } from '@/lib/client-utils';
+import { getInitials, getAvatarColor } from '@/utils/client-utils';
 import type { ReengagementUser } from '@/services/customer.service';
 
 export function ClientCard({ client }: { client: ReengagementUser }) {

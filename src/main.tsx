@@ -8,8 +8,8 @@ import App from './App'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * 1000,   // 30s — dados considerados frescos
-      retry: 1,               // 1 retry em caso de erro
+      staleTime: 30 * 1000,
+      retry: 1,
       refetchOnWindowFocus: false,
     },
   },

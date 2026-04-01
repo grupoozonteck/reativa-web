@@ -3,7 +3,7 @@ import { Package, Tag, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { formatCurrency, formatDateTime } from '@/lib/client-utils';
+import { formatCurrency, formatDateTime } from '@/utils/client-utils';
 import { orderStatusStyleMap, deliveryStatusMap } from '@/config/orderStatus';
 import type { PersonalOrder } from '@/services/customer.service';
 
