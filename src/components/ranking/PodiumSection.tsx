@@ -1,18 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Trophy, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ChampionParticle } from './ChampionParticle';
-import { AnimatedNumber } from './AnimatedNumber';
 import type { LeaderboardEntry } from './types';
 
-const PODIUM_ORDER = [1, 0, 2];
-const PODIUM_CFG = [
-    { rank: '2', heightPx: 96, barGrad: 'from-slate-400 to-slate-500', avatarGrad: 'from-slate-300 to-slate-500 shadow-slate-500/20', avatarSize: 'w-16 h-16 text-base', label: 'text-slate-300', delay: 0.25 },
-    { rank: '1', heightPx: 144, barGrad: 'from-amber-400 to-yellow-500', avatarGrad: 'from-amber-300 to-yellow-500 shadow-amber-500/40', avatarSize: 'w-20 h-20 sm:w-24 sm:h-24 text-xl sm:text-2xl', label: 'text-amber-300', delay: 0.1 },
-    { rank: '3', heightPx: 64, barGrad: 'from-amber-700 to-amber-800', avatarGrad: 'from-amber-600 to-amber-800 shadow-amber-700/20', avatarSize: 'w-14 h-14 text-sm', label: 'text-amber-700', delay: 0.38 },
-];
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
 function getInitials(name: string) {
     return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -22,132 +14,146 @@ interface PodiumSectionProps {
     sellers: LeaderboardEntry[];
 }
 
-export function PodiumSection({ sellers }: PodiumSectionProps) {
-    const [livePulse, setLivePulse] = useState(true);
-    useEffect(() => {
-        const id = setInterval(() => setLivePulse(p => !p), 900);
-        return () => clearInterval(id);
-    }, []);
+const PODIUM_ORDER = [1, 0, 2]; // order: 2nd, 1st, 3rd
 
+export function PodiumSection({ sellers }: PodiumSectionProps) {
     if (sellers.length < 1) return null;
 
+    const configs = [
+        {
+            rank: 2,
+            barH: 80,
+            avatarSize: 'w-16 h-16',
+            ring: 'ring-2 ring-slate-400/60',
+            glow: '',
+            nameColor: 'text-slate-300',
+            revenueColor: 'text-slate-400',
+            delay: 0.2,
+        },
+        {
+            rank: 1,
+            barH: 128,
+            avatarSize: 'w-24 h-24',
+            ring: 'ring-4 ring-lime-400',
+            glow: 'shadow-[0_0_40px_rgba(132,204,22,0.5)]',
+            nameColor: 'text-white',
+            revenueColor: 'text-lime-400',
+            delay: 0.05,
+        },
+        {
+            rank: 3,
+            barH: 56,
+            avatarSize: 'w-14 h-14',
+            ring: 'ring-2 ring-amber-700/60',
+            glow: '',
+            nameColor: 'text-amber-700',
+            revenueColor: 'text-amber-800',
+            delay: 0.35,
+        },
+    ];
+
     return (
-        <motion.div
-            className="glass-card rounded-2xl p-4 sm:p-6 relative overflow-hidden"
-        >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
-            <motion.div
-                className="absolute inset-0 bg-gradient-to-b from-amber-500/[0.04] via-transparent to-transparent pointer-events-none"
-                animate={{ opacity: [0.4, 0.6, 0.4] }}
-                transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-            />
+        <div className="solid-card rounded-2xl p-6 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-lime-500/[0.03] to-transparent pointer-events-none" />
 
-            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center mb-6 sm:mb-8 flex items-center justify-center gap-2">
-                <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                Pódio do Mês
-                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/15">
-                    <motion.div
-                        className="w-1.5 h-1.5 rounded-full bg-orange-400"
-                        animate={{ opacity: livePulse ? 1 : 0.5, scale: livePulse ? 1.05 : 0.95 }}
-                        transition={{ duration: 0.4 }}
-                    />
-                    <span className="text-[9px] text-orange-400 font-bold">AO VIVO</span>
-                </span>
-            </h2>
-
-            <div className="flex items-end justify-center gap-3 sm:gap-6">
+            <div className="flex items-end justify-center gap-6">
                 {PODIUM_ORDER.map((sellerIdx, vi) => {
                     const seller = sellers[sellerIdx];
-                    const cfg = PODIUM_CFG[vi];
+                    const cfg = configs[vi];
                     if (!seller) return null;
-                    const isFirst = sellerIdx === 0;
+
+                    const isFirst = cfg.rank === 1;
                     const revenue = Number(seller.revenue ?? 0);
                     const initials = getInitials(seller.user.name);
                     const avatarUrl = seller.user.personal_data?.avatar ?? undefined;
+                    const firstName = seller.user.name.split(' ')[0];
 
                     return (
                         <motion.div
                             key={seller.id}
-                            className="flex flex-col items-center gap-2 sm:gap-3"
+                            className="flex flex-col items-center"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ type: 'spring', damping: 22, stiffness: 260, delay: cfg.delay }}
                         >
                             {isFirst && (
                                 <motion.div
-                                    className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/25 mb-1"
-                                    animate={{ y: [0, -1.5, 0] }}
+                                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-lime-500/15 border border-lime-500/30 mb-2"
+                                    animate={{ y: [0, -2, 0] }}
                                     transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                                 >
-                                    <Star className="w-3 h-3 text-amber-400" />
-                                    <span className="text-[8px] sm:text-[9px] text-amber-400 font-bold uppercase tracking-wider">MVP do Mês</span>
+                                    <Star className="w-2.5 h-2.5 text-lime-400 fill-lime-400" />
+                                    <span className="text-[9px] text-lime-400 font-bold uppercase tracking-wider">MVP do Mês</span>
                                 </motion.div>
                             )}
 
-                            <div className="relative">
-                                {isFirst && (
-                                    <div className="absolute inset-0 pointer-events-none hidden sm:block">
-                                        {Array.from({ length: 8 }).map((_, pi) => (
-                                            <ChampionParticle key={pi} i={pi} />
-                                        ))}
-                                    </div>
-                                )}
-
+                            {/* Rank badge on avatar */}
+                            <div className="relative mb-3">
                                 {isFirst && (
                                     <motion.div
-                                        className="absolute -inset-4 rounded-full bg-amber-400/15"
-                                        style={{ filter: 'blur(16px)' }}
-                                        animate={{ scale: [1, 1.06, 1], opacity: [0.3, 0.5, 0.3] }}
-                                        transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
+                                        className="absolute -inset-5 rounded-full bg-lime-400/20"
+                                        style={{ filter: 'blur(20px)' }}
+                                        animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+                                        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                                     />
                                 )}
-
-                                <motion.div
-                                    className={cn(
-                                        'rounded-full bg-gradient-to-br flex items-center justify-center font-black text-white shadow-xl relative z-10',
-                                        cfg.avatarSize, cfg.avatarGrad
-                                    )}
-                                    whileHover={{ scale: 1.05 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                >
-                                    <Avatar className="h-full w-full">
-                                        <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
-                                        <AvatarFallback className="bg-transparent text-inherit font-inherit">
-                                            {initials}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </motion.div>
+                                <Avatar className={cn('rounded-full relative z-10', cfg.avatarSize, cfg.ring, cfg.glow)}>
+                                    <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
+                                    <AvatarFallback className={cn(
+                                        'font-bold text-white',
+                                        isFirst ? 'bg-lime-900 text-sm' : 'bg-slate-700 text-xs'
+                                    )}>
+                                        {initials}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className={cn(
+                                    'absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black z-20',
+                                    isFirst
+                                        ? 'bg-lime-400 text-black'
+                                        : cfg.rank === 2
+                                            ? 'bg-slate-400 text-black'
+                                            : 'bg-amber-800 text-white'
+                                )}>
+                                    #{cfg.rank}
+                                </div>
                             </div>
 
-                            <div className="text-center">
-                                <p className={cn('text-xs sm:text-sm font-bold truncate max-w-[80px] sm:max-w-none', cfg.label)}>
-                                    {seller.user.name.split(' ')[0]}
+                            {/* Name + revenue */}
+                            <div className="text-center mb-3 mt-1">
+                                <p className={cn('text-sm font-bold truncate max-w-[90px]', cfg.nameColor)}>
+                                    {firstName}
                                 </p>
-                                <AnimatedNumber
-                                    value={revenue}
-                                    currency
-                                    duration={1.8}
-                                    className={cn('font-black tabular-nums block', isFirst ? 'text-lg sm:text-2xl text-amber-300' : 'text-base sm:text-lg', cfg.label)}
-                                />
-                                <p className="text-[10px] text-muted-foreground">{seller.sales} vendas</p>
-                                <p className="text-[9px] text-muted-foreground mt-0.5">
-                                    {seller.graduation_label} · {seller.level}
+                                <p className={cn('text-xs font-black tabular-nums', cfg.revenueColor)}>
+                                    {isFirst && <span className="mr-0.5">💰</span>}
+                                    {BRL.format(revenue)}
                                 </p>
                             </div>
 
+                            {/* Podium bar */}
                             <motion.div
                                 className={cn(
-                                    'w-20 sm:w-28 rounded-t-2xl flex items-center justify-center bg-gradient-to-t relative overflow-hidden',
-                                    cfg.barGrad
+                                    'w-24 rounded-t-xl flex items-center justify-center relative overflow-hidden',
+                                    isFirst
+                                        ? 'bg-gradient-to-t from-[#1a2e1a] to-[#2a4a2a] border border-lime-900/50'
+                                        : cfg.rank === 2
+                                            ? 'bg-gradient-to-t from-[#1a1e2e] to-[#252a3a] border border-slate-700/50'
+                                            : 'bg-gradient-to-t from-[#1e1a10] to-[#2a2210] border border-amber-900/30'
                                 )}
                                 initial={{ height: 0 }}
-                                animate={{ height: cfg.heightPx }}
-                                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: cfg.delay + 0.15 }}
+                                animate={{ height: cfg.barH }}
+                                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: cfg.delay + 0.1 }}
                             >
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                                <span className="text-3xl font-black text-white/70 relative z-10">{cfg.rank}</span>
+                                <span className={cn(
+                                    'text-3xl font-black opacity-20',
+                                    isFirst ? 'text-lime-300' : cfg.rank === 2 ? 'text-slate-300' : 'text-amber-700'
+                                )}>
+                                    {cfg.rank}
+                                </span>
                             </motion.div>
                         </motion.div>
                     );
                 })}
             </div>
-        </motion.div>
+        </div>
     );
 }

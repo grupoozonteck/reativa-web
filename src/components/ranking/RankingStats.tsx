@@ -1,78 +1,88 @@
-import { Target, TrendingUp, DollarSign, Users } from 'lucide-react';
-import { motion, type Variants } from 'framer-motion';
+import { RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { AnimatedNumber } from './AnimatedNumber';
-import type { LeaderboardEntry } from './types';
-
-const fadeUp: Variants = {
-    hidden: { opacity: 0, y: 28 },
-    show: (delay: number = 0) => ({
-        opacity: 1, y: 0,
-        transition: { type: 'spring' as const, damping: 22, stiffness: 260, delay },
-    }),
-};
 
 interface RankingStatsProps {
-    sellers: LeaderboardEntry[];
+    summary?: {
+        total_revenue: number;
+        total_sales: number;
+        total_reengagements: number;
+        conversion_percentage: number;
+    };
 }
 
-export function RankingStats({ sellers }: RankingStatsProps) {
-    const totalSales = sellers.reduce((acc, s) => acc + s.sales, 0);
-    const totalRevenue = sellers.reduce((acc, s) => acc + Number(s.revenue ?? 0), 0);
-    const totalReengagements = sellers.reduce((acc, s) => acc + s.total_reengagements, 0);
-    const avgConversion = sellers.length > 0
-        ? Math.round(sellers.reduce((acc, s) => acc + s.conversion, 0) / sellers.length)
-        : 0;
+export function RankingStats( {summary} : RankingStatsProps) {
+    console.log(`sumary`, summary);
+
+    if (!summary) return null;
 
     return (
         <motion.div
-            className="glass-card rounded-2xl p-4 sm:p-5"
-            variants={fadeUp} initial="hidden" animate="show" custom={0.42}
+            className="solid-card rounded-2xl overflow-hidden border-l-2 border-l-lime-400"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 260, delay: 0.1 }}
         >
-            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Target className="w-3.5 h-3.5 text-blue-400" /> Resumo da Equipe
-            </h3>
+            {/* Header */}
+            <div className="px-5 pt-4 pb-3 border-b border-white/5">
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.18em]">
+                    Resumo da Equipe
+                </p>
+            </div>
 
-            <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] text-center">
-                    <DollarSign className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
-                    <AnimatedNumber
-                        value={totalRevenue}
-                        currency
-                        className="text-sm sm:text-base font-black text-emerald-400 block"
-                        duration={1.8}
-                    />
-                    <p className="text-[9px] text-muted-foreground mt-0.5">Receita Total</p>
+            <div className="p-5 space-y-4">
+                {/* Receita Total */}
+                <div>
+                    <p className="text-[10px] text-muted-foreground mb-1">Receita Total</p>
+                    <div className="flex items-start gap-3">
+                        <div>
+                            <p className="text-base font-black text-white leading-none">R$</p>
+                            <p className="text-4xl font-black text-white leading-none">
+                                {new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(summary.total_revenue)}
+                            </p>
+                        </div>
+                        <span className="mt-1 text-[8px] font-bold px-2 py-1 rounded bg-lime-500/20 text-lime-400 border border-lime-500/30 leading-tight">
+                            +12% vs last<br />month
+                        </span>
+                    </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] text-center">
-                    <TrendingUp className="w-4 h-4 text-blue-400 mx-auto mb-1" />
-                    <AnimatedNumber
-                        value={totalSales}
-                        className="text-sm sm:text-base font-black block"
-                        duration={1.6}
-                    />
-                    <p className="text-[9px] text-muted-foreground mt-0.5">Vendas Totais</p>
+                <div className="h-px bg-white/5" />
+
+                {/* Vendas + Conv */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <p className="text-[10px] text-muted-foreground mb-1">Vendas Totais</p>
+                        <AnimatedNumber
+                            value={summary.total_sales}
+                            duration={1.4}
+                            className="text-2xl font-black text-white"
+                        />
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-muted-foreground mb-1">Conv. Média</p>
+                        <AnimatedNumber
+                            value={summary.conversion_percentage}
+                            suffix="%"
+                            duration={1.4}
+                            className="text-2xl font-black text-blue-400"
+                        />
+                    </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] text-center">
-                    <Target className="w-4 h-4 text-amber-400 mx-auto mb-1" />
-                    <AnimatedNumber
-                        value={avgConversion}
-                        suffix="%"
-                        className="text-sm sm:text-base font-black text-amber-400 block"
-                        duration={1.6}
-                    />
-                    <p className="text-[9px] text-muted-foreground mt-0.5">Conv. Média</p>
-                </div>
+                <div className="h-px bg-white/5" />
 
-                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] text-center">
-                    <Users className="w-4 h-4 text-purple-400 mx-auto mb-1" />
-                    <AnimatedNumber
-                        value={totalReengagements}
-                        className="text-sm sm:text-base font-black text-purple-400 block"
-                        duration={1.6}
-                    />
-                    <p className="text-[9px] text-muted-foreground mt-0.5">Reengajamentos</p>
+                {/* Reengajamentos */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-[10px] text-muted-foreground mb-1">Atendimentos</p>
+                        <AnimatedNumber
+                            value={summary.total_reengagements}
+                            duration={1.4}
+                            className="text-2xl font-black text-white"
+                        />
+                    </div>
+                    <RefreshCw className="w-6 h-6 text-pink-500" />
                 </div>
             </div>
         </motion.div>

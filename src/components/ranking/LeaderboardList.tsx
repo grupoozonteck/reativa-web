@@ -1,4 +1,3 @@
-import { Medal, DollarSign, TrendingUp, Users } from 'lucide-react';
 import { motion, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -6,172 +5,162 @@ import type { LeaderboardEntry } from './types';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
-const fadeUp: Variants = {
-    hidden: { opacity: 0, y: 28 },
-    show: (delay: number = 0) => ({
-        opacity: 1, y: 0,
-        transition: { type: 'spring' as const, damping: 22, stiffness: 260, delay },
-    }),
+const rowItem: Variants = {
+    hidden: { opacity: 0, x: -16 },
+    show: { opacity: 1, x: 0, transition: { type: 'spring' as const, damping: 22, stiffness: 260 } },
 };
 
 const staggerContainer: Variants = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
-};
-
-const rowItem: Variants = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0, transition: { type: 'spring' as const, damping: 22, stiffness: 260 } },
+    show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
 };
 
 function getInitials(name: string) {
     return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
+function LevelBadge({ label }: { label: string }) {
+    const lower = label.toLowerCase();
+    const isJunior = lower.includes('junior') || lower.includes('júnior');
+    return (
+        <span className={cn(
+            'text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide',
+            isJunior
+                ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-700/50'
+                : 'bg-green-900/50 text-green-400 border border-green-700/50'
+        )}>
+            {label}
+        </span>
+    );
+}
+
 interface LeaderboardListProps {
     sellers: LeaderboardEntry[];
 }
 
+const VISIBLE_ROWS = 3;
+
 export function LeaderboardList({ sellers }: LeaderboardListProps) {
     const maxRevenue = Math.max(...sellers.map(s => Number(s.revenue ?? 0)), 1);
+    const visible = sellers.slice(0, VISIBLE_ROWS);
+    const hidden = sellers.length - VISIBLE_ROWS;
 
     return (
-        <motion.div
-            className="lg:col-span-2 glass-card rounded-2xl p-4 sm:p-5"
-            variants={fadeUp} initial="hidden" animate="show" custom={0.32}
-        >
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                    <Medal className="w-3.5 h-3.5 text-blue-400" />
-                    Leaderboard Completo
-                </h3>
-                <span className="text-[10px] text-muted-foreground">{sellers.length} participantes</span>
+        <div className="solid-card rounded-2xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
+                <h3 className="text-sm font-bold text-white">Lista de Elite</h3>
+                <span className="text-[10px] text-muted-foreground">{sellers.length} Participantes</span>
             </div>
 
-            <motion.div
-                className="space-y-2"
-                variants={staggerContainer}
-                initial="hidden"
-                animate="show"
-            >
-                {sellers.map((s, i) => {
+            {/* Column headers */}
+            <div className="grid grid-cols-[36px_1fr_72px_52px_80px_90px] items-center px-4 py-2 border-b border-white/5">
+                {['RANK', 'MEMBRO', 'NÍVEL', 'VENDAS', 'CONV. %', 'RECEITA'].map(col => (
+                    <span key={col} className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+                        {col}
+                    </span>
+                ))}
+            </div>
+
+            {/* Rows */}
+            <motion.div variants={staggerContainer} initial="hidden" animate="show">
+                {visible.map((s, i) => {
                     const revenue = Number(s.revenue ?? 0);
-                    const revenuePct = Math.round((revenue / maxRevenue) * 100);
+                    const convPct = s.conversion;
                     const initials = getInitials(s.user.name);
                     const avatarUrl = s.user.personal_data?.avatar ?? undefined;
-
-                    const rankStyle = i === 0
-                        ? 'text-amber-400 font-black text-xl'
-                        : i === 1
-                            ? 'text-slate-300 font-black text-xl'
-                            : i === 2
-                                ? 'text-amber-700 font-black text-xl'
-                                : 'text-muted-foreground font-bold text-base';
-
-                    const rowBg = i === 0
-                        ? 'bg-amber-500/[0.05] border-amber-500/15 hover:border-amber-500/30'
-                        : i <= 2
-                            ? 'bg-white/[0.02] border-white/[0.05] hover:border-white/10'
-                            : 'bg-transparent border-transparent hover:bg-white/[0.02]';
+                    const isFirst = i === 0;
 
                     return (
                         <motion.div
                             key={s.id}
                             variants={rowItem}
-                            className={cn('flex items-center gap-3 px-3 py-3 rounded-xl border transition-colors', rowBg)}
-                            whileHover={{ x: 4, transition: { type: 'spring', stiffness: 400, damping: 20 } }}
+                            className={cn(
+                                'grid grid-cols-[36px_1fr_72px_52px_80px_90px] items-center px-4 py-3 border-b border-white/5',
+                                isFirst ? 'bg-lime-500/[0.04]' : 'hover:bg-white/[0.02]'
+                            )}
                         >
-                            {/* Posição */}
-                            <motion.div
-                                className={cn('w-7 text-center tabular-nums shrink-0', rankStyle)}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 400, delay: 0.35 + i * 0.06 }}
-                            >
-                                {i < 3 ? ['1', '2', '3'][i] : `${i + 1}`}
-                            </motion.div>
+                            {/* Rank */}
+                            <span className={cn(
+                                'text-sm font-black tabular-nums',
+                                isFirst ? 'text-lime-400' : 'text-muted-foreground'
+                            )}>
+                                {String(i + 1).padStart(2, '0')}
+                            </span>
 
-                            {/* Avatar */}
-                            <div className="relative shrink-0">
-                                <Avatar
-                                    className={cn(
-                                        'w-10 h-10 rounded-full bg-gradient-to-br flex items-center justify-center text-xs font-bold text-white',
-                                        i === 0 ? 'from-amber-400 to-yellow-500' :
-                                            i === 1 ? 'from-slate-300 to-slate-500' :
-                                                i === 2 ? 'from-amber-600 to-amber-800' :
-                                                    'from-slate-600 to-slate-700'
-                                    )}
-                                >
+                            {/* Member */}
+                            <div className="flex items-center gap-2 min-w-0">
+                                <Avatar className={cn(
+                                    'w-8 h-8 shrink-0',
+                                    isFirst ? 'ring-2 ring-lime-400/50' : ''
+                                )}>
                                     <AvatarImage src={avatarUrl} alt={s.user.name} className="object-cover" />
-                                    <AvatarFallback className="bg-transparent text-inherit font-inherit">
+                                    <AvatarFallback className={cn(
+                                        'text-[10px] font-bold',
+                                        isFirst ? 'bg-lime-900 text-lime-300' : 'bg-slate-700 text-slate-300'
+                                    )}>
                                         {initials}
                                     </AvatarFallback>
                                 </Avatar>
-                            </div>
-
-                            {/* Nome + barra de receita */}
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-sm font-semibold truncate">{s.user.name.split(' ')[0]}</span>
-                                    <span className="text-[9px] text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded font-medium">
-                                        {s.graduation_label}
-                                    </span>
-                                    <span className="text-[9px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded font-medium hidden sm:inline">
-                                        {s.level}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                        <motion.div
-                                            className={cn(
-                                                'h-full rounded-full',
-                                                i === 0
-                                                    ? 'bg-gradient-to-r from-amber-400 to-yellow-500'
-                                                    : 'bg-gradient-to-r from-blue-500 to-blue-400'
-                                            )}
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${revenuePct}%` }}
-                                            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.5 + i * 0.05 }}
-                                        />
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-xs font-semibold text-white truncate">
+                                            {s.user.name.split(' ')[0]}
+                                        </span>
+                                        {isFirst && (
+                                            <span className="text-[7px] font-bold px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-400 border border-rose-700/50 uppercase tracking-wide shrink-0">
+                                                Top Performer
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Stats desktop */}
-                            <div className="hidden sm:flex items-center gap-4 shrink-0">
-                                <div className="text-center">
-                                    <p className="text-[10px] text-muted-foreground flex items-center gap-0.5 justify-center">
-                                        <TrendingUp className="w-2.5 h-2.5" /> Vendas
-                                    </p>
-                                    <p className="text-sm font-bold tabular-nums">{s.sales}</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-[10px] text-muted-foreground flex items-center gap-0.5 justify-center">
-                                        <Users className="w-2.5 h-2.5" /> Conv.
-                                    </p>
-                                    <p className="text-sm font-bold tabular-nums">{s.conversion}%</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-[10px] text-muted-foreground flex items-center gap-0.5 justify-end">
-                                        <DollarSign className="w-2.5 h-2.5" /> Receita
-                                    </p>
-                                    <p className={cn('text-sm font-black tabular-nums', i === 0 ? 'text-amber-400' : 'text-foreground')}>
-                                        {BRL.format(revenue)}
-                                    </p>
-                                </div>
+                            {/* Level */}
+                            <div>
+                                <LevelBadge label={s.graduation_label} />
                             </div>
 
-                            {/* Stats mobile */}
-                            <div className="sm:hidden shrink-0 text-right">
-                                <p className={cn('text-xs font-black tabular-nums', i === 0 ? 'text-amber-400' : 'text-foreground')}>
-                                    {BRL.format(revenue)}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground">{s.sales} vendas</p>
+                            {/* Sales */}
+                            <span className="text-xs font-bold text-white tabular-nums">
+                                {s.sales}
+                            </span>
+
+                            {/* Conv% */}
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] text-muted-foreground tabular-nums">{convPct}%</span>
+                                {convPct > 0 && (
+                                    <div className="h-1 w-10 bg-white/5 rounded-full overflow-hidden">
+                                        <motion.div
+                                            className="h-full bg-blue-500 rounded-full"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${Math.min(convPct, 100)}%` }}
+                                            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 + i * 0.05 }}
+                                        />
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Revenue */}
+                            <span className={cn(
+                                'text-xs font-black tabular-nums text-right',
+                                isFirst ? 'text-lime-400' : 'text-white'
+                            )}>
+                                {BRL.format(revenue)}
+                            </span>
                         </motion.div>
                     );
                 })}
             </motion.div>
-        </motion.div>
+
+            {/* Footer */}
+            {hidden > 0 && (
+                <div className="px-4 py-3 text-center">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                        + {hidden} outros membros em campo
+                    </span>
+                </div>
+            )}
+        </div>
     );
 }
