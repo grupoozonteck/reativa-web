@@ -146,6 +146,15 @@ export interface UserDetail {
     [key: string]: unknown;
 }
 
+export interface ReengagementObservation {
+    id: number;
+    reengagement_id: number;
+    observation: string;
+    next_contact_date: string;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface CustomerReengagement {
     id: number;
     user_id: number;
@@ -155,7 +164,7 @@ export interface CustomerReengagement {
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
-    observations: unknown[];
+    observations: ReengagementObservation[];
 }
 
 export interface UserDetailResponse {
@@ -255,6 +264,12 @@ export const customerService = {
     /** Obtém link de acesso à loja já logado pelo cliente */
     getAccessStoreLink: async (userId: number) => {
         const response = await api.get<{ success: boolean; data: { url: string; token: string } }>(`/api/reengagements/user/${userId}/access-store`);
+        return response.data;
+    },
+
+    /** Registra observação e agenda próximo contato */
+    addObservation: async (reengagementId: number, data: { observation: string; next_contact_date: string }) => {
+        const response = await api.post(`/api/reengagements/${reengagementId}/observations`, data);
         return response.data;
     },
 

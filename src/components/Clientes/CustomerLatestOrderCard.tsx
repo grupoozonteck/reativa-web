@@ -57,14 +57,17 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
             </div>
 
             {order.personal_order_items && order.personal_order_items.length > 0 && (
-                <div>
+                <div className="border-t border-border/40 mt-2 pt-2">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setExpanded(v => !v)}
-                        className="w-full justify-between px-3 h-9 text-xs font-semibold text-on-surface-variant uppercase tracking-wider hover:text-on-surface hover:bg-surface-highest"
+                        className="w-full justify-between px-3 h-10 text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-highest rounded-xl"
                     >
-                        <span>Itens do pedido ({order.personal_order_items.length})</span>
+                        <span className="flex items-center gap-2">
+                            <Package className="w-3.5 h-3.5" />
+                            {expanded ? 'Ocultar itens' : `Ver ${order.personal_order_items.length} ${order.personal_order_items.length === 1 ? 'item' : 'itens'} do pedido`}
+                        </span>
                         {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </Button>
                     {expanded && (

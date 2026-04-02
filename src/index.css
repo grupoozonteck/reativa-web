@@ -128,10 +128,11 @@
 /* ============================================================ */
 @layer utilities {
 
-  /* Level 1 card: background shift creates boundary, no border needed */
+  /* Level 1 card: background shift + subtle border */
   .solid-card {
     background: hsl(var(--surface-container-low));
     border-radius: 1rem;
+    border: 1px solid hsl(var(--border) / 0.4);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
 
