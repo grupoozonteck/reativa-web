@@ -11,15 +11,16 @@ export default function SupervisorPerformance() {
         refetchInterval: 5 * 60 * 1000,
     });
 
-    const members = data ?? [];
+    const members = data?.members ?? [];
+    const summary = data?.summary;
 
-    const totalSales = members.reduce((acc, m) => acc + m.sales, 0);
-    const totalReengagements = members.reduce((acc, m) => acc + m.total_reengagements, 0);
-    const totalRevenue = members.reduce((acc, m) => acc + (m.revenue ?? 0), 0);
-    const avgConversion =
-        members.length > 0
+    const totalSales = summary?.total_sales ?? members.reduce((acc, m) => acc + m.sales, 0);
+    const totalReengagements = summary?.total_reengagements ?? members.reduce((acc, m) => acc + m.total_reengagements, 0);
+    const totalRevenue = summary?.total_revenue ?? members.reduce((acc, m) => acc + Number(m.revenue ?? 0), 0);
+    const avgConversion = summary?.conversion ??
+        (members.length > 0
             ? Math.round(members.reduce((acc, m) => acc + m.conversion, 0) / members.length)
-            : 0;
+            : 0);
 
     return (
         <div className="p-4 py-8 sm:p-6 space-y-5 max-w-7xl mx-auto">

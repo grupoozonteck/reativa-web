@@ -34,6 +34,90 @@ export interface TeamMemberPerformance {
     };
 }
 
+export interface SupervisorPerformanceSummary {
+    total_revenue: number;
+    total_sales: number;
+    total_reengagements: number;
+    conversion: number;
+    xp: number;
+    level: string;
+}
+
+export interface SupervisorPerformanceResponse {
+    summary: SupervisorPerformanceSummary | null;
+    members: TeamMemberPerformance[];
+}
+
+function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPerformanceResponse {
+    if (Array.isArray(payload)) {
+        return {
+            summary: null,
+            members: payload as TeamMemberPerformance[],
+        };
+    }
+
+    if (payload && typeof payload === 'object') {
+        const candidate = payload as {
+            data?: unknown;
+            members?: unknown;
+            attendants?: unknown;
+            leaderboard?: unknown;
+            supervisor?: {
+                total_revenue?: number;
+                total_sales?: number;
+                total_reengagements?: number;
+                conversion?: number;
+                xp?: number;
+                level?: string;
+            };
+        };
+
+        const summary = candidate.supervisor
+            ? {
+                total_revenue: Number(candidate.supervisor.total_revenue ?? 0),
+                total_sales: Number(candidate.supervisor.total_sales ?? 0),
+                total_reengagements: Number(candidate.supervisor.total_reengagements ?? 0),
+                conversion: Number(candidate.supervisor.conversion ?? 0),
+                xp: Number(candidate.supervisor.xp ?? 0),
+                level: candidate.supervisor.level ?? 'Nv.0',
+            }
+            : null;
+
+        if (Array.isArray(candidate.data)) {
+            return {
+                summary,
+                members: candidate.data as TeamMemberPerformance[],
+            };
+        }
+
+        if (Array.isArray(candidate.members)) {
+            return {
+                summary,
+                members: candidate.members as TeamMemberPerformance[],
+            };
+        }
+
+        if (Array.isArray(candidate.attendants)) {
+            return {
+                summary,
+                members: candidate.attendants as TeamMemberPerformance[],
+            };
+        }
+
+        if (Array.isArray(candidate.leaderboard)) {
+            return {
+                summary,
+                members: candidate.leaderboard as TeamMemberPerformance[],
+            };
+        }
+    }
+
+    return {
+        summary: null,
+        members: [],
+    };
+}
+
 export interface SupervisorAttendant {
     id: number;
     user_id: number;
@@ -205,16 +289,23 @@ export interface AttendantsResponse {
         code: string;
         name: string;
     }[];
-    gestors?: {
-        id: number;
-        user_id: number;
-    }
+    gestors?: ManagerAttendant | null;
+}
+
+function normalizeAttendantsResponse(payload: AttendantsResponse): AttendantsResponse {
+    const attendantsData = Array.isArray(payload.attendants?.data) ? payload.attendants.data : [];
+    const gestorFromAttendants = attendantsData.find((attendant) => attendant.type === 1) ?? null;
+
+    return {
+        ...payload,
+        gestors: payload.gestors ?? gestorFromAttendants,
+    };
 }
 
 export const teamService = {
-    getSupervisorPerformance: async (): Promise<TeamMemberPerformance[]> => {
-        const response = await api.get<TeamMemberPerformance[]>('/api/supervisor/performance');
-        return response.data;
+    getSupervisorPerformance: async (): Promise<SupervisorPerformanceResponse> => {
+        const response = await api.get('/api/supervisor/performance');
+        return normalizeSupervisorPerformanceResponse(response.data);
     },
 
     getManagerPerformance: async (): Promise<ManagerPerformanceResponse> => {
@@ -226,7 +317,8 @@ export const teamService = {
         const response = await api.get<{ success: boolean; data: AttendantsResponse }>('/api/attendants', {
             params: filters,
         });
-        return response.data.data;
+
+        return normalizeAttendantsResponse(response.data.data);
     },
 
     createAttendant: async (data: CreateAttendantRe) => {

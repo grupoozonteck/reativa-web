@@ -36,7 +36,7 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
 
             <div className="p-4">
                 {isLoading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="space-y-3">
                         {Array.from({ length: 6 }).map((_, i) => (
                             <MemberCardSkeleton key={i} />
                         ))}
@@ -49,12 +49,23 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
                 ) : (
                     <div
                         className={cn(
-                            'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 transition-opacity duration-200',
+                            'space-y-3 transition-opacity duration-200',
                             isFetching && !isLoading && 'opacity-50',
                         )}
                     >
-                        {members.map(member => (
-                            <MemberCard key={member.id} member={member} />
+                        <div className="hidden rounded-2xl border border-border/60 bg-muted/30 px-4 py-3 lg:grid lg:grid-cols-[72px_minmax(260px,1fr)_88px_70px_70px_82px_120px_96px] lg:items-center lg:gap-3">
+                            {['Rank', 'Membro', 'Cargo', 'Vendas', 'Reat.', 'Conv.', 'Receita', 'Nivel'].map((column) => (
+                                <span
+                                    key={column}
+                                    className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                                >
+                                    {column}
+                                </span>
+                            ))}
+                        </div>
+
+                        {members.map((member, index) => (
+                            <MemberCard key={member.id} member={member} index={index} />
                         ))}
                     </div>
                 )}

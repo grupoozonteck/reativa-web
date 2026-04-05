@@ -11,78 +11,79 @@ interface RankingStatsProps {
     };
 }
 
-export function RankingStats( {summary} : RankingStatsProps) {
-    console.log(`sumary`, summary);
-
+export function RankingStats({ summary }: RankingStatsProps) {
     if (!summary) return null;
 
     return (
         <motion.div
-            className="solid-card rounded-2xl overflow-hidden border-l-2 border-l-lime-400"
+            className="solid-card overflow-hidden rounded-2xl border-l-2 border-l-primary"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', damping: 22, stiffness: 260, delay: 0.1 }}
         >
-            {/* Header */}
-            <div className="px-5 pt-4 pb-3 border-b border-white/5">
-                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.18em]">
+            <div className="border-b border-border/60 px-5 pb-3 pt-4">
+                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                     Resumo da Equipe
                 </p>
             </div>
 
-            <div className="p-5 space-y-4">
-                {/* Receita Total */}
+            <div className="space-y-4 p-5">
                 <div>
-                    <p className="text-[10px] text-muted-foreground mb-1">Receita Total</p>
+                    <p className="mb-1 text-[10px] text-muted-foreground">Receita Total</p>
                     <div className="flex items-start gap-3">
                         <div>
-                            <p className="text-base font-black text-white leading-none">R$</p>
-                            <p className="text-4xl font-black text-white leading-none">
-                                {new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(summary.total_revenue)}
+                            <p className="text-base font-black leading-none text-foreground">R$</p>
+                            <p className="text-4xl font-black leading-none text-foreground">
+                                {new Intl.NumberFormat('pt-BR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }).format(summary.total_revenue)}
                             </p>
                         </div>
-                        <span className="mt-1 text-[8px] font-bold px-2 py-1 rounded bg-lime-500/20 text-lime-400 border border-lime-500/30 leading-tight">
-                            +12% vs last<br />month
+                        <span className="mt-1 rounded border border-primary/25 bg-primary/10 px-2 py-1 text-[8px] font-bold leading-tight text-primary">
+                            desempenho
+                            <br />
+                            consolidado
                         </span>
                     </div>
                 </div>
 
-                <div className="h-px bg-white/5" />
+                <div className="h-px bg-border/60" />
 
-                {/* Vendas + Conv */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-[10px] text-muted-foreground mb-1">Vendas Totais</p>
+                        <p className="mb-1 text-[10px] text-muted-foreground">Vendas Totais</p>
                         <AnimatedNumber
                             value={summary.total_sales}
                             duration={1.4}
-                            className="text-2xl font-black text-white"
+                            className="text-2xl font-black text-foreground"
                         />
                     </div>
                     <div>
-                        <p className="text-[10px] text-muted-foreground mb-1">Conv. Média</p>
+                        <p className="mb-1 text-[10px] text-muted-foreground">Conv. Media</p>
                         <AnimatedNumber
                             value={summary.conversion_percentage}
                             suffix="%"
                             duration={1.4}
-                            className="text-2xl font-black text-blue-400"
+                            className="text-2xl font-black text-secondary"
                         />
                     </div>
                 </div>
 
-                <div className="h-px bg-white/5" />
+                <div className="h-px bg-border/60" />
 
-                {/* Reengajamentos */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] text-muted-foreground mb-1">Atendimentos</p>
+                        <p className="mb-1 text-[10px] text-muted-foreground">Atendimentos</p>
                         <AnimatedNumber
                             value={summary.total_reengagements}
                             duration={1.4}
-                            className="text-2xl font-black text-white"
+                            className="text-2xl font-black text-foreground"
                         />
                     </div>
-                    <RefreshCw className="w-6 h-6 text-pink-500" />
+                    <div className="rounded-xl border border-accent/20 bg-accent/10 p-2">
+                        <RefreshCw className="h-5 w-5 text-accent" />
+                    </div>
                 </div>
             </div>
         </motion.div>

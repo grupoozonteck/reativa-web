@@ -10,12 +10,12 @@ interface RankingHeaderProps {
 
 export function RankingHeader({ isFetching, onRefresh }: RankingHeaderProps) {
     return (
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
             <div>
-                <p className="text-[10px] font-bold text-lime-400 uppercase tracking-[0.2em]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                     Performance Center
                 </p>
-                <h1 className="text-3xl font-black tracking-tight text-white mt-1">
+                <h1 className="mt-1 text-3xl font-black tracking-tight text-foreground">
                     Ranking de Performance
                 </h1>
             </div>
@@ -23,19 +23,19 @@ export function RankingHeader({ isFetching, onRefresh }: RankingHeaderProps) {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="border-white/15 bg-white/5 text-white gap-2 hover:bg-white/10"
+                    className="gap-2 border-border bg-background text-foreground hover:bg-muted"
                 >
-                    <Calendar className="w-3.5 h-3.5 text-lime-400" />
-                    Este Mês
+                    <Calendar className="h-3.5 w-3.5 text-primary" />
+                    Este Mes
                 </Button>
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-white"
+                    className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
                     onClick={onRefresh}
                 >
-                    <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
                 </Button>
             </div>
         </div>

@@ -7,92 +7,167 @@ import { type TeamMemberPerformance } from '@/services/team.service';
 
 export function MemberCardSkeleton() {
     return (
-        <div className="solid-card p-4 space-y-3">
-            <div className="flex items-center gap-3">
-                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
-                <div className="flex-1 space-y-1.5">
-                    <Skeleton className="h-4 w-36" />
-                    <Skeleton className="h-3 w-24" />
-                </div>
-            </div>
-            <div className="grid grid-cols-4 gap-2 pt-2 border-t border-border/50">
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="space-y-1 text-center">
-                        <Skeleton className="h-5 w-10 mx-auto" />
-                        <Skeleton className="h-3 w-14 mx-auto" />
-                    </div>
+        <div className="rounded-2xl border border-border/60 bg-card px-4 py-4">
+            <div className="hidden lg:grid lg:grid-cols-[72px_minmax(260px,1fr)_88px_70px_70px_82px_120px_96px] lg:items-center lg:gap-3">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <Skeleton key={i} className="h-5 w-full" />
                 ))}
+            </div>
+            <div className="space-y-3 lg:hidden">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-4 w-28" />
+                <div className="grid grid-cols-2 gap-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="h-10 w-full" />
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
 
-export function MemberCard({ member }: { member: TeamMemberPerformance }) {
-    const initials = member.user.name
+export function MemberCard({ member, index }: { member: TeamMemberPerformance; index: number }) {
+    const initials = (member.user?.name ?? 'Membro')
         .split(' ')
-        .map(p => p[0])
+        .map((part) => part[0])
         .filter(Boolean)
         .slice(0, 2)
         .join('')
         .toUpperCase();
 
-    const conversionPct = Math.min(member.conversion, 100);
+    const conversionPct = Math.min(Number(member.conversion ?? 0), 100);
+    const xpValue = Number(member.xp ?? 0);
+    const revenueValue = Number(member.revenue ?? 0);
+    const isTopPerformer = index === 0;
 
     return (
-        <div className="solid-card p-4 hover:scale-[1.01] transition-transform">
-            {/* Topo: avatar + nome */}
-            <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {initials}
+        <div
+            className={cn(
+                'rounded-2xl border px-4 py-4 transition-all',
+                isTopPerformer
+                    ? 'border-primary/30 bg-gradient-to-r from-primary/10 via-card to-card shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
+                    : 'border-border/60 bg-card hover:bg-muted/20',
+            )}
+        >
+            <div className="grid gap-4 lg:hidden">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-bold text-secondary-foreground">
+                        {initials}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                            <p className="truncate text-sm font-semibold text-foreground">{member.user?.name ?? 'Membro sem nome'}</p>
+                            {isTopPerformer && (
+                                <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                    Top 1
+                                </span>
+                            )}
+                        </div>
+                        <p className="truncate text-[11px] text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
+                    </div>
+                    <span className={cn('text-lg font-black tabular-nums', isTopPerformer ? 'text-primary' : 'text-muted-foreground')}>
+                        {String(index + 1).padStart(2, '0')}
+                    </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{member.user.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">@{member.user.login}</p>
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <MobileMetric label="Cargo" value={member.type_label} />
+                    <MobileMetric label="Graduacao" value={member.graduation_label} />
+                    <MobileMetric label="Vendas" value={member.sales} />
+                    <MobileMetric label="Reat." value={member.total_reengagements} />
+                    <MobileMetric label="Conv." value={`${member.conversion}%`} />
+                    <MobileMetric label="XP" value={xpValue.toFixed(2)} />
+                    <MobileMetric label="Receita" value={formatCurrency(revenueValue)} valueClassName="text-emerald-600 dark:text-emerald-400" />
+                    <div className="space-y-1">
+                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Nivel</p>
+                        <div className="flex items-center gap-2">
+                            <Progress value={conversionPct} className="h-1.5 flex-1" />
+                            <span className="w-10 text-right text-[10px] text-muted-foreground">{member.level}</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col items-end gap-1 shrink-0">
+            </div>
+
+            <div className="hidden lg:grid lg:grid-cols-[56px_minmax(260px,1fr)_88px_70px_70px_82px_120px_96px] lg:items-center lg:gap-3">
+                <div className="flex items-center gap-2">
+                    <span className={cn('text-lg font-black tabular-nums', isTopPerformer ? 'text-primary' : 'text-muted-foreground')}>
+                        {String(index + 1).padStart(2, '0')}
+                    </span>
+                    {isTopPerformer && <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.55)]" />}
+                </div>
+
+                <div className="flex min-w-0 items-center gap-3">
+                    <div className={cn(
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold',
+                        isTopPerformer ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
+                    )}>
+                        {initials}
+                    </div>
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                            <p className="truncate text-sm font-semibold text-foreground">{member.user?.name ?? 'Membro sem nome'}</p>
+                            {isTopPerformer && (
+                                <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                    Top 1
+                                </span>
+                            )}
+                        </div>
+                        <p className="truncate text-[11px] text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
+                    </div>
+                </div>
+
+                <div className="space-y-1">
                     <Badge
                         variant="outline"
-                        className="text-[9px] px-1.5 h-4 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                        className={cn(
+                            'h-5 px-2 text-[10px]',
+                            isTopPerformer
+                                ? 'border-primary/30 bg-primary/10 text-primary'
+                                : 'border-border bg-muted text-foreground',
+                        )}
                     >
                         {member.type_label}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground">{member.graduation_label}</span>
+                    <p className="text-[10px] text-muted-foreground">{member.graduation_label}</p>
                 </div>
-            </div>
 
-            {/* Métricas */}
-            <div className="grid grid-cols-4 gap-2 pt-3 border-t border-border/50">
-                <div className="text-center">
-                    <p className="text-sm font-bold tabular-nums">{member.sales}</p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Vendas</p>
-                </div>
-                <div className="text-center">
-                    <p className="text-sm font-bold tabular-nums">{member.total_reengagements}</p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Reat.</p>
-                </div>
-                <div className="text-center">
-                    <p className="text-sm font-bold tabular-nums">{member.conversion}%</p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Conv.</p>
-                </div>
-                <div className="text-center">
-                    <p className="text-sm font-bold tabular-nums text-amber-500 dark:text-amber-400">{member.xp.toFixed(2)}</p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">XP</p>
-                </div>
-            </div>
+                <Metric value={member.sales} />
+                <Metric value={member.total_reengagements} />
+                <Metric value={`${member.conversion}%`} />
+                <Metric value={formatCurrency(revenueValue)} valueClassName="text-emerald-600 dark:text-emerald-400" />
 
-            {/* Receita + barra de conversão */}
-            <div className="mt-3 space-y-1.5">
-                <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-muted-foreground">Receita</span>
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                        {formatCurrency(member.revenue)}
-                    </span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Progress value={conversionPct} className="h-1.5 flex-1" />
-                    <span className={cn('text-[10px] text-muted-foreground w-8 text-right')}>{member.level}</span>
+                <div className="space-y-1">
+                    <p className="text-sm font-bold tabular-nums text-foreground">{member.level}</p>
+                    <Progress value={conversionPct} className="h-1.5" />
                 </div>
             </div>
+        </div>
+    );
+}
+
+function Metric({
+    value,
+    valueClassName,
+}: {
+    value: string | number;
+    valueClassName?: string;
+}) {
+    return <p className={cn('text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</p>;
+}
+
+function MobileMetric({
+    label,
+    value,
+    valueClassName,
+}: {
+    label: string;
+    value: string | number;
+    valueClassName?: string;
+}) {
+    return (
+        <div className="space-y-1 rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+            <p className={cn('text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</p>
         </div>
     );
 }

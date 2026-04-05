@@ -5,9 +5,9 @@ import type { LeaderboardEntry } from './types';
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
 function timeAgo(minutes: number) {
-    if (minutes < 60) return `Há ${minutes} min`;
+    if (minutes < 60) return `Ha ${minutes} min`;
     const h = Math.floor(minutes / 60);
-    return `Há ${h}h`;
+    return `Ha ${h}h`;
 }
 
 interface Activity {
@@ -20,13 +20,13 @@ function buildActivities(sellers: LeaderboardEntry[]): Activity[] {
     const activities: Activity[] = [];
     let minuteOffset = 5;
 
-    for (const s of sellers.slice(0, 4)) {
-        const firstName = s.user.name.split(' ')[0];
-        const revenue = Number(s.revenue ?? 0);
+    for (const seller of sellers.slice(0, 4)) {
+        const firstName = seller.user.name.split(' ')[0];
+        const revenue = Number(seller.revenue ?? 0);
 
-        if (s.sales > 0 && revenue > 0) {
+        if (seller.sales > 0 && revenue > 0) {
             activities.push({
-                dotColor: 'bg-lime-400',
+                dotColor: 'bg-primary',
                 time: timeAgo(minuteOffset),
                 parts: [
                     { text: `${firstName} fechou uma venda de ` },
@@ -34,19 +34,19 @@ function buildActivities(sellers: LeaderboardEntry[]): Activity[] {
                 ],
             });
             minuteOffset += 10;
-        } else if (s.total_reengagements > 0) {
+        } else if (seller.total_reengagements > 0) {
             activities.push({
-                dotColor: 'bg-pink-500',
+                dotColor: 'bg-accent',
                 time: timeAgo(minuteOffset),
                 parts: [
                     { text: `${firstName} reengajou ` },
-                    { text: `${s.total_reengagements} clientes antigos`, highlight: true },
+                    { text: `${seller.total_reengagements} clientes antigos`, highlight: true },
                 ],
             });
             minuteOffset += 15;
         } else {
             activities.push({
-                dotColor: 'bg-blue-400',
+                dotColor: 'bg-secondary',
                 time: timeAgo(minuteOffset),
                 parts: [{ text: `${firstName} iniciou um novo checkout` }],
             });
@@ -73,26 +73,26 @@ export function FieldActivity({ sellers }: FieldActivityProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', damping: 22, stiffness: 260, delay: 0.2 }}
         >
-            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.18em] mb-4">
+            <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 Atividade de Campo
             </p>
 
             <div className="space-y-0">
-                {activities.map((a, i) => (
-                    <div key={i} className="flex gap-3">
-                        <div className="flex flex-col items-center pt-1.5 shrink-0">
-                            <div className={cn('w-2 h-2 rounded-full shrink-0', a.dotColor)} />
-                            {i < activities.length - 1 && (
-                                <div className="w-px flex-1 min-h-[20px] bg-white/5 mt-1" />
+                {activities.map((activity, index) => (
+                    <div key={index} className="flex gap-3">
+                        <div className="flex shrink-0 flex-col items-center pt-1.5">
+                            <div className={cn('h-2 w-2 rounded-full', activity.dotColor)} />
+                            {index < activities.length - 1 && (
+                                <div className="mt-1 min-h-[20px] w-px flex-1 bg-border/60" />
                             )}
                         </div>
                         <div className="pb-4">
-                            <p className="text-[9px] text-muted-foreground">{a.time}</p>
-                            <p className="text-xs leading-snug">
-                                {a.parts.map((part, pi) => (
+                            <p className="text-[9px] text-muted-foreground">{activity.time}</p>
+                            <p className="text-xs leading-snug text-foreground/85">
+                                {activity.parts.map((part, partIndex) => (
                                     <span
-                                        key={pi}
-                                        className={part.highlight ? 'text-lime-400 font-bold' : 'text-white/80'}
+                                        key={partIndex}
+                                        className={part.highlight ? 'font-bold text-primary' : 'text-foreground/85'}
                                     >
                                         {part.text}
                                     </span>

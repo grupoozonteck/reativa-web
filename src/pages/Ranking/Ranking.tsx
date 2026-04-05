@@ -61,7 +61,7 @@ export default function Ranking() {
     if (isError) {
         return (
             <div className="p-6 max-w-screen-2xl mx-auto">
-                <div className="glass-card rounded-2xl p-6 border border-rose-500/20 bg-rose-500/5">
+                <div className="solid-card rounded-2xl border border-rose-500/20 bg-rose-500/5 p-6">
                     <div className="flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-rose-400 mt-0.5" />
                         <div>
@@ -104,7 +104,7 @@ export default function Ranking() {
                     </div>
                 </div>
             ) : (
-                <div className="glass-card rounded-2xl p-6 text-center border border-white/10">
+                <div className="solid-card rounded-2xl border border-border/60 p-6 text-center">
                     <h2 className="text-base font-bold">Nenhum atendente no ranking</h2>
                     <p className="text-sm text-muted-foreground mt-1">
                         Assim que houver movimentação de atendentes, o ranking aparece aqui.

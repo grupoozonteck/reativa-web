@@ -7,7 +7,7 @@ const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL',
 
 const rowItem: Variants = {
     hidden: { opacity: 0, x: -16 },
-    show: { opacity: 1, x: 0, transition: { type: 'spring' as const, damping: 22, stiffness: 260 } },
+    show: { opacity: 1, x: 0, transition: { type: 'spring', damping: 22, stiffness: 260 } },
 };
 
 const staggerContainer: Variants = {
@@ -16,19 +16,22 @@ const staggerContainer: Variants = {
 };
 
 function getInitials(name: string) {
-    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
 function LevelBadge({ label }: { label: string }) {
     const lower = label.toLowerCase();
     const isJunior = lower.includes('junior') || lower.includes('júnior');
+
     return (
-        <span className={cn(
-            'text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide',
-            isJunior
-                ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-700/50'
-                : 'bg-green-900/50 text-green-400 border border-green-700/50'
-        )}>
+        <span
+            className={cn(
+                'rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide',
+                isJunior
+                    ? 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+            )}
+        >
             {label}
         </span>
     );
@@ -38,129 +41,156 @@ interface LeaderboardListProps {
     sellers: LeaderboardEntry[];
 }
 
-const VISIBLE_ROWS = 3;
+const VISIBLE_ROWS = 8;
 
 export function LeaderboardList({ sellers }: LeaderboardListProps) {
-    const maxRevenue = Math.max(...sellers.map(s => Number(s.revenue ?? 0)), 1);
     const visible = sellers.slice(0, VISIBLE_ROWS);
     const hidden = sellers.length - VISIBLE_ROWS;
 
     return (
-        <div className="solid-card rounded-2xl overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
-                <h3 className="text-sm font-bold text-white">Lista de Elite</h3>
-                <span className="text-[10px] text-muted-foreground">{sellers.length} Participantes</span>
+        <div className="solid-card overflow-hidden rounded-2xl">
+            <div className="flex items-center justify-between border-b border-border/60 px-4 py-4">
+                <h3 className="text-sm font-bold text-foreground">Lista de Elite</h3>
+                <span className="text-[10px] text-muted-foreground">{sellers.length} participantes</span>
             </div>
 
-            {/* Column headers */}
-            <div className="grid grid-cols-[36px_1fr_72px_52px_80px_90px] items-center px-4 py-2 border-b border-white/5">
-                {['RANK', 'MEMBRO', 'NÍVEL', 'VENDAS', 'CONV. %', 'RECEITA'].map(col => (
-                    <span key={col} className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+            <div className="hidden grid-cols-[56px_minmax(220px,1fr)_86px_64px_92px_120px] items-center border-b border-border/60 bg-muted/25 px-4 py-2 lg:grid">
+                {['Rank', 'Membro', 'Nivel', 'Vendas', 'Conv. %', 'Receita'].map((col) => (
+                    <span key={col} className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
                         {col}
                     </span>
                 ))}
             </div>
 
-            {/* Rows */}
             <motion.div variants={staggerContainer} initial="hidden" animate="show">
-                {visible.map((s, i) => {
-                    const revenue = Number(s.revenue ?? 0);
-                    const convPct = s.conversion;
-                    const initials = getInitials(s.user.name);
-                    const avatarUrl = s.user.personal_data?.avatar ?? undefined;
-                    const isFirst = i === 0;
+                {visible.map((seller, index) => {
+                    const revenue = Number(seller.revenue ?? 0);
+                    const convPct = seller.conversion;
+                    const initials = getInitials(seller.user.name);
+                    const avatarUrl = seller.user.personal_data?.avatar ?? undefined;
+                    const isFirst = index === 0;
 
                     return (
                         <motion.div
-                            key={s.id}
+                            key={seller.id}
                             variants={rowItem}
                             className={cn(
-                                'grid grid-cols-[36px_1fr_72px_52px_80px_90px] items-center px-4 py-3 border-b border-white/5',
-                                isFirst ? 'bg-lime-500/[0.04]' : 'hover:bg-white/[0.02]'
+                                'border-b border-border/50 px-4 py-4 last:border-b-0',
+                                isFirst ? 'bg-primary/5' : 'hover:bg-muted/20',
                             )}
                         >
-                            {/* Rank */}
-                            <span className={cn(
-                                'text-sm font-black tabular-nums',
-                                isFirst ? 'text-lime-400' : 'text-muted-foreground'
-                            )}>
-                                {String(i + 1).padStart(2, '0')}
-                            </span>
-
-                            {/* Member */}
-                            <div className="flex items-center gap-2 min-w-0">
-                                <Avatar className={cn(
-                                    'w-8 h-8 shrink-0',
-                                    isFirst ? 'ring-2 ring-lime-400/50' : ''
-                                )}>
-                                    <AvatarImage src={avatarUrl} alt={s.user.name} className="object-cover" />
-                                    <AvatarFallback className={cn(
-                                        'text-[10px] font-bold',
-                                        isFirst ? 'bg-lime-900 text-lime-300' : 'bg-slate-700 text-slate-300'
-                                    )}>
-                                        {initials}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="min-w-0">
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="text-xs font-semibold text-white truncate">
-                                            {s.user.name.split(' ')[0]}
-                                        </span>
-                                        {isFirst && (
-                                            <span className="text-[7px] font-bold px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-400 border border-rose-700/50 uppercase tracking-wide shrink-0">
-                                                Top Performer
-                                            </span>
-                                        )}
+                            <div className="grid gap-4 lg:hidden">
+                                <div className="flex items-center gap-3">
+                                    <span className={cn('text-lg font-black tabular-nums', isFirst ? 'text-primary' : 'text-muted-foreground')}>
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                    <Avatar className={cn('h-10 w-10', isFirst && 'ring-2 ring-primary/40')}>
+                                        <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
+                                        <AvatarFallback className={cn(
+                                            'text-[10px] font-bold',
+                                            isFirst ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
+                                        )}>
+                                            {initials}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="truncate text-sm font-semibold text-foreground">{seller.user.name}</span>
+                                            {isFirst && (
+                                                <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
+                                                    Top performer
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-[11px] text-muted-foreground">@{seller.user.login}</p>
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                    <MobileMetric label="Nivel" value={<LevelBadge label={seller.graduation_label} />} />
+                                    <MobileMetric label="Vendas" value={seller.sales} />
+                                    <MobileMetric label="Conv." value={`${convPct}%`} />
+                                    <MobileMetric label="Receita" value={BRL.format(revenue)} valueClassName={isFirst ? 'text-primary' : 'text-foreground'} />
                                 </div>
                             </div>
 
-                            {/* Level */}
-                            <div>
-                                <LevelBadge label={s.graduation_label} />
-                            </div>
+                            <div className="hidden lg:grid lg:grid-cols-[56px_minmax(220px,1fr)_86px_64px_92px_120px] lg:items-center">
+                                <span className={cn('text-sm font-black tabular-nums', isFirst ? 'text-primary' : 'text-muted-foreground')}>
+                                    {String(index + 1).padStart(2, '0')}
+                                </span>
 
-                            {/* Sales */}
-                            <span className="text-xs font-bold text-white tabular-nums">
-                                {s.sales}
-                            </span>
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <Avatar className={cn('h-10 w-10', isFirst && 'ring-2 ring-primary/40')}>
+                                        <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
+                                        <AvatarFallback className={cn(
+                                            'text-[10px] font-bold',
+                                            isFirst ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
+                                        )}>
+                                            {initials}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="truncate text-sm font-semibold text-foreground">{seller.user.name}</span>
+                                            {isFirst && (
+                                                <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
+                                                    Top performer
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="truncate text-[11px] text-muted-foreground">@{seller.user.login}</p>
+                                    </div>
+                                </div>
 
-                            {/* Conv% */}
-                            <div className="flex flex-col gap-1">
-                                <span className="text-[10px] text-muted-foreground tabular-nums">{convPct}%</span>
-                                {convPct > 0 && (
-                                    <div className="h-1 w-10 bg-white/5 rounded-full overflow-hidden">
+                                <LevelBadge label={seller.graduation_label} />
+
+                                <span className="text-sm font-bold tabular-nums text-foreground">{seller.sales}</span>
+
+                                <div className="space-y-1">
+                                    <span className="text-[11px] font-semibold tabular-nums text-muted-foreground">{convPct}%</span>
+                                    <div className="h-1 w-12 overflow-hidden rounded-full bg-muted">
                                         <motion.div
-                                            className="h-full bg-blue-500 rounded-full"
+                                            className="h-full rounded-full bg-secondary"
                                             initial={{ width: 0 }}
                                             animate={{ width: `${Math.min(convPct, 100)}%` }}
-                                            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 + i * 0.05 }}
+                                            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 + index * 0.05 }}
                                         />
                                     </div>
-                                )}
-                            </div>
+                                </div>
 
-                            {/* Revenue */}
-                            <span className={cn(
-                                'text-xs font-black tabular-nums text-right',
-                                isFirst ? 'text-lime-400' : 'text-white'
-                            )}>
-                                {BRL.format(revenue)}
-                            </span>
+                                <span className={cn('text-right text-sm font-black tabular-nums', isFirst ? 'text-primary' : 'text-foreground')}>
+                                    {BRL.format(revenue)}
+                                </span>
+                            </div>
                         </motion.div>
                     );
                 })}
             </motion.div>
 
-            {/* Footer */}
             {hidden > 0 && (
                 <div className="px-4 py-3 text-center">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         + {hidden} outros membros em campo
                     </span>
                 </div>
             )}
+        </div>
+    );
+}
+
+function MobileMetric({
+    label,
+    value,
+    valueClassName,
+}: {
+    label: string;
+    value: React.ReactNode;
+    valueClassName?: string;
+}) {
+    return (
+        <div className="rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+            <div className={cn('pt-1 text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</div>
         </div>
     );
 }

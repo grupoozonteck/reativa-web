@@ -51,7 +51,7 @@ export default function AtendenteEditar() {
 
     const supportQuery = useQuery({
         queryKey: ['attendants-edit-support'],
-        queryFn: () => teamService.getAttendants({  type: 3 }),
+        queryFn: () => teamService.getAttendants(),
         select: (res) => ({
             supervisors: res.supervisors,
             gestor:res.gestors ?? null,
@@ -67,6 +67,28 @@ export default function AtendenteEditar() {
     const types = detailQuery.data?.types ?? supportQuery.data?.types ?? {};
     const graduates = detailQuery.data?.graduates ?? supportQuery.data?.graduates ?? {};
     const supervisors = supportQuery.data?.supervisors ?? [];
+    const gestor = supportQuery.data?.gestor ?? null;
+    const isEditingGestor = attendant?.type === 1;
+    const isSupervisorType = type === '2';
+
+    const availableTypes = useMemo(
+        () => Object.entries(types).filter(([key]) => key !== '1' || isEditingGestor),
+        [isEditingGestor, types],
+    );
+
+    const leaderOptions = useMemo(() => {
+        if (isSupervisorType) {
+            return gestor
+                ? [{ id: gestor.id, name: gestor.user.name, login: gestor.user.login }]
+                : [];
+        }
+
+        return supervisors.map((supervisor) => ({
+            id: supervisor.id,
+            name: supervisor.name,
+            login: supervisor.login,
+        }));
+    }, [gestor, isSupervisorType, supervisors]);
 
     useEffect(() => {
         if (!attendant) return;
@@ -75,8 +97,15 @@ export default function AtendenteEditar() {
         setSelectedSupervisorId(attendant.parent?.id ? String(attendant.parent.id) : 'none');
         setError(null);
     }, [attendant]);
-        const availableSupervisors =  supervisors
-        
+
+    useEffect(() => {
+        if (selectedSupervisorId === 'none') return;
+
+        const selectedLeaderIsAvailable = leaderOptions.some((leader) => String(leader.id) === selectedSupervisorId);
+        if (!selectedLeaderIsAvailable) {
+            setSelectedSupervisorId('none');
+        }
+    }, [leaderOptions, selectedSupervisorId]);
 
 
     const commissionRanges = attendant?.commissions_attendant ?? attendant?.commissions ?? [];
@@ -116,7 +145,7 @@ export default function AtendenteEditar() {
         const selectedSupervisor =
             selectedSupervisorId === 'none'
                 ? null
-                : availableSupervisors.find((supervisor) => String(supervisor.id) === selectedSupervisorId);
+                : leaderOptions.find((leader) => String(leader.id) === selectedSupervisorId);
 
         setIsSaving(true);
         setError(null);
@@ -404,12 +433,12 @@ export default function AtendenteEditar() {
                         <FieldGroup className="gap-5">
                             <Field>
                                 <FieldLabel htmlFor="attendant-type">Cargo</FieldLabel>
-                                <Select value={type} onValueChange={setType} disabled={isSaving}>
+                                <Select value={type} onValueChange={setType} disabled={isSaving || isEditingGestor}>
                                     <SelectTrigger id="attendant-type">
                                         <SelectValue placeholder="Selecione o cargo" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.entries(types).map(([key, label]) => (
+                                        {availableTypes.map(([key, label]) => (
                                             <SelectItem key={key} value={key}>
                                                 {label}
                                             </SelectItem>
@@ -435,15 +464,16 @@ export default function AtendenteEditar() {
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="attendant-parent">Lider</FieldLabel>
+                                <FieldLabel htmlFor="attendant-parent">{isSupervisorType ? 'Gestor' : 'Lider'}</FieldLabel>
                                 <Select value={selectedSupervisorId} onValueChange={setSelectedSupervisorId} disabled={isSaving}>
                                     <SelectTrigger id="attendant-parent">
-                                        <SelectValue placeholder="Selecione o lider" />
+                                        <SelectValue placeholder={isSupervisorType ? 'Selecione o gestor' : 'Selecione o lider'} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {availableSupervisors.map((supervisor) => (
-                                            <SelectItem key={supervisor.id} value={String(supervisor.id)}>
-                                                {supervisor.name} @{supervisor.login}
+                                        <SelectItem value="none">Sem lider</SelectItem>
+                                        {leaderOptions.map((leader) => (
+                                            <SelectItem key={leader.id} value={String(leader.id)}>
+                                                {leader.name} @{leader.login}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

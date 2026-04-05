@@ -88,6 +88,7 @@ export default function Atendentes() {
                     open={createModalOpen}
                     onClose={() => setCreateModalOpen(false)}
                     supervisors={data?.supervisors ?? []}
+                    gestor={data?.gestors ?? null}
                     types={data?.types ?? {}}
                     graduates={data?.graduates ?? {}}
                     onCreated={() => refetch()}

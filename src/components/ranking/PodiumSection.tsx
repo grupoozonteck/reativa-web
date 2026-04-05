@@ -7,14 +7,14 @@ import type { LeaderboardEntry } from './types';
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
 function getInitials(name: string) {
-    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
 interface PodiumSectionProps {
     sellers: LeaderboardEntry[];
 }
 
-const PODIUM_ORDER = [1, 0, 2]; // order: 2nd, 1st, 3rd
+const PODIUM_ORDER = [1, 0, 2];
 
 export function PodiumSection({ sellers }: PodiumSectionProps) {
     if (sellers.length < 1) return null;
@@ -24,37 +24,43 @@ export function PodiumSection({ sellers }: PodiumSectionProps) {
             rank: 2,
             barH: 80,
             avatarSize: 'w-16 h-16',
-            ring: 'ring-2 ring-slate-400/60',
+            ring: 'ring-2 ring-slate-400/40 dark:ring-slate-400/60',
             glow: '',
-            nameColor: 'text-slate-300',
-            revenueColor: 'text-slate-400',
+            nameColor: 'text-foreground',
+            revenueColor: 'text-muted-foreground',
+            barStyle: 'from-slate-200 to-slate-300 border-slate-300 dark:from-slate-800 dark:to-slate-700 dark:border-slate-700/50',
+            digitColor: 'text-slate-500 dark:text-slate-300',
             delay: 0.2,
         },
         {
             rank: 1,
             barH: 128,
             avatarSize: 'w-24 h-24',
-            ring: 'ring-4 ring-lime-400',
-            glow: 'shadow-[0_0_40px_rgba(132,204,22,0.5)]',
-            nameColor: 'text-white',
-            revenueColor: 'text-lime-400',
+            ring: 'ring-4 ring-primary',
+            glow: 'shadow-[0_0_40px_hsl(var(--primary)/0.35)]',
+            nameColor: 'text-foreground',
+            revenueColor: 'text-primary',
+            barStyle: 'from-primary/20 to-primary/10 border-primary/30',
+            digitColor: 'text-primary/60',
             delay: 0.05,
         },
         {
             rank: 3,
             barH: 56,
             avatarSize: 'w-14 h-14',
-            ring: 'ring-2 ring-amber-700/60',
+            ring: 'ring-2 ring-amber-500/40 dark:ring-amber-700/60',
             glow: '',
-            nameColor: 'text-amber-700',
-            revenueColor: 'text-amber-800',
+            nameColor: 'text-foreground',
+            revenueColor: 'text-amber-600 dark:text-amber-400',
+            barStyle: 'from-amber-500/15 to-amber-500/5 border-amber-500/20',
+            digitColor: 'text-amber-600/60 dark:text-amber-400/60',
             delay: 0.35,
         },
     ];
 
     return (
-        <div className="solid-card rounded-2xl p-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-lime-500/[0.03] to-transparent pointer-events-none" />
+        <div className="solid-card relative overflow-hidden rounded-2xl p-6">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
 
             <div className="flex items-end justify-center gap-6">
                 {PODIUM_ORDER.map((sellerIdx, vi) => {
@@ -78,77 +84,62 @@ export function PodiumSection({ sellers }: PodiumSectionProps) {
                         >
                             {isFirst && (
                                 <motion.div
-                                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-lime-500/15 border border-lime-500/30 mb-2"
+                                    className="mb-2 flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1"
                                     animate={{ y: [0, -2, 0] }}
                                     transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                                 >
-                                    <Star className="w-2.5 h-2.5 text-lime-400 fill-lime-400" />
-                                    <span className="text-[9px] text-lime-400 font-bold uppercase tracking-wider">MVP do Mês</span>
+                                    <Star className="h-2.5 w-2.5 fill-primary text-primary" />
+                                    <span className="text-[9px] font-bold uppercase tracking-wider text-primary">MVP do Mes</span>
                                 </motion.div>
                             )}
 
-                            {/* Rank badge on avatar */}
                             <div className="relative mb-3">
                                 {isFirst && (
                                     <motion.div
-                                        className="absolute -inset-5 rounded-full bg-lime-400/20"
+                                        className="absolute -inset-5 rounded-full bg-primary/20"
                                         style={{ filter: 'blur(20px)' }}
                                         animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
                                         transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                                     />
                                 )}
-                                <Avatar className={cn('rounded-full relative z-10', cfg.avatarSize, cfg.ring, cfg.glow)}>
+                                <Avatar className={cn('relative z-10 rounded-full bg-card', cfg.avatarSize, cfg.ring, cfg.glow)}>
                                     <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
                                     <AvatarFallback className={cn(
-                                        'font-bold text-white',
-                                        isFirst ? 'bg-lime-900 text-sm' : 'bg-slate-700 text-xs'
+                                        'font-bold',
+                                        isFirst ? 'bg-primary text-primary-foreground text-sm' : 'bg-secondary text-secondary-foreground text-xs',
                                     )}>
                                         {initials}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className={cn(
-                                    'absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black z-20',
-                                    isFirst
-                                        ? 'bg-lime-400 text-black'
-                                        : cfg.rank === 2
-                                            ? 'bg-slate-400 text-black'
-                                            : 'bg-amber-800 text-white'
-                                )}>
+                                <div
+                                    className={cn(
+                                        'absolute -bottom-2 left-1/2 z-20 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full text-[9px] font-black',
+                                        isFirst
+                                            ? 'bg-primary text-primary-foreground'
+                                            : cfg.rank === 2
+                                                ? 'bg-slate-300 text-slate-900 dark:bg-slate-400 dark:text-slate-950'
+                                                : 'bg-amber-500 text-amber-950',
+                                    )}
+                                >
                                     #{cfg.rank}
                                 </div>
                             </div>
 
-                            {/* Name + revenue */}
-                            <div className="text-center mb-3 mt-1">
-                                <p className={cn('text-sm font-bold truncate max-w-[90px]', cfg.nameColor)}>
-                                    {firstName}
-                                </p>
-                                <p className={cn('text-xs font-black tabular-nums', cfg.revenueColor)}>
-                                    {isFirst && <span className="mr-0.5">💰</span>}
-                                    {BRL.format(revenue)}
-                                </p>
+                            <div className="mb-3 mt-1 text-center">
+                                <p className={cn('max-w-[90px] truncate text-sm font-bold', cfg.nameColor)}>{firstName}</p>
+                                <p className={cn('text-xs font-black tabular-nums', cfg.revenueColor)}>{BRL.format(revenue)}</p>
                             </div>
 
-                            {/* Podium bar */}
                             <motion.div
                                 className={cn(
-                                    'w-24 rounded-t-xl flex items-center justify-center relative overflow-hidden',
-                                    isFirst
-                                        ? 'bg-gradient-to-t from-[#1a2e1a] to-[#2a4a2a] border border-lime-900/50'
-                                        : cfg.rank === 2
-                                            ? 'bg-gradient-to-t from-[#1a1e2e] to-[#252a3a] border border-slate-700/50'
-                                            : 'bg-gradient-to-t from-[#1e1a10] to-[#2a2210] border border-amber-900/30'
+                                    'relative flex w-24 items-center justify-center overflow-hidden rounded-t-xl border bg-gradient-to-t',
+                                    cfg.barStyle,
                                 )}
                                 initial={{ height: 0 }}
                                 animate={{ height: cfg.barH }}
                                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: cfg.delay + 0.1 }}
                             >
-                                <span className={cn(
-                                    'text-3xl font-black opacity-20',
-                                    isFirst ? 'text-lime-300' : cfg.rank === 2 ? 'text-slate-300' : 'text-amber-700'
-                                )}>
-                                    {cfg.rank}
-                                </span>
+                                <span className={cn('text-3xl font-black opacity-40', cfg.digitColor)}>{cfg.rank}</span>
                             </motion.div>
                         </motion.div>
                     );
