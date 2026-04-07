@@ -14,7 +14,7 @@ export default function Atendentes() {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const debouncedSearch = useDebounce(filters.search ?? '', 400);
 
-    const { data, isLoading, isFetching, refetch } = useQuery({
+    const attendantsQuery = useQuery({
         queryKey: ['attendants', debouncedSearch, filters.type, filters.country_code],
         queryFn: () =>
             teamService.getAttendants({
@@ -25,9 +25,20 @@ export default function Atendentes() {
         refetchInterval: 5 * 60 * 1000,
     });
 
+    const supportQuery = useQuery({
+        queryKey: ['attendants-form-support'],
+        queryFn: () => teamService.getAttendantFormSupport(),
+        refetchInterval: 5 * 60 * 1000,
+    });
 
+    const data = attendantsQuery.data;
     const attendants = data?.attendants?.data ?? [];
     const total = data?.attendants?.meta?.total;
+    const isLoading = attendantsQuery.isLoading;
+    const isFetching = attendantsQuery.isFetching || supportQuery.isFetching;
+    const refetch = async () => {
+        await Promise.all([attendantsQuery.refetch(), supportQuery.refetch()]);
+    };
 
     return (
         <div className="min-h-screen  p-4 py-12 sm:p-12 max-w-screen-2xl mx-auto">
@@ -87,8 +98,8 @@ export default function Atendentes() {
                 <CreateAttendantModal
                     open={createModalOpen}
                     onClose={() => setCreateModalOpen(false)}
-                    supervisors={data?.supervisors ?? []}
-                    gestor={data?.gestors ?? null}
+                    supervisors={supportQuery.data?.supervisors ?? []}
+                    gestor={supportQuery.data?.gestor ?? null}
                     types={data?.types ?? {}}
                     graduates={data?.graduates ?? {}}
                     onCreated={() => refetch()}

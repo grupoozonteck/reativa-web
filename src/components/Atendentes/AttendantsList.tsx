@@ -2,10 +2,11 @@ import { Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { type ManagerAttendant } from '@/services/team.service';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { getInitials } from '@/utils/client-utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { TableEmptyState } from '@/components/ui/table-empty-state';
 
@@ -23,7 +24,6 @@ interface AttendantsListProps {
 }
 
 export function AttendantsList({ attendants, total, isLoading, isFetching }: AttendantsListProps) {
-    const navigate = useNavigate();
     return (
         <div className="solid-card overflow-hidden animate-fade-in">
             {/* Header */}
@@ -54,6 +54,7 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                         <TableRow className="hover:bg-transparent">
                             <TableHead>Atendente</TableHead>
                             <TableHead>Cargo</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Graduação</TableHead>
                             <TableHead className="text-right">Líder</TableHead>
                             <TableHead className="text-right">Ações</TableHead>
@@ -66,6 +67,7 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                                 columns={[
                                     { type: 'avatar', width: 'w-32' },
                                     { type: 'badge', width: 'w-20' },
+                                    { type: 'badge', width: 'w-20' },
                                     { type: 'text', width: 'w-14' },
                                     { type: 'text', width: 'w-24', align: 'right' },
                                     { type: 'text', width: 'w-8', align: 'right' },
@@ -73,7 +75,7 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                             />
                         ) : attendants.length === 0 ? (
                             <TableEmptyState
-                                colSpan={5}
+                                colSpan={6}
                                 icon={Users}
                                 message="Nenhum atendente encontrado"
                             />
@@ -101,10 +103,17 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
+                                        <StatusBadge status={attendant.status ?? null} />
+                                    </TableCell>
+                                    <TableCell>
                                         {attendant.graduation_label}
                                     </TableCell>
                                     <TableCell className="text-right font-medium tabular-nums">
-                                        {attendant.parent?.user?.name || '-'}
+                                        {attendant.parent?.user?.name ? (
+                                            attendant.parent.user.name
+                                        ) : (
+                                            '-'
+                                        )}
                                     </TableCell>
                                     <TableCell className="text-right font-medium tabular-nums">
                                         <Link to={`/atendentes/${attendant.id}`} className="bg-primary text-slate-950 px-2 py-1 rounded">

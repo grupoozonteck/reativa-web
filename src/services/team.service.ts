@@ -133,6 +133,24 @@ export interface SupervisorAttendant {
     name: string;
 }
 
+export interface AttendantLeaderOption {
+    id: number;
+    user_id: number;
+    type?: number;
+    graduation?: number;
+    type_label?: string;
+    graduation_label?: string;
+    name: string;
+    login: string;
+    user: {
+        id: number;
+        name: string;
+        login: string;
+        status?: number | null;
+    };
+    status?: number | null;
+}
+
 export interface ICommissions {
     id: number;
     attendant_id?: number;
@@ -150,6 +168,7 @@ export interface ICommissions {
 export interface ManagerAttendant {
     id: number;
     user_id: number;
+    status?: number | null;
     type: number;
     graduation: number;
     created_at: string;
@@ -167,6 +186,7 @@ export interface ManagerAttendant {
         id: number;
         name: string;
         login: string;
+        status?: number | null;
         personal_data?: {
             avatar: string;
             id: string;
@@ -176,12 +196,14 @@ export interface ManagerAttendant {
     parent: {
         id: number;
         user_id: number;
+        status?: number | null;
         type: number;
         type_label: string;
         user: {
             id: number;
             name: string;
             login: string;
+            status?: number | null;
         };
     };
     reengagements: Reengagements[];
@@ -223,6 +245,7 @@ export interface ManagerSupervisor {
         id: number;
         name: string;
         login: string;
+        status?: number | null;
     };
     attendants: ManagerAttendant[];
 }
@@ -259,6 +282,7 @@ export interface CreateAttendantRe {
 }
 
 export interface UpdateAttendantPayload {
+    status?: number | null;
     type?: number;
     graduation?: number;
     parent_id?: number | null;
@@ -289,17 +313,88 @@ export interface AttendantsResponse {
         code: string;
         name: string;
     }[];
-    gestors?: ManagerAttendant | null;
 }
 
-function normalizeAttendantsResponse(payload: AttendantsResponse): AttendantsResponse {
-    const attendantsData = Array.isArray(payload.attendants?.data) ? payload.attendants.data : [];
-    const gestorFromAttendants = attendantsData.find((attendant) => attendant.type === 1) ?? null;
+function extractListFromResponse(payload: unknown): unknown[] {
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+
+    if (payload && typeof payload === 'object') {
+        const candidate = payload as {
+            data?: unknown;
+            supervisors?: unknown;
+            managers?: unknown;
+            attendants?: unknown;
+        };
+
+        if (Array.isArray(candidate.data)) return candidate.data;
+        if (Array.isArray(candidate.supervisors)) return candidate.supervisors;
+        if (Array.isArray(candidate.managers)) return candidate.managers;
+        if (Array.isArray(candidate.attendants)) return candidate.attendants;
+    }
+
+    return [];
+}
+
+function normalizeLeaderOption(payload: unknown): AttendantLeaderOption | null {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const candidate = payload as {
+        id?: number | string;
+        user_id?: number | string;
+        type?: number;
+        graduation?: number;
+        type_label?: string;
+        graduation_label?: string;
+        name?: string;
+        login?: string;
+        user?: {
+            id?: number | string;
+            name?: string;
+            login?: string;
+            status?: number | null;
+        };
+        status?: number | null;
+    };
+
+    const rawId = candidate.id ?? candidate.user_id ?? candidate.user?.id;
+    const numericId = Number(rawId);
+    const rawUserId = candidate.user_id ?? candidate.user?.id ?? candidate.id;
+    const numericUserId = Number(rawUserId);
+    const name = candidate.name ?? candidate.user?.name ?? '';
+    const login = candidate.login ?? candidate.user?.login ?? '';
+    const status = typeof candidate.status === 'number' ? candidate.status : null;
+
+    if (Number.isNaN(numericId) || !name || !login) {
+        return null;
+    }
 
     return {
-        ...payload,
-        gestors: payload.gestors ?? gestorFromAttendants,
+        id: numericId,
+        user_id: Number.isNaN(numericUserId) ? numericId : numericUserId,
+        type: candidate.type,
+        graduation: candidate.graduation,
+        type_label: candidate.type_label,
+        graduation_label: candidate.graduation_label,
+        name,
+        login,
+        status,
+        user: {
+            id: Number.isNaN(Number(candidate.user?.id)) ? (Number.isNaN(numericUserId) ? numericId : numericUserId) : Number(candidate.user?.id),
+            name,
+            login,
+            status,
+        },
     };
+}
+
+function normalizeLeaderOptions(payload: unknown): AttendantLeaderOption[] {
+    return extractListFromResponse(payload)
+        .map(normalizeLeaderOption)
+        .filter((leader): leader is AttendantLeaderOption => leader !== null);
 }
 
 export const teamService = {
@@ -318,7 +413,32 @@ export const teamService = {
             params: filters,
         });
 
-        return normalizeAttendantsResponse(response.data.data);
+        return response.data.data;
+    },
+
+    getAttendantSupervisors: async (): Promise<AttendantLeaderOption[]> => {
+        const response = await api.get('/api/attendants/supervisors');
+        return normalizeLeaderOptions(response.data?.data ?? response.data);
+    },
+
+    getAttendantManagers: async (): Promise<AttendantLeaderOption[]> => {
+        const response = await api.get('/api/attendants/managers');
+        return normalizeLeaderOptions(response.data?.data ?? response.data);
+    },
+
+    getAttendantFormSupport: async (): Promise<{
+        supervisors: AttendantLeaderOption[];
+        gestor: AttendantLeaderOption | null;
+    }> => {
+        const [supervisors, managers] = await Promise.all([
+            teamService.getAttendantSupervisors(),
+            teamService.getAttendantManagers(),
+        ]);
+
+        return {
+            supervisors,
+            gestor: managers[0] ?? null,
+        };
     },
 
     createAttendant: async (data: CreateAttendantRe) => {

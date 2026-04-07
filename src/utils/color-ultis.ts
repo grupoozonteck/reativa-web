@@ -17,6 +17,28 @@ export const statusStyleMap: Record<number, { color: string; dotColor: string }>
     },
 };
 
+export function getAttendantStatusMeta(status?: number | null) {
+    const label = status === 1 ? 'Ativo' : status === 0 ? 'Inativo' : 'Sem status';
+    const style =
+        status === 1
+            ? {
+                color: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20',
+                dotColor: 'bg-emerald-500',
+            }
+            : status === 0
+                ? {
+                    color: 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20',
+                    dotColor: 'bg-rose-500',
+                }
+                : null;
+
+    return {
+        label,
+        color: style?.color ?? 'text-muted-foreground bg-muted/40 border-border/60',
+        dotColor: style?.dotColor ?? 'bg-muted-foreground/50',
+    };
+}
+
 
  export const typeColors: Record<number, string> = {
     1: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20',

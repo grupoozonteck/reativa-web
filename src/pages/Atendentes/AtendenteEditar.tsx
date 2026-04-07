@@ -19,17 +19,48 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getInitials } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { typeColors } from '@/utils/color-ultis';
 
+function extractApiErrorMessage(err: unknown, fallback: string) {
+    if (!(err instanceof Object) || !('response' in err)) {
+        return fallback;
+    }
+
+    const response = (err as {
+        response?: {
+            data?: {
+                message?: string;
+                errors?: Record<string, string[]>;
+            };
+        };
+    }).response;
+
+    const message = response?.data?.message;
+    const errors = response?.data?.errors;
+
+    const detailedErrors = errors
+        ? Object.values(errors)
+            .flat()
+            .filter(Boolean)
+        : [];
+
+    if (detailedErrors.length > 0) {
+        return detailedErrors.join(' | ');
+    }
+
+    return message ?? fallback;
+}
 export default function AtendenteEditar() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
     const [type, setType] = useState('');
+    const [status, setStatus] = useState('');
     const [graduation, setGraduation] = useState('');
     const [selectedSupervisorId, setSelectedSupervisorId] = useState('none');
     const [error, setError] = useState<string | null>(null);
@@ -51,21 +82,12 @@ export default function AtendenteEditar() {
 
     const supportQuery = useQuery({
         queryKey: ['attendants-edit-support'],
-        queryFn: () => teamService.getAttendants(),
-        select: (res) => ({
-            supervisors: res.supervisors,
-            gestor:res.gestors ?? null,
-            types: res.types,
-            graduates: res.graduates,
-        }),
+        queryFn: () => teamService.getAttendantFormSupport(),
     });
 
-
-
-
     const attendant = detailQuery.data?.attendant;
-    const types = detailQuery.data?.types ?? supportQuery.data?.types ?? {};
-    const graduates = detailQuery.data?.graduates ?? supportQuery.data?.graduates ?? {};
+    const types = detailQuery.data?.types ?? {};
+    const graduates = detailQuery.data?.graduates ?? {};
     const supervisors = supportQuery.data?.supervisors ?? [];
     const gestor = supportQuery.data?.gestor ?? null;
     const isEditingGestor = attendant?.type === 1;
@@ -79,7 +101,7 @@ export default function AtendenteEditar() {
     const leaderOptions = useMemo(() => {
         if (isSupervisorType) {
             return gestor
-                ? [{ id: gestor.id, name: gestor.user.name, login: gestor.user.login }]
+                ? [{ id: gestor.id, name: gestor.name, login: gestor.login, status: gestor.status ?? null }]
                 : [];
         }
 
@@ -87,12 +109,19 @@ export default function AtendenteEditar() {
             id: supervisor.id,
             name: supervisor.name,
             login: supervisor.login,
+            status: supervisor.status ?? null,
         }));
     }, [gestor, isSupervisorType, supervisors]);
+
+    const selectedLeader =
+        selectedSupervisorId === 'none'
+            ? null
+            : leaderOptions.find((leader) => String(leader.id) === selectedSupervisorId) ?? null;
 
     useEffect(() => {
         if (!attendant) return;
         setType(String(attendant.type ?? ''));
+        setStatus(attendant.status === 0 ? '0' : '1');
         setGraduation(String(attendant.graduation ?? ''));
         setSelectedSupervisorId(attendant.parent?.id ? String(attendant.parent.id) : 'none');
         setError(null);
@@ -137,36 +166,26 @@ export default function AtendenteEditar() {
     }
 
     async function handleSubmit() {
-        if (!id || !type || !graduation) {
-            setError('Selecione cargo e graduacao para salvar.');
+        if (!id || !type || !graduation || status === '') {
+            setError('Selecione cargo, status e graduacao para salvar.');
             return;
         }
-
-        const selectedSupervisor =
-            selectedSupervisorId === 'none'
-                ? null
-                : leaderOptions.find((leader) => String(leader.id) === selectedSupervisorId);
 
         setIsSaving(true);
         setError(null);
 
         try {
             await teamService.updateAttendant(Number(id), {
+                status: Number(status),
                 type: Number(type),
                 graduation: Number(graduation),
-                parent_id: selectedSupervisor?.id ?? null,
+                parent_id: selectedLeader?.id ?? null,
             });
 
             toast.success('Atendente atualizado com sucesso.');
             await detailQuery.refetch();
         } catch (err: unknown) {
-            const apiMessage =
-                err instanceof Object &&
-                'response' in err
-                    ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-                    : undefined;
-
-            const message = apiMessage ?? 'Nao foi possivel salvar as alteracoes.';
+            const message = extractApiErrorMessage(err, 'Nao foi possivel salvar as alteracoes.');
             setError(message);
             toast.error(message);
         } finally {
@@ -211,13 +230,7 @@ export default function AtendenteEditar() {
             toast.success('Faixa de comissao criada com sucesso.');
             await detailQuery.refetch();
         } catch (err: unknown) {
-            const apiMessage =
-                err instanceof Object &&
-                'response' in err
-                    ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-                    : undefined;
-
-            const message = apiMessage ?? 'Nao foi possivel criar a faixa de comissao.';
+            const message = extractApiErrorMessage(err, 'Nao foi possivel criar a faixa de comissao.');
             setCommissionError(message);
             toast.error(message);
         } finally {
@@ -391,6 +404,7 @@ export default function AtendenteEditar() {
                                 <Badge variant="default" className="px-2 h-5">
                                     {attendant.graduation_label}
                                 </Badge>
+                                <StatusBadge status={attendant.status ?? null} />
                             </div>
                         </div>
                     </div>
@@ -417,7 +431,12 @@ export default function AtendenteEditar() {
                             </div>
                             <div className="flex items-center justify-between gap-4">
                                 <span className="text-muted-foreground">Lider atual</span>
-                                <span className="font-medium text-right">{attendant.parent?.user?.name ?? 'Sem lider vinculado'}</span>
+                                <div className="flex flex-col items-end gap-1 text-right">
+                                    <span className="font-medium">{attendant.parent?.user?.name ?? 'Sem lider vinculado'}</span>
+                                    {attendant.parent?.user?.name ? (
+                                        <StatusBadge status={attendant.parent.status ?? null} />
+                                    ) : null}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -459,6 +478,19 @@ export default function AtendenteEditar() {
                                                 {label}
                                             </SelectItem>
                                         ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+
+                            <Field>
+                                <FieldLabel htmlFor="attendant-status">Status</FieldLabel>
+                                <Select value={status} onValueChange={setStatus} disabled={isSaving}>
+                                    <SelectTrigger id="attendant-status">
+                                        <SelectValue placeholder="Selecione o status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">Ativo</SelectItem>
+                                        <SelectItem value="0">Inativo</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </Field>

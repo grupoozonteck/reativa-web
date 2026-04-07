@@ -3,14 +3,44 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { teamService, type ManagerAttendant, type SupervisorAttendant } from '@/services/team.service';
+import { teamService, type AttendantLeaderOption } from '@/services/team.service';
 import { Input } from '@/components/ui/input';
+
+function extractApiErrorMessage(err: unknown, fallback: string) {
+    if (!(err instanceof Object) || !('response' in err)) {
+        return fallback;
+    }
+
+    const response = (err as {
+        response?: {
+            data?: {
+                message?: string;
+                errors?: Record<string, string[]>;
+            };
+        };
+    }).response;
+
+    const message = response?.data?.message;
+    const errors = response?.data?.errors;
+
+    const detailedErrors = errors
+        ? Object.values(errors)
+            .flat()
+            .filter(Boolean)
+        : [];
+
+    if (detailedErrors.length > 0) {
+        return detailedErrors.join(' | ');
+    }
+
+    return message ?? fallback;
+}
 
 interface CreateAttendantModalProps {
     open: boolean;
     onClose: () => void;
-    supervisors: SupervisorAttendant[];
-    gestor?: ManagerAttendant | null;
+    supervisors: AttendantLeaderOption[];
+    gestor?: AttendantLeaderOption | null;
     types: Record<string, string>;
     graduates: Record<string, string>;
     onCreated?: () => void;
@@ -41,12 +71,12 @@ export function CreateAttendantModal({
     const leaderOptions = useMemo(() => {
         if (isCreatingSupervisor) {
             return gestor
-                ? [{ id: gestor.user_id, name: gestor.user.name, login: gestor.user.login }]
+                ? [{ id: gestor.id, name: gestor.name, login: gestor.login }]
                 : [];
         }
 
         return supervisors.map((supervisor) => ({
-            id: supervisor.user_id,
+            id: supervisor.id,
             name: supervisor.name,
             login: supervisor.login,
         }));
@@ -95,12 +125,7 @@ export function CreateAttendantModal({
             resetForm();
             onClose();
         } catch (err: unknown) {
-            const apiMessage =
-                err instanceof Object &&
-                'response' in err
-                    ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-                    : undefined;
-            setError(apiMessage ?? 'Erro ao criar atendente. Tente novamente.');
+            setError(extractApiErrorMessage(err, 'Erro ao criar atendente. Tente novamente.'));
         } finally {
             setLoading(false);
         }
