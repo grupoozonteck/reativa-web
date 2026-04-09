@@ -11,13 +11,13 @@ import {
     ExternalLink,
     Loader2,
     ShoppingBag,
-    AlertCircle,
     Edit,
     Store,
     ClipboardEdit,
     Package,
     CalendarClock,
     StickyNote,
+    UserPlus,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,14 +44,17 @@ import {
 import { customerService } from '@/services/customer.service';
 import { EditClienteModal } from '@/components/Clientes/EditClienteModal';
 import { AddObservacaoModal } from '@/components/Clientes/AddObservacaoModal';
+import { InformSponsorModal } from '@/components/Clientes/InformSponsorModal';
 import { CustomerLatestOrderCard } from '@/components/Clientes/CustomerLatestOrderCard';
 import { reengagementStatusMap } from '@/utils/color-ultis';
 import { orderStatusStyleMap } from '@/config/orderStatus';
+import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 
 
 export default function ClienteDetalhes() {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [observacaoModalOpen, setObservacaoModalOpen] = useState(false);
+    const [sponsorModalOpen, setSponsorModalOpen] = useState(false);
     const [accessingStore, setAccessingStore] = useState(false);
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -83,30 +86,22 @@ export default function ClienteDetalhes() {
     const reengagement = data?.customerReengagement ?? null;
     const statusMap = data?.statusReengagements ?? {};
     const orderStatusCollection = data?.statusOrderCollection ?? {};
+    const linkedLeader = reengagement?.leader ?? null;
 
     if (isLoading) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    <p className="text-sm text-on-surface-variant">Carregando detalhes do cliente...</p>
-                </div>
-            </div>
+            <PageLoadingState message="Carregando detalhes do cliente..." />
         );
     }
 
     if (isError || !user) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3 text-center">
-                    <AlertCircle className="w-8 h-8 text-destructive" />
-                    <p className="text-sm text-on-surface-variant">Erro ao carregar os detalhes do cliente.</p>
-                    <Button variant="ghost" onClick={() => navigate('/clientes')} className="gap-2 text-on-surface-variant hover:text-primary">
-                        <ArrowLeft className="w-4 h-4" />
-                        Voltar
-                    </Button>
-                </div>
-            </div>
+            <PageErrorState
+                message="Erro ao carregar os detalhes do cliente."
+                actionLabel="Voltar"
+                onAction={() => navigate('/clientes')}
+                actionVariant="ghost"
+            />
         );
     }
 
@@ -144,6 +139,13 @@ export default function ClienteDetalhes() {
                     onUpdated={() => refetch()}
                 />
             )}
+            <InformSponsorModal
+                open={sponsorModalOpen}
+                onClose={() => setSponsorModalOpen(false)}
+                userId={user.id}
+                existingLeader={linkedLeader}
+                onUpdated={() => refetch()}
+            />
 
             <div className="p-4 sm:p-6 space-y-5 max-w-screen-2xl mx-auto">
                 {/* Back */}
@@ -190,13 +192,19 @@ export default function ClienteDetalhes() {
                                 {reengagement && (
                                     <div className="flex flex-wrap gap-x-5 gap-y-1">
                                         <div>
-                                            <span className="text-[10px] uppercase tracking-wider text-on-surface-variant">Atendimento </span>
-                                            <span className="text-xs font-mono text-on-surface-variant">#{reengagement.id}</span>
+                                            <span className="text-xs uppercase tracking-wider text-on-surface">Atendimento </span>
+                                            <span className="text-xs font-mono text-on-surface">#{reengagement.id}</span>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] uppercase tracking-wider text-on-surface-variant">Iniciado em </span>
+                                            <span className="text-xs uppercase tracking-wider text-on-surface">Iniciado em </span>
                                             <span className="text-xs text-on-surface">{formatDateTime(reengagement.created_at)}</span>
                                         </div>
+                                        {linkedLeader && (
+                                            <div>
+                                                <span className="text-xs uppercase tracking-wider">Lider </span>
+                                                <span className="text-xs text-on-surface">{linkedLeader.name} (@{linkedLeader.login})</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -231,6 +239,16 @@ export default function ClienteDetalhes() {
                                         Observação
                                     </Button>
                                 )}
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-2"
+                                    onClick={() => setSponsorModalOpen(true)}
+                                    disabled={!!linkedLeader}
+                                >
+                                    <UserPlus className="w-4 h-4" />
+                                    {linkedLeader ? 'Leader vinculado' : 'Leader'}
+                                </Button>
                                 <Button size="sm" variant="outline" className="gap-2" onClick={() => setEditModalOpen(true)}>
                                     <Edit className="w-4 h-4" />
                                     Editar
@@ -502,3 +520,5 @@ export default function ClienteDetalhes() {
         </>
     );
 }
+
+

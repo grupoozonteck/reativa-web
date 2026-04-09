@@ -2,8 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft,
-    AlertCircle,
-    Loader2,
     UserCog,
     TrendingUp,
     ShoppingCart,
@@ -19,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { getInitials } from '@/utils/client-utils';
 import { teamService } from '@/services/team.service';
+import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 
 const typeColors: Record<number, string> = {
     1: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20',
@@ -75,27 +74,17 @@ export default function AtendenteDetalhes() {
 
     if (isLoading) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                    <p className="text-md text-muted-foreground">Carregando detalhes do atendente...</p>
-                </div>
-            </div>
+            <PageLoadingState message="Carregando detalhes do atendente..." />
         );
     }
 
     if (isError || !data) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3 text-center">
-                    <AlertCircle className="w-8 h-8 text-rose-500" />
-                    <p className="text-md text-muted-foreground">Erro ao carregar os detalhes do atendente.</p>
-                    <Button variant="outline" onClick={() => navigate('/atendentes')} className="gap-2">
-                        <ArrowLeft className="w-4 h-4" />
-                        Voltar
-                    </Button>
-                </div>
-            </div>
+            <PageErrorState
+                message="Erro ao carregar os detalhes do atendente."
+                actionLabel="Voltar"
+                onAction={() => navigate('/atendentes')}
+            />
         );
     }
 
@@ -107,17 +96,14 @@ export default function AtendenteDetalhes() {
             <div className="animate-fade-in flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
                     <Button
-                        variant="outline"
-                        size="icon"
+                        variant="default"
                         onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl shrink-0"
+                        className="gap-2"
                     >
                         <ArrowLeft className="w-4 h-4" />
+                        Voltar
                     </Button>
                     <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/20">
-                            <UserCog className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        </div>
                         <h1 className="text-2xl font-extrabold tracking-tight">Detalhes do Atendente</h1>
                     </div>
                 </div>

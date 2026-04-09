@@ -6,11 +6,14 @@ import {
     ArrowLeft,
     Coins,
     Loader2,
+    Pencil,
     Plus,
     Save,
     ShieldCheck,
+    Trash2,
     UserCog,
     Users,
+    X,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { teamService } from '@/services/team.service';
@@ -22,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 import { getInitials } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { typeColors } from '@/utils/color-ultis';
@@ -72,6 +76,11 @@ export default function AtendenteEditar() {
     const [maxSales, setMaxSales] = useState('');
     const [commissionError, setCommissionError] = useState<string | null>(null);
     const [isSavingCommission, setIsSavingCommission] = useState(false);
+    const [editingCommissionId, setEditingCommissionId] = useState<number | null>(null);
+    const [deletingCommissionId, setDeletingCommissionId] = useState<number | null>(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [pendingDeleteCommissionId, setPendingDeleteCommissionId] = useState<number | null>(null);
+    const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
 
     const detailQuery = useQuery({
         queryKey: ['attendant-detail', id],
@@ -158,11 +167,47 @@ export default function AtendenteEditar() {
         return `${numericValue.toFixed(2)}%`;
     }
 
+    function formatCurrencyInput(value: string) {
+        const digitsOnly = value.replace(/\D/g, '');
+        if (!digitsOnly) return '';
+        const numericValue = Number(digitsOnly) / 100;
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(numericValue);
+    }
+
+    function parseCurrencyInput(value: string) {
+        const digitsOnly = value.replace(/\D/g, '');
+        if (!digitsOnly) return Number.NaN;
+        return Number(digitsOnly) / 100;
+    }
+
+    function toCurrencyInputValue(value: number | string | undefined) {
+        if (value === undefined || value === null || value === '') return '';
+        return formatCurrencyInput(String(value));
+    }
+
     function resetCommissionForm() {
         setCommissionPercent('');
         setMinSales('');
         setMaxSales('');
         setCommissionError(null);
+        setEditingCommissionId(null);
+    }
+
+    function openCreateCommissionModal() {
+        resetCommissionForm();
+        setCommissionModalOpen(true);
+    }
+
+    function openEditCommissionModal(commission: { id: number; commission_percent?: number | string; value?: number | string; min_sales?: number | string; max_sales?: number | string }) {
+        setEditingCommissionId(commission.id);
+        setCommissionPercent(String(commission.commission_percent ?? commission.value ?? ''));
+        setMinSales(toCurrencyInputValue(commission.min_sales));
+        setMaxSales(toCurrencyInputValue(commission.max_sales));
+        setCommissionError(null);
+        setCommissionModalOpen(true);
     }
 
     async function handleSubmit() {
@@ -193,12 +238,12 @@ export default function AtendenteEditar() {
         }
     }
 
-    async function handleCreateCommission() {
+    async function handleSaveCommission() {
         if (!id) return;
 
         const parsedPercent = Number(commissionPercent);
-        const parsedMinSales = Number(minSales);
-        const parsedMaxSales = Number(maxSales);
+        const parsedMinSales = parseCurrencyInput(minSales);
+        const parsedMaxSales = parseCurrencyInput(maxSales);
 
         if (!commissionPercent || !minSales || !maxSales) {
             setCommissionError('Preencha percentual, venda minima e venda maxima.');
@@ -219,18 +264,32 @@ export default function AtendenteEditar() {
         setCommissionError(null);
 
         try {
-            await teamService.createAttendantCommission(Number(id), {
-                commission_percent: parsedPercent,
-                min_sales: parsedMinSales,
-                max_sales: parsedMaxSales,
-            });
+            if (editingCommissionId) {
+                await teamService.updateAttendantCommission(editingCommissionId, {
+                    commission_percent: parsedPercent,
+                    min_sales: parsedMinSales,
+                    max_sales: parsedMaxSales,
+                });
+                toast.success('Faixa de comissao atualizada com sucesso.');
+            } else {
+                await teamService.createAttendantCommission(Number(id), {
+                    commission_percent: parsedPercent,
+                    min_sales: parsedMinSales,
+                    max_sales: parsedMaxSales,
+                });
+                toast.success('Faixa de comissao criada com sucesso.');
+            }
 
             resetCommissionForm();
             setCommissionModalOpen(false);
-            toast.success('Faixa de comissao criada com sucesso.');
             await detailQuery.refetch();
         } catch (err: unknown) {
-            const message = extractApiErrorMessage(err, 'Nao foi possivel criar a faixa de comissao.');
+            const message = extractApiErrorMessage(
+                err,
+                editingCommissionId
+                    ? 'Nao foi possivel atualizar a faixa de comissao.'
+                    : 'Nao foi possivel criar a faixa de comissao.',
+            );
             setCommissionError(message);
             toast.error(message);
         } finally {
@@ -238,29 +297,54 @@ export default function AtendenteEditar() {
         }
     }
 
+    async function handleDeleteCommission(commissionId: number) {
+        setDeletingCommissionId(commissionId);
+        try {
+            await teamService.deleteAttendantCommission(commissionId);
+            toast.success('Faixa de comissao excluida com sucesso.');
+            await detailQuery.refetch();
+        } catch (err: unknown) {
+            const message = extractApiErrorMessage(err, 'Nao foi possivel excluir a faixa de comissao.');
+            toast.error(message);
+        } finally {
+            setDeletingCommissionId(null);
+        }
+    }
+
+    function requestDeleteCommission(commissionId: number) {
+        setPendingDeleteCommissionId(commissionId);
+        setDeleteConfirmOpen(true);
+    }
+
+    async function confirmDeleteCommission() {
+        if (!pendingDeleteCommissionId) return;
+        await handleDeleteCommission(pendingDeleteCommissionId);
+        setDeleteConfirmOpen(false);
+        setPendingDeleteCommissionId(null);
+    }
+
+    function requestSaveChanges() {
+        setSaveConfirmOpen(true);
+    }
+
+    async function confirmSaveChanges() {
+        setSaveConfirmOpen(false);
+        await handleSubmit();
+    }
+
     if (isLoading) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                    <p className="text-md text-muted-foreground">Carregando dados de edicao do atendente...</p>
-                </div>
-            </div>
+            <PageLoadingState message="Carregando dados de edicao do atendente..." />
         );
     }
 
     if (isError) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3 text-center">
-                    <AlertCircle className="w-8 h-8 text-rose-500" />
-                    <p className="text-md text-muted-foreground">Erro ao carregar a tela de edicao do atendente.</p>
-                    <Button variant="outline" onClick={() => navigate('/atendentes')} className="gap-2">
-                        <ArrowLeft className="w-4 h-4" />
-                        Voltar
-                    </Button>
-                </div>
-            </div>
+            <PageErrorState
+                message="Erro ao carregar a tela de edicao do atendente."
+                actionLabel="Voltar"
+                onAction={() => navigate('/atendentes')}
+            />
         );
     }
 
@@ -276,7 +360,7 @@ export default function AtendenteEditar() {
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Nova faixa de comissao</DialogTitle>
+                        <DialogTitle>{editingCommissionId ? 'Editar faixa de comissao' : 'Nova faixa de comissao'}</DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-4">
@@ -284,13 +368,12 @@ export default function AtendenteEditar() {
                             <FieldLabel htmlFor="commission-min-sales">Venda minima</FieldLabel>
                             <Input
                                 id="commission-min-sales"
-                                type="number"
-                                min="0"
-                                step="0.01"
+                                type="text"
+                                inputMode="decimal"
                                 value={minSales}
-                                onChange={(e) => setMinSales(e.target.value)}
+                                onChange={(e) => setMinSales(formatCurrencyInput(e.target.value))}
                                 disabled={isSavingCommission}
-                                placeholder="0"
+                                placeholder="R$ 0,00"
                             />
                         </Field>
 
@@ -298,13 +381,12 @@ export default function AtendenteEditar() {
                             <FieldLabel htmlFor="commission-max-sales">Venda maxima</FieldLabel>
                             <Input
                                 id="commission-max-sales"
-                                type="number"
-                                min="0"
-                                step="0.01"
+                                type="text"
+                                inputMode="decimal"
                                 value={maxSales}
-                                onChange={(e) => setMaxSales(e.target.value)}
+                                onChange={(e) => setMaxSales(formatCurrencyInput(e.target.value))}
                                 disabled={isSavingCommission}
-                                placeholder="1000"
+                                placeholder="R$ 0,00"
                             />
                         </Field>
 
@@ -331,16 +413,91 @@ export default function AtendenteEditar() {
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setCommissionModalOpen(false)} disabled={isSavingCommission}>
+                        <Button variant="destructive" onClick={() => setCommissionModalOpen(false)} disabled={isSavingCommission}>
+                            <X className="w-4 h-4" />
                             Cancelar
                         </Button>
                         <Button
-                            onClick={handleCreateCommission}
+                            onClick={handleSaveCommission}
                             disabled={isSavingCommission}
-                            className="gap-2 bg-amber-500 hover:bg-amber-600 text-white"
                         >
-                            {isSavingCommission ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                            {isSavingCommission ? 'Criando faixa...' : 'Criar faixa'}
+                            {isSavingCommission ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingCommissionId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
+                            {isSavingCommission
+                                ? (editingCommissionId ? 'Salvando faixa...' : 'Criando faixa...')
+                                : (editingCommissionId ? 'Salvar faixa' : 'Criar faixa')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={deleteConfirmOpen}
+                onOpenChange={(open) => {
+                    if (deletingCommissionId !== null) return;
+                    setDeleteConfirmOpen(open);
+                    if (!open) setPendingDeleteCommissionId(null);
+                }}
+            >
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Excluir faixa de comissao</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-muted-foreground">
+                        Deseja realmente excluir esta faixa de comissao? Esta acao nao pode ser desfeita.
+                    </p>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setDeleteConfirmOpen(false);
+                                setPendingDeleteCommissionId(null);
+                            }}
+                            disabled={deletingCommissionId !== null}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={confirmDeleteCommission}
+                            disabled={deletingCommissionId !== null}
+                            className="gap-2"
+                        >
+                            {deletingCommissionId !== null ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            {deletingCommissionId !== null ? 'Excluindo...' : 'Excluir faixa'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={saveConfirmOpen}
+                onOpenChange={(open) => {
+                    if (isSaving) return;
+                    setSaveConfirmOpen(open);
+                }}
+            >
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Confirmar alterações</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-muted-foreground">
+                        Deseja salvar as alterações deste atendente?
+                    </p>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setSaveConfirmOpen(false)}
+                            disabled={isSaving}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            onClick={confirmSaveChanges}
+                            disabled={isSaving}
+                            className="gap-2"
+                        >
+                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            {isSaving ? 'Salvando...' : 'Confirmar e salvar'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -349,12 +506,12 @@ export default function AtendenteEditar() {
             <div className="animate-fade-in flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
                     <Button
-                        variant="outline"
-                        size="icon"
+                        variant="default"
                         onClick={() => navigate(-1)}
-                        className="w-9 h-9 rounded-xl shrink-0"
+                        className="rounded-xl shrink-0"
                     >
                         <ArrowLeft className="w-4 h-4" />
+                        Voltar
                     </Button>
                     <div className="flex items-center gap-2">
                         <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-500/20">
@@ -366,20 +523,7 @@ export default function AtendenteEditar() {
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => navigate(`/atendentes/${id}`)} className="gap-2">
-                        Ver detalhes
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={isSaving}
-                        size="lg"
-                        className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        {isSaving ? 'Salvando...' : 'Salvar alteracoes'}
-                    </Button>
-                </div>
+
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-5">
@@ -449,7 +593,7 @@ export default function AtendenteEditar() {
                             <p className="text-sm text-muted-foreground">A tela ja vem preenchida com os dados atuais para voce editar com seguranca.</p>
                         </div>
 
-                        <FieldGroup className="gap-5">
+                        <FieldGroup className="gap-5 md:grid md:grid-cols-2">
                             <Field>
                                 <FieldLabel htmlFor="attendant-type">Cargo</FieldLabel>
                                 <Select value={type} onValueChange={setType} disabled={isSaving || isEditingGestor}>
@@ -525,10 +669,7 @@ export default function AtendenteEditar() {
                                 ID interno #{attendant.user_id}
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button variant="destructive" onClick={() => navigate(`/atendentes/${id}`)} disabled={isSaving}>
-                                    Cancelar
-                                </Button>
-                                <Button onClick={handleSubmit} disabled={isSaving} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                                <Button onClick={requestSaveChanges} disabled={isSaving} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     {isSaving ? 'Salvando...' : 'Salvar alteracoes'}
                                 </Button>
@@ -548,10 +689,7 @@ export default function AtendenteEditar() {
                                 </div>
                             </div>
                             <Button
-                                onClick={() => {
-                                    resetCommissionForm();
-                                    setCommissionModalOpen(true);
-                                }}
+                                onClick={openCreateCommissionModal}
                                 className="gap-2 bg-amber-500 hover:bg-amber-600 text-white"
                             >
                                 <Plus className="w-4 h-4" />
@@ -582,7 +720,35 @@ export default function AtendenteEditar() {
                                                         {formatPercent(commission.commission_percent ?? commission.value)} de comissao
                                                     </p>
                                                 </div>
-                                                <Badge variant="outline">#{commission.id}</Badge>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline">#{commission.id}</Badge>
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1.5"
+                                                        onClick={() => openEditCommissionModal(commission)}
+                                                        disabled={isSavingCommission || deletingCommissionId === commission.id}
+                                                    >
+                                                        <Pencil className="w-3.5 h-3.5" />
+                                                        Editar
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        variant="destructive"
+                                                        className="gap-1.5"
+                                                        onClick={() => requestDeleteCommission(commission.id)}
+                                                        disabled={isSavingCommission || deletingCommissionId === commission.id}
+                                                    >
+                                                        {deletingCommissionId === commission.id ? (
+                                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                        ) : (
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        )}
+                                                        Excluir
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}

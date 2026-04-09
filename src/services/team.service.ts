@@ -294,6 +294,12 @@ export interface CreateAttendantCommissionPayload {
     max_sales: number;
 }
 
+export interface UpdateAttendantCommissionPayload {
+    commission_percent: number;
+    min_sales: number;
+    max_sales: number;
+}
+
 export interface AttendantsResponse {
     attendants: {
         data: ManagerAttendant[];
@@ -458,6 +464,16 @@ export const teamService = {
 
     createAttendantCommission: async (id: number, data: CreateAttendantCommissionPayload) => {
         const response = await api.post(`/api/attendants/${id}/commissions/create`, data);
+        return response.data;
+    },
+
+    updateAttendantCommission: async (commissionId: number, data: UpdateAttendantCommissionPayload) => {
+        const response = await api.post(`/api/commissions/${commissionId}/update`, data);
+        return response.data;
+    },
+
+    deleteAttendantCommission: async (commissionId: number) => {
+        const response = await api.post(`/api/commissions/${commissionId}/delete`);
         return response.data;
     },
 };
