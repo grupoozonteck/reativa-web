@@ -90,3 +90,31 @@ export function formatCurrency(value: string | number | null | undefined): strin
     }
     return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
+
+export function formatPercent(value: number | string | null | undefined): string {
+    if (value === undefined || value === null || value === '') return '--';
+    const numericValue = typeof value === 'string' ? Number(value) : value;
+    if (Number.isNaN(numericValue)) return '--';
+    return `${numericValue.toFixed(2)}%`;
+}
+
+export function formatCurrencyInput(value: string): string {
+    const digitsOnly = value.replace(/\D/g, '');
+    if (!digitsOnly) return '';
+    const numericValue = Number(digitsOnly) / 100;
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(numericValue);
+}
+
+export function parseCurrencyInput(value: string): number {
+    const digitsOnly = value.replace(/\D/g, '');
+    if (!digitsOnly) return Number.NaN;
+    return Number(digitsOnly) / 100;
+}
+
+export function toCurrencyInputValue(value: number | string | undefined): string {
+    if (value === undefined || value === null || value === '') return '';
+    return formatCurrencyInput(String(value));
+}

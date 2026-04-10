@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-    AlertCircle,
     ArrowLeft,
     Coins,
     Loader2,
@@ -26,9 +25,10 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
-import { getInitials } from '@/utils/client-utils';
+import { formatCurrency, formatCurrencyInput, formatPercent, getInitials, parseCurrencyInput, toCurrencyInputValue } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { typeColors } from '@/utils/color-ultis';
+import type { AttendantLeaderOption } from '@/services/team.service';
 
 function extractApiErrorMessage(err: unknown, fallback: string) {
     if (!(err instanceof Object) || !('response' in err)) {
@@ -59,6 +59,18 @@ function extractApiErrorMessage(err: unknown, fallback: string) {
 
     return message ?? fallback;
 }
+
+const initialCommissionFormState = {
+    commissionPercent: '',
+    minSales: '',
+    maxSales: '',
+    error: null as string | null,
+    editingCommissionId: null as number | null,
+};
+
+const EMPTY_TYPES: Record<string, string> = {};
+const EMPTY_SUPERVISORS: AttendantLeaderOption[] = [];
+
 export default function AtendenteEditar() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -71,14 +83,9 @@ export default function AtendenteEditar() {
     const [isSaving, setIsSaving] = useState(false);
 
     const [commissionModalOpen, setCommissionModalOpen] = useState(false);
-    const [commissionPercent, setCommissionPercent] = useState('');
-    const [minSales, setMinSales] = useState('');
-    const [maxSales, setMaxSales] = useState('');
-    const [commissionError, setCommissionError] = useState<string | null>(null);
+    const [commissionForm, setCommissionForm] = useState(initialCommissionFormState);
     const [isSavingCommission, setIsSavingCommission] = useState(false);
-    const [editingCommissionId, setEditingCommissionId] = useState<number | null>(null);
     const [deletingCommissionId, setDeletingCommissionId] = useState<number | null>(null);
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [pendingDeleteCommissionId, setPendingDeleteCommissionId] = useState<number | null>(null);
     const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
 
@@ -95,9 +102,9 @@ export default function AtendenteEditar() {
     });
 
     const attendant = detailQuery.data?.attendant;
-    const types = detailQuery.data?.types ?? {};
+    const types = detailQuery.data?.types ?? EMPTY_TYPES;
     const graduates = detailQuery.data?.graduates ?? {};
-    const supervisors = supportQuery.data?.supervisors ?? [];
+    const supervisors = supportQuery.data?.supervisors ?? EMPTY_SUPERVISORS;
     const gestor = supportQuery.data?.gestor ?? null;
     const isEditingGestor = attendant?.type === 1;
     const isSupervisorType = type === '2';
@@ -147,53 +154,12 @@ export default function AtendenteEditar() {
 
 
     const commissionRanges = attendant?.commissions_attendant ?? attendant?.commissions ?? [];
+    const isEditingCommission = commissionForm.editingCommissionId !== null;
     const isLoading = detailQuery.isLoading || supportQuery.isLoading;
     const isError = detailQuery.isError || supportQuery.isError || !attendant;
 
-    function formatMoney(value: number | string | undefined) {
-        if (value === undefined || value === null || value === '') return '--';
-        const numericValue = typeof value === 'string' ? Number(value) : value;
-        if (Number.isNaN(numericValue)) return '--';
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(numericValue);
-    }
-
-    function formatPercent(value: number | string | undefined) {
-        if (value === undefined || value === null || value === '') return '--';
-        const numericValue = typeof value === 'string' ? Number(value) : value;
-        if (Number.isNaN(numericValue)) return '--';
-        return `${numericValue.toFixed(2)}%`;
-    }
-
-    function formatCurrencyInput(value: string) {
-        const digitsOnly = value.replace(/\D/g, '');
-        if (!digitsOnly) return '';
-        const numericValue = Number(digitsOnly) / 100;
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(numericValue);
-    }
-
-    function parseCurrencyInput(value: string) {
-        const digitsOnly = value.replace(/\D/g, '');
-        if (!digitsOnly) return Number.NaN;
-        return Number(digitsOnly) / 100;
-    }
-
-    function toCurrencyInputValue(value: number | string | undefined) {
-        if (value === undefined || value === null || value === '') return '';
-        return formatCurrencyInput(String(value));
-    }
-
     function resetCommissionForm() {
-        setCommissionPercent('');
-        setMinSales('');
-        setMaxSales('');
-        setCommissionError(null);
-        setEditingCommissionId(null);
+        setCommissionForm(initialCommissionFormState);
     }
 
     function openCreateCommissionModal() {
@@ -202,11 +168,13 @@ export default function AtendenteEditar() {
     }
 
     function openEditCommissionModal(commission: { id: number; commission_percent?: number | string; value?: number | string; min_sales?: number | string; max_sales?: number | string }) {
-        setEditingCommissionId(commission.id);
-        setCommissionPercent(String(commission.commission_percent ?? commission.value ?? ''));
-        setMinSales(toCurrencyInputValue(commission.min_sales));
-        setMaxSales(toCurrencyInputValue(commission.max_sales));
-        setCommissionError(null);
+        setCommissionForm({
+            editingCommissionId: commission.id,
+            commissionPercent: String(commission.commission_percent ?? commission.value ?? ''),
+            minSales: toCurrencyInputValue(commission.min_sales),
+            maxSales: toCurrencyInputValue(commission.max_sales),
+            error: null,
+        });
         setCommissionModalOpen(true);
     }
 
@@ -241,27 +209,51 @@ export default function AtendenteEditar() {
     async function handleSaveCommission() {
         if (!id) return;
 
+        const { commissionPercent, minSales, maxSales, editingCommissionId } = commissionForm;
         const parsedPercent = Number(commissionPercent);
         const parsedMinSales = parseCurrencyInput(minSales);
         const parsedMaxSales = parseCurrencyInput(maxSales);
 
         if (!commissionPercent || !minSales || !maxSales) {
-            setCommissionError('Preencha percentual, venda minima e venda maxima.');
+            setCommissionForm((prev) => ({ ...prev, error: 'Preencha percentual, venda minima e venda maxima.' }));
             return;
         }
 
         if ([parsedPercent, parsedMinSales, parsedMaxSales].some((value) => Number.isNaN(value))) {
-            setCommissionError('Informe apenas numeros validos para a faixa de comissao.');
+            setCommissionForm((prev) => ({ ...prev, error: 'Informe apenas numeros validos para a faixa de comissao.' }));
             return;
         }
 
         if (parsedMinSales > parsedMaxSales) {
-            setCommissionError('A venda minima nao pode ser maior que a venda maxima.');
+            setCommissionForm((prev) => ({ ...prev, error: 'A venda minima nao pode ser maior que a venda maxima.' }));
+            return;
+        }
+
+        const hasOverlappingRange = commissionRanges.some((commission) => {
+            if (editingCommissionId && commission.id === editingCommissionId) {
+                return false;
+            }
+
+            const existingMin = Number(commission.min_sales);
+            const existingMax = Number(commission.max_sales);
+
+            if (Number.isNaN(existingMin) || Number.isNaN(existingMax)) {
+                return false;
+            }
+
+            return parsedMinSales <= existingMax && parsedMaxSales >= existingMin;
+        });
+
+        if (hasOverlappingRange) {
+            setCommissionForm((prev) => ({
+                ...prev,
+                error: 'Essa faixa cruza com outra ja cadastrada. Ajuste os valores para nao sobrepor.',
+            }));
             return;
         }
 
         setIsSavingCommission(true);
-        setCommissionError(null);
+        setCommissionForm((prev) => ({ ...prev, error: null }));
 
         try {
             if (editingCommissionId) {
@@ -290,7 +282,7 @@ export default function AtendenteEditar() {
                     ? 'Nao foi possivel atualizar a faixa de comissao.'
                     : 'Nao foi possivel criar a faixa de comissao.',
             );
-            setCommissionError(message);
+            setCommissionForm((prev) => ({ ...prev, error: message }));
             toast.error(message);
         } finally {
             setIsSavingCommission(false);
@@ -313,13 +305,11 @@ export default function AtendenteEditar() {
 
     function requestDeleteCommission(commissionId: number) {
         setPendingDeleteCommissionId(commissionId);
-        setDeleteConfirmOpen(true);
     }
 
     async function confirmDeleteCommission() {
         if (!pendingDeleteCommissionId) return;
         await handleDeleteCommission(pendingDeleteCommissionId);
-        setDeleteConfirmOpen(false);
         setPendingDeleteCommissionId(null);
     }
 
@@ -360,7 +350,7 @@ export default function AtendenteEditar() {
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingCommissionId ? 'Editar faixa de comissao' : 'Nova faixa de comissao'}</DialogTitle>
+                        <DialogTitle>{isEditingCommission ? 'Editar faixa de comissao' : 'Nova faixa de comissao'}</DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-4">
@@ -370,8 +360,8 @@ export default function AtendenteEditar() {
                                 id="commission-min-sales"
                                 type="text"
                                 inputMode="decimal"
-                                value={minSales}
-                                onChange={(e) => setMinSales(formatCurrencyInput(e.target.value))}
+                                value={commissionForm.minSales}
+                                onChange={(e) => setCommissionForm((prev) => ({ ...prev, minSales: formatCurrencyInput(e.target.value) }))}
                                 disabled={isSavingCommission}
                                 placeholder="R$ 0,00"
                             />
@@ -383,8 +373,8 @@ export default function AtendenteEditar() {
                                 id="commission-max-sales"
                                 type="text"
                                 inputMode="decimal"
-                                value={maxSales}
-                                onChange={(e) => setMaxSales(formatCurrencyInput(e.target.value))}
+                                value={commissionForm.maxSales}
+                                onChange={(e) => setCommissionForm((prev) => ({ ...prev, maxSales: formatCurrencyInput(e.target.value) }))}
                                 disabled={isSavingCommission}
                                 placeholder="R$ 0,00"
                             />
@@ -397,17 +387,17 @@ export default function AtendenteEditar() {
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                value={commissionPercent}
-                                onChange={(e) => setCommissionPercent(e.target.value)}
+                                value={commissionForm.commissionPercent}
+                                onChange={(e) => setCommissionForm((prev) => ({ ...prev, commissionPercent: e.target.value }))}
                                 disabled={isSavingCommission}
                                 placeholder="5"
                             />
                             <FieldDescription>Ex.: `5` para 5% nessa faixa.</FieldDescription>
                         </Field>
 
-                        {commissionError && (
+                        {commissionForm.error && (
                             <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
-                                {commissionError}
+                                {commissionForm.error}
                             </div>
                         )}
                     </div>
@@ -421,21 +411,22 @@ export default function AtendenteEditar() {
                             onClick={handleSaveCommission}
                             disabled={isSavingCommission}
                         >
-                            {isSavingCommission ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingCommissionId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
+                            {isSavingCommission ? <Loader2 className="w-4 h-4 animate-spin" /> : (isEditingCommission ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
                             {isSavingCommission
-                                ? (editingCommissionId ? 'Salvando faixa...' : 'Criando faixa...')
-                                : (editingCommissionId ? 'Salvar faixa' : 'Criar faixa')}
+                                ? (isEditingCommission ? 'Salvando faixa...' : 'Criando faixa...')
+                                : (isEditingCommission ? 'Salvar faixa' : 'Criar faixa')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <Dialog
-                open={deleteConfirmOpen}
+                open={pendingDeleteCommissionId !== null}
                 onOpenChange={(open) => {
                     if (deletingCommissionId !== null) return;
-                    setDeleteConfirmOpen(open);
-                    if (!open) setPendingDeleteCommissionId(null);
+                    if (!open) {
+                        setPendingDeleteCommissionId(null);
+                    }
                 }}
             >
                 <DialogContent className="sm:max-w-md">
@@ -449,7 +440,6 @@ export default function AtendenteEditar() {
                         <Button
                             variant="outline"
                             onClick={() => {
-                                setDeleteConfirmOpen(false);
                                 setPendingDeleteCommissionId(null);
                             }}
                             disabled={deletingCommissionId !== null}
@@ -577,9 +567,6 @@ export default function AtendenteEditar() {
                                 <span className="text-muted-foreground">Lider atual</span>
                                 <div className="flex flex-col items-end gap-1 text-right">
                                     <span className="font-medium">{attendant.parent?.user?.name ?? 'Sem lider vinculado'}</span>
-                                    {attendant.parent?.user?.name ? (
-                                        <StatusBadge status={attendant.parent.status ?? null} />
-                                    ) : null}
                                 </div>
                             </div>
                         </div>
@@ -710,23 +697,24 @@ export default function AtendenteEditar() {
                             ) : (
                                 <div className="space-y-3">
                                     {commissionRanges.map((commission) => (
-                                        <div key={commission.id} className="rounded-xl border border-border/60 px-4 py-4">
+                                        <div key={commission.id} className="rounded-xl border border-border/60 px-4 py-4 bg-slate-950/20">
                                             <div className="flex flex-wrap items-center justify-between gap-3">
-                                                <div>
-                                                    <p className="font-semibold">
-                                                        {formatMoney(commission.min_sales)} ate {formatMoney(commission.max_sales)}
+                                                <div className="space-y-1">
+                                                    <div className="inline-flex items-center rounded-full border border-amber-300/60 bg-amber-500/15 px-2.5 py-1 text-xs font-bold text-amber-300">
+                                                        ID #{commission.id}
+                                                    </div>
+                                                    <p className="font-semibold text-base">
+                                                        {formatCurrency(commission.min_sales)} ate {formatCurrency(commission.max_sales)}
                                                     </p>
                                                     <p className="text-sm text-muted-foreground">
                                                         {formatPercent(commission.commission_percent ?? commission.value)} de comissao
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Badge variant="outline">#{commission.id}</Badge>
                                                     <Button
                                                         type="button"
                                                         size="sm"
-                                                        variant="outline"
-                                                        className="gap-1.5"
+                                                        className="gap-1.5 bg-sky-600 text-white hover:bg-sky-500"
                                                         onClick={() => openEditCommissionModal(commission)}
                                                         disabled={isSavingCommission || deletingCommissionId === commission.id}
                                                     >
@@ -736,8 +724,7 @@ export default function AtendenteEditar() {
                                                     <Button
                                                         type="button"
                                                         size="sm"
-                                                        variant="destructive"
-                                                        className="gap-1.5"
+                                                        className="gap-1.5 bg-rose-600 text-white hover:bg-rose-500"
                                                         onClick={() => requestDeleteCommission(commission.id)}
                                                         disabled={isSavingCommission || deletingCommissionId === commission.id}
                                                     >
