@@ -40,7 +40,7 @@ type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
 
 function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number) {
     const params: Record<string, number | string> = { page };
-    if (search) params.login = search;
+    if (search) params.search = search;
     if (status === 'sem_pedidos') params.without_orders = 1;
     if (status === 'com_pedidos') params.has_orders = 1;
     if (status === 'com_pagos') params.has_paid_orders = 1;

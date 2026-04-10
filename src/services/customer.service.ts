@@ -164,7 +164,18 @@ export interface CustomerReengagement {
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
+    leader?: SponsorLeader | null;
     observations: ReengagementObservation[];
+}
+
+export interface SponsorLeader {
+    id: number;
+    login: string;
+    name: string;
+    email?: string | null;
+    personal_data?: {
+        avatar: string;
+    }
 }
 
 export interface UserDetailResponse {
@@ -261,6 +272,57 @@ export const customerService = {
         return response.data;
     },
 
+    /** Busca lider/patrocinador pelo login */
+    searchSponsorLeader: async (login: string): Promise<SponsorLeader> => {
+        const response = await api.get('/api/reengagements/search-leader', {
+            params: { login },
+        });
+
+        const payload = response.data as {
+            data?: unknown;
+            leader?: unknown;
+            user?: unknown;
+        };
+        const base = payload?.data ?? payload;
+        const candidate = Array.isArray(base)
+            ? base[0]
+            : (base as { leader?: unknown; user?: unknown })?.leader
+            ?? (base as { leader?: unknown; user?: unknown })?.user
+            ?? base;
+
+        const entity = (candidate ?? {}) as {
+            id?: number | string;
+            login?: string;
+            name?: string;
+            email?: string | null;
+            personal_data?: {
+                avatar?: string | null;
+            } | null;
+        };
+
+        if (!entity.id || !entity.login) {
+            throw new Error('Lider nao encontrado');
+        }
+
+        return {
+            id: Number(entity.id),
+            login: entity.login,
+            name: entity.name ?? entity.login,
+            email: entity.email ?? null,
+            personal_data: {
+                avatar: entity.personal_data?.avatar ?? '',
+            },
+        };
+    },
+
+    /** Vincula lider/patrocinador ao cliente */
+    updateSponsorLogin: async (userId: number, leaderId: number) => {
+        const response = await api.post(`/api/reengagements/user/${userId}/link-leader`, {
+            leader_id: leaderId,
+        });
+        return response.data;
+    },
+
     /** Obtém link de acesso à loja já logado pelo cliente */
     getAccessStoreLink: async (userId: number) => {
         const response = await api.get<{ success: boolean; data: { url: string; token: string } }>(`/api/reengagements/user/${userId}/access-store`);
@@ -278,7 +340,7 @@ export const customerService = {
         page?: number;
         start_date?: string;
         end_date?: string;
-        login?: string;
+        search?: string;
         order_id?: number;
         status?: number;
     } = {}) => {
@@ -287,7 +349,7 @@ export const customerService = {
                 page: params.page ?? 1,
                 ...(params.start_date && { start_date: params.start_date }),
                 ...(params.end_date && { end_date: params.end_date }),
-                ...(params.login && { login: params.login }),
+                ...(params.search && { search: params.search }),
                 ...(params.order_id && { order_id: params.order_id }),
                 ...(params.status !== undefined && { status: params.status }),
             },

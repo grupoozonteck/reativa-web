@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldLabel } from '../ui/field';
 import { customerService } from '@/services/customer.service';
+import { X, StickyNote } from 'lucide-react';
 
 interface AddObservacaoModalProps {
     open: boolean;
@@ -79,9 +80,11 @@ export function AddObservacaoModal({ open, onClose, reengagementId, onUpdated }:
                 </div>
                 <DialogFooter>
                     <Button variant="destructive" onClick={handleClose} disabled={loading}>
+                        <X className="w-4 h-4" />
                         Cancelar
                     </Button>
                     <Button onClick={handleSave} disabled={loading}>
+                        <StickyNote className="w-4 h-4" />
                         {loading ? 'Salvando...' : 'Salvar'}
                     </Button>
                 </DialogFooter>

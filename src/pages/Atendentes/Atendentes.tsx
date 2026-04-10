@@ -60,17 +60,16 @@ export default function Atendentes() {
                         <div className="flex items-center gap-2">
                             <Button
                                 onClick={() => setCreateModalOpen(true)}
-                                size="lg"
-                                className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                                className="gap-2"
                             >
                                 <Plus className="w-4 h-4" />
                                 Novo Atendente
                             </Button>
                             <Button
                                 onClick={() => refetch()}
+                                variant="secondary"
                                 disabled={isFetching}
-                                size="lg"
-                                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                className="gap-2"
                             >
                                 <RefreshCcw className={cn('w-4 h-4', isFetching && 'animate-spin')} />
                                 {isFetching ? 'Atualizando...' : 'Atualizar'}

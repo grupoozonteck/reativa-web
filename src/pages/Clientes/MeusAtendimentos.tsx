@@ -61,7 +61,7 @@ export default function MeusAtendimentos() {
         queryKey: ['personal-reengagements', page, appliedSearch, appliedStartDate, effectiveEndDate, appliedStatusFilter],
         queryFn: () => customerService.getPersonalReengagements({
             page,
-            login: appliedSearch || undefined,
+            search: appliedSearch || undefined,
             start_date: appliedStartDate || undefined,
             end_date: effectiveEndDate,
             status: appliedStatusFilter ? Number(appliedStatusFilter) : undefined,
