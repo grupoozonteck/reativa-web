@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/utils/client-utils';
 import { type TeamMemberPerformance } from '@/services/team.service';
+import { useNavigate } from 'react-router-dom';
 
 export function MemberCardSkeleton() {
     return (
@@ -27,6 +28,7 @@ export function MemberCardSkeleton() {
 }
 
 export function MemberCard({ member, index }: { member: TeamMemberPerformance; index: number }) {
+    const navigate = useNavigate();
     const initials = (member.user?.name ?? 'Membro')
         .split(' ')
         .map((part) => part[0])
@@ -39,14 +41,24 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
     const xpValue = Number(member.xp ?? 0);
     const revenueValue = Number(member.revenue ?? 0);
     const isTopPerformer = index === 0;
+    const goToDetails = () => navigate(`/atendentes/${member.id}`);
 
     return (
         <div
+            role="button"
+            tabIndex={0}
+            onClick={goToDetails}
+            onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    goToDetails();
+                }
+            }}
             className={cn(
-                'rounded-2xl border px-4 py-4 transition-all',
+                'cursor-pointer rounded-2xl border px-4 py-4 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2',
                 isTopPerformer
-                    ? 'border-primary/30 bg-gradient-to-r from-primary/10 via-card to-card shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
-                    : 'border-border/60 bg-card hover:bg-muted/20',
+                    ? 'border-primary/30 bg-gradient-to-r from-primary/10 via-card to-card shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-primary/50 hover:shadow-[0_10px_34px_rgba(0,0,0,0.08)]'
+                    : 'border-border/60 bg-card hover:border-primary/30 hover:bg-muted/20',
             )}
         >
             <div className="grid gap-4 lg:hidden">
