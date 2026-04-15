@@ -85,7 +85,7 @@ export function PerformanceStats({
                         <card.icon className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                        <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        <p className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                             {card.label}
                         </p>
                         <p className={cn('text-xl font-black tracking-tight tabular-nums', card.color)}>{card.value}</p>

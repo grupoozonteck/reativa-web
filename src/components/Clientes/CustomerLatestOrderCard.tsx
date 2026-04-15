@@ -38,11 +38,11 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
 
             <div className="grid grid-cols-2 gap-4 mb-5 md:grid-cols-4">
                 <div>
-                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Valor</p>
+                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-1">Valor</p>
                     <p className="font-display text-lg font-black text-secondary">{formatCurrency(order.value)}</p>
                 </div>
                 <div>
-                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Franquia</p>
+                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-1">Franquia</p>
                     {order.franchise ? (
                         <div className="flex items-start gap-1.5">
                             <Store className="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-0.5" />
@@ -53,6 +53,19 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
                                         {[order.franchise.city?.name, order.franchise.state?.name].filter(Boolean).join(' - ')}
                                     </p>
                                 )}
+                                {order.franchise.address_line && (
+                                    <p className="text-xs text-on-surface-variant mt-0.5">
+                                        {order.franchise.address_line}{order.franchise.number ? `, ${order.franchise.number}` : ''}
+                                        {order.franchise.complement && order.franchise.complement !== order.franchise.address_line
+                                            ? ` — ${order.franchise.complement}` : ''}
+                                    </p>
+                                )}
+                                {order.franchise.district && (
+                                    <p className="text-xs text-on-surface-variant">{order.franchise.district}</p>
+                                )}
+                                {order.franchise.zip_code && (
+                                    <p className="text-xs text-on-surface-variant">CEP: {order.franchise.zip_code}</p>
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -60,12 +73,12 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
                     )}
                 </div>
                 <div>
-                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Data / Pagamento</p>
+                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-1">Data / Pagamento</p>
                     <p className="text-sm font-medium text-on-surface">{formatDateTime(order.created_at)}</p>
                     <p className="text-sm font-medium text-on-surface-variant">{order.payment_date ? formatDateTime(order.payment_date) : 'Não pago'}</p>
                 </div>
                 <div>
-                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Entrega</p>
+                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-1">Entrega</p>
                     <p className={cn('text-sm font-medium', deliveryStatus?.color || 'text-on-surface-variant')}>
                         {deliveryStatus?.label || '--'}
                     </p>
@@ -100,7 +113,7 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
                                         <p className="text-sm font-medium text-on-surface truncate">
                                             {item.internationalization?.product_name || `Produto #${item.product_id}`}
                                         </p>
-                                        <p className="text-[11px] text-on-surface-variant font-mono">Item #{item.id}</p>
+                                        <p className="text-xs text-on-surface-variant font-mono">Item #{item.id}</p>
                                     </div>
                                 </div>
                             ))}

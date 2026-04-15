@@ -51,7 +51,7 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
                     </Avatar>
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold truncate leading-tight">{name}</p>
-                        <p className="text-[10px] text-muted-foreground truncate leading-tight">{email}</p>
+                        <p className="text-xs text-muted-foreground truncate leading-tight">{email}</p>
                     </div>
                     <ThemeToggleButton />
                     <Button

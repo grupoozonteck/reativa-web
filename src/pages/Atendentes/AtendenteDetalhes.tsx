@@ -145,13 +145,13 @@ export default function AtendenteDetalhes() {
                             <p className="text text-muted-foreground">@{data.attendant.user?.login}</p>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            <Badge variant="outline" className={cn('text-[10px] px-2 h-5', typeColors[data.attendant.type])}>
+                            <Badge variant="outline" className={cn('text-xs px-2 h-5', typeColors[data.attendant.type])}>
                                 {data.attendant.type_label}
                             </Badge>
-                            <Badge variant="outline" className="text-[10px] px-2 h-5">
+                            <Badge variant="outline" className="text-xs px-2 h-5">
                                 {data.attendant.graduation_label}
                             </Badge>
-                            <Badge variant="outline" className="text-[10px] px-2 h-5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20">
+                            <Badge variant="outline" className="text-xs px-2 h-5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20">
                                 <Star className="w-2.5 h-2.5 mr-1" />
                                 Nível {data.attendant.level}
                             </Badge>
@@ -196,7 +196,7 @@ export default function AtendenteDetalhes() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-muted-foreground">Cargo</span>
-                                <Badge variant="outline" className={cn('text-[10px] px-2 h-5', typeColors[data.attendant.parent.type])}>
+                                <Badge variant="outline" className={cn('text-xs px-2 h-5', typeColors[data.attendant.parent.type])}>
                                     {data.attendant.parent.type_label}
                                 </Badge>
                             </div>

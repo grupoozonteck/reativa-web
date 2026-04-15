@@ -50,7 +50,7 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
                     </a>
                 )}
                 <div className="flex items-center justify-between gap-2">
-                    <Badge className={cn('text-[10px] gap-1.5 whitespace-nowrap border', statusStyle.color)}>
+                    <Badge className={cn('text-xs gap-1.5 whitespace-nowrap border', statusStyle.color)}>
                         <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
                         {statusLabel}
                     </Badge>

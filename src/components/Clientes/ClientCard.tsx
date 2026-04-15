@@ -40,11 +40,11 @@ export function ClientCard({ client }: { client: ReengagementUser }) {
 
                 <div className="bg-surface-highest rounded-lg p-2.5 flex items-center justify-between gap-3">
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-0.5">Pedidos</span>
+                        <span className="text-xs text-on-surface-variant uppercase tracking-wider mb-0.5">Pedidos</span>
                         <span className="font-display text-lg font-semibold text-on-surface">{client.total_orders}</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-0.5">Pagos</span>
+                        <span className="text-xs text-on-surface-variant uppercase tracking-wider mb-0.5">Pagos</span>
                         <span className={cn(
                             'font-display text-lg font-semibold',
                             client.paid_orders > 0 ? 'text-primary [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.35)]' : 'text-on-surface-variant'

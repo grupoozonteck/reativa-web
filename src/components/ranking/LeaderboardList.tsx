@@ -2,6 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { LeaderboardEntry } from './types';
+import { formatCurrency } from '@/utils/client-utils';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
@@ -26,7 +27,7 @@ function LevelBadge({ label }: { label: string }) {
     return (
         <span
             className={cn(
-                'rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide',
+                'rounded-full border px-2 py-0.5 text-xs font-bold uppercase tracking-wide',
                 isJunior
                     ? 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
                     : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
@@ -51,12 +52,12 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
         <div className="solid-card overflow-hidden rounded-2xl">
             <div className="flex items-center justify-between border-b border-border/60 px-4 py-4">
                 <h3 className="text-sm font-bold text-foreground">Lista de Elite</h3>
-                <span className="text-[10px] text-muted-foreground">{sellers.length} participantes</span>
+                <span className="text-xs text-muted-foreground">{sellers.length} participantes</span>
             </div>
 
             <div className="hidden grid-cols-[56px_minmax(220px,1fr)_86px_64px_92px_120px] items-center border-b border-border/60 bg-muted/25 px-4 py-2 lg:grid">
                 {['Rank', 'Membro', 'Nivel', 'Vendas', 'Conv. %', 'Receita'].map((col) => (
-                    <span key={col} className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <span key={col} className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         {col}
                     </span>
                 ))}
@@ -87,7 +88,7 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                     <Avatar className={cn('h-10 w-10', isFirst && 'ring-2 ring-primary/40')}>
                                         <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
                                         <AvatarFallback className={cn(
-                                            'text-[10px] font-bold',
+                                            'text-xs font-bold',
                                             isFirst ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
                                         )}>
                                             {initials}
@@ -97,12 +98,12 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                         <div className="flex items-center gap-2">
                                             <span className="truncate text-sm font-semibold text-foreground">{seller.user.name}</span>
                                             {isFirst && (
-                                                <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
+                                                <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-primary">
                                                     Top performer
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-[11px] text-muted-foreground">@{seller.user.login}</p>
+                                        <p className="text-xs text-muted-foreground">@{seller.user.login}</p>
                                     </div>
                                 </div>
 
@@ -123,7 +124,7 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                     <Avatar className={cn('h-10 w-10', isFirst && 'ring-2 ring-primary/40')}>
                                         <AvatarImage src={avatarUrl} alt={seller.user.name} className="object-cover" />
                                         <AvatarFallback className={cn(
-                                            'text-[10px] font-bold',
+                                            'text-xs font-bold',
                                             isFirst ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
                                         )}>
                                             {initials}
@@ -133,21 +134,21 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                         <div className="flex items-center gap-2">
                                             <span className="truncate text-sm font-semibold text-foreground">{seller.user.name}</span>
                                             {isFirst && (
-                                                <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
+                                                <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-primary">
                                                     Top performer
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="truncate text-[11px] text-muted-foreground">@{seller.user.login}</p>
+                                        <p className="truncate text-xs text-muted-foreground">@{seller.user.login}</p>
                                     </div>
                                 </div>
 
                                 <LevelBadge label={seller.graduation_label} />
 
-                                <span className="text-sm font-bold tabular-nums text-foreground">{seller.sales}</span>
+                                <span className="text-sm font-bold tabular-nums text-foreground ml-4">{seller.sales}</span>
 
                                 <div className="space-y-1">
-                                    <span className="text-[11px] font-semibold tabular-nums text-muted-foreground">{convPct}%</span>
+                                    <span className="text-xs font-semibold tabular-nums text-muted-foreground">{convPct}%</span>
                                     <div className="h-1 w-12 overflow-hidden rounded-full bg-muted">
                                         <motion.div
                                             className="h-full rounded-full bg-secondary"
@@ -159,7 +160,7 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                 </div>
 
                                 <span className={cn('text-right text-sm font-black tabular-nums', isFirst ? 'text-primary' : 'text-foreground')}>
-                                    {BRL.format(revenue)}
+                                    {formatCurrency(revenue)}
                                 </span>
                             </div>
                         </motion.div>
@@ -169,7 +170,7 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
 
             {hidden > 0 && (
                 <div className="px-4 py-3 text-center">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         + {hidden} outros membros em campo
                     </span>
                 </div>
@@ -189,7 +190,7 @@ function MobileMetric({
 }) {
     return (
         <div className="rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
             <div className={cn('pt-1 text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</div>
         </div>
     );

@@ -39,7 +39,7 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                     <span className="w-2 h-2 rounded-full bg-primary" />
                     Top Atendentes — Mês
                 </h2>
-                <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse inline-block" />
                     Ao vivo
                 </Badge>
@@ -86,10 +86,10 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                     />
                                 </div>
                                 <div className="flex gap-3 mt-1.5">
-                                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
                                         <ShoppingCart className="w-2.5 h-2.5" />{s.sales} vendas
                                     </span>
-                                    <span className="text-[10px] text-muted-foreground">{s.conversion}% conv.</span>
+                                    <span className="text-xs text-muted-foreground">{s.conversion}% conv.</span>
                                 </div>
                             </div>
                         </div>

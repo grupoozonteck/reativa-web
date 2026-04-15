@@ -196,7 +196,7 @@ export default function Clientes() {
                     <Filter className="w-4 h-4 text-on-surface-variant" />
                     <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
                     {hasActiveFilters && (
-                        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                        <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
                             ativo
                         </Badge>
                     )}
@@ -332,11 +332,11 @@ export default function Clientes() {
                             <Table>
                                 <TableHeader>
                                     <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
+                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
+                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
+                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
+                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
+                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                             </Table>

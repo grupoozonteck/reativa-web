@@ -38,7 +38,7 @@ export function ClientRow({ client }: { client: ReengagementUser }) {
                         )}
                         <div className="min-w-0">
                             <p className="text-sm font-semibold text-on-surface truncate">{client.name}</p>
-                            <p className="text-[11px] text-on-surface-variant truncate">{client.login}</p>
+                            <p className="text-xs text-on-surface-variant truncate">{client.login}</p>
                         </div>
                     </div>
                 </TableCell>

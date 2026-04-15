@@ -49,20 +49,20 @@ export default function RecentSalesCard({ sales, isLoading = false }: RecentSale
                             style={{ animationDelay: `${600 + i * 60}ms`, opacity: 0 }}
                         >
                             {/* Avatar initials */}
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-[9px] font-bold text-white shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                                 {getInitials(n.attendant_name)}
                             </div>
 
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-xs font-semibold">{n.attendant_name}</span>
-                                    <Badge variant="outline" className={cn('text-[8px] px-1 h-3.5', cfg.color)}>
+                                    <Badge variant="outline" className={cn('text-xs px-1 h-3.5', cfg.color)}>
                                         {cfg.label}
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[10px] text-muted-foreground truncate">{n.customer_name}</p>
-                                    <span className="text-[11px] font-bold text-emerald-500 ml-1 shrink-0">
+                                    <p className="text-xs text-muted-foreground truncate">{n.customer_name}</p>
+                                    <span className="text-xs font-bold text-emerald-500 ml-1 shrink-0">
                                         +{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(n.value)}
                                     </span>
                                 </div>

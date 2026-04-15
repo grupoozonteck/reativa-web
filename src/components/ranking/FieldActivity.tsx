@@ -73,7 +73,7 @@ export function FieldActivity({ sellers }: FieldActivityProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', damping: 22, stiffness: 260, delay: 0.2 }}
         >
-            <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 Atividade de Campo
             </p>
 
@@ -87,7 +87,7 @@ export function FieldActivity({ sellers }: FieldActivityProps) {
                             )}
                         </div>
                         <div className="pb-4">
-                            <p className="text-[9px] text-muted-foreground">{activity.time}</p>
+                            <p className="text-xs text-muted-foreground">{activity.time}</p>
                             <p className="text-xs leading-snug text-foreground/85">
                                 {activity.parts.map((part, partIndex) => (
                                     <span

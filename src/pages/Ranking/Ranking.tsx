@@ -6,7 +6,6 @@ import { PodiumSection } from '@/components/ranking/PodiumSection';
 import { LeaderboardList } from '@/components/ranking/LeaderboardList';
 import { RankingStats } from '@/components/ranking/RankingStats';
 import { RankingHeader } from '@/components/ranking/RankingHeader';
-import { FieldActivity } from '@/components/ranking/FieldActivity';
 import { GlobalGoal } from '@/components/ranking/GlobalGoal';
 import { LeaderboardService } from '@/services/leaderboard.service';
 import type { LeaderboardEntry } from '@/components/ranking/types';
@@ -99,7 +98,6 @@ export default function Ranking() {
                     {/* Right column */}
                     <div className="space-y-4">
                         <RankingStats summary={data?.summary } />
-                        <FieldActivity sellers={sellers} />
                         <GlobalGoal totalRevenue={totalRevenue} />
                     </div>
                 </div>

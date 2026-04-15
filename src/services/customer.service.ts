@@ -93,6 +93,11 @@ export interface PersonalOrderItem {
 export interface OrderFranchise {
     id: number;
     fantasy_name: string;
+    address_line?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    zip_code?: string;
     city_id?: number;
     state_id?: number;
     city?: { id: number; name: string };
@@ -153,6 +158,7 @@ export interface UserDetail {
     personal_orders: PersonalOrder[] | null;
     personal_data: PersonalData;
     personal_address: PersonalAddress | null;
+    sponsor?: UserSponsor | null;
     [key: string]: unknown;
 }
 
@@ -186,6 +192,22 @@ export interface SponsorLeader {
     personal_data?: {
         avatar: string;
     }
+}
+
+export interface UserSponsor {
+    id: number;
+    user_id: number;
+    sponsor: number;
+    sponsor_changed: string | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    operator_id: number | null;
+    user_sponsor: {
+        id: number;
+        login: string;
+        name: string;
+    };
 }
 
 export interface UserDetailResponse {

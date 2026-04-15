@@ -39,7 +39,7 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                     {!isLoading && (
                         <Badge
                             variant="outline"
-                            className="ml-2 text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                            className="ml-2 text-xs bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
                         >
                             {total ?? attendants.length}
                         </Badge>

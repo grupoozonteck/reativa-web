@@ -59,13 +59,13 @@ export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">{attendant.user?.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">@{attendant.user?.login}</p>
+                    <p className="text-xs text-muted-foreground truncate">@{attendant.user?.login}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                    <Badge variant="outline" className={`text-[9px] px-1.5 h-4 ${badgeColor}`}>
+                    <Badge variant="outline" className={`text-xs px-1.5 h-4 ${badgeColor}`}>
                         {attendant.type_label}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground">{attendant.graduation_label}</span>
+                    <span className="text-xs text-muted-foreground">{attendant.graduation_label}</span>
                 </div>
             </div>
 
@@ -73,17 +73,17 @@ export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
             <div className="grid grid-cols-3 gap-2 pt-3 border-t border-border/50">
                 <div className="text-center">
                     <p className="text-sm font-bold tabular-nums">{attendant.sales}</p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Vendas</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Vendas</p>
                 </div>
                 <div className="text-center">
                     <p className="text-sm font-bold tabular-nums">{attendant.total_reengagements}</p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Reat.</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Reat.</p>
                 </div>
                 <div className="text-center">
                     <p className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
                         {formatCurrency(attendant.revenue)}
                     </p>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wide">Receita</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Receita</p>
                 </div>
             </div>
         </div>

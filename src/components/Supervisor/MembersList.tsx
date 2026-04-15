@@ -20,7 +20,7 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
                     {!isLoading && (
                         <Badge
                             variant="outline"
-                            className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                            className="text-xs bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
                         >
                             {members.length}
                         </Badge>
@@ -57,7 +57,7 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
                             {['Rank', 'Membro', 'Cargo', 'Vendas', 'Reat.', 'Conv.', 'Receita', 'Nivel'].map((column) => (
                                 <span
                                     key={column}
-                                    className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                                    className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
                                 >
                                     {column}
                                 </span>

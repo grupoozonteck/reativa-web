@@ -158,7 +158,7 @@ export default function MeusAtendimentos() {
                                 <card.icon className={cn('w-5 h-5', card.iconColor)} />
                             </div>
                             <div>
-                                <p className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                                <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                                     {card.label}
                                 </p>
                                 <p className={cn('font-display text-2xl font-black tracking-tight tabular-nums', card.color)}>
@@ -311,12 +311,12 @@ export default function MeusAtendimentos() {
                         <Table>
                             <TableHeader>
                                 <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[8%] px-3">ID</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-3">Cliente</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[18%] px-3">WhatsApp</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[18%] px-3">Status</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[15%] px-3">Início</TableHead>
-                                    <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-3">Ações</TableHead>
+                                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant w-[8%] px-3">ID</TableHead>
+                                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant px-3">Cliente</TableHead>
+                                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant w-[18%] px-3">WhatsApp</TableHead>
+                                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[18%] px-3">Status</TableHead>
+                                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[15%] px-3">Início</TableHead>
+                                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-3">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                         </Table>

@@ -89,7 +89,7 @@ export function PodiumSection({ sellers }: PodiumSectionProps) {
                                     transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                                 >
                                     <Star className="h-2.5 w-2.5 fill-primary text-primary" />
-                                    <span className="text-[9px] font-bold uppercase tracking-wider text-primary">MVP do Mes</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-primary">MVP do Mes</span>
                                 </motion.div>
                             )}
 
@@ -113,7 +113,7 @@ export function PodiumSection({ sellers }: PodiumSectionProps) {
                                 </Avatar>
                                 <div
                                     className={cn(
-                                        'absolute -bottom-2 left-1/2 z-20 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full text-[9px] font-black',
+                                        'absolute -bottom-2 left-1/2 z-20 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full text-xs font-black',
                                         isFirst
                                             ? 'bg-primary text-primary-foreground'
                                             : cfg.rank === 2

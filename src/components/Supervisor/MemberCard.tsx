@@ -70,12 +70,12 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                         <div className="flex items-center gap-2">
                             <p className="truncate text-sm font-semibold text-foreground">{member.user?.name ?? 'Membro sem nome'}</p>
                             {isTopPerformer && (
-                                <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary">
                                     Top 1
                                 </span>
                             )}
                         </div>
-                        <p className="truncate text-[11px] text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
+                        <p className="truncate text-xs text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
                     </div>
                     <span className={cn('text-lg font-black tabular-nums', isTopPerformer ? 'text-primary' : 'text-muted-foreground')}>
                         {String(index + 1).padStart(2, '0')}
@@ -91,10 +91,10 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                     <MobileMetric label="XP" value={xpValue.toFixed(2)} />
                     <MobileMetric label="Receita" value={formatCurrency(revenueValue)} valueClassName="text-emerald-600 dark:text-emerald-400" />
                     <div className="space-y-1">
-                        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Nivel</p>
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">Nivel</p>
                         <div className="flex items-center gap-2">
                             <Progress value={conversionPct} className="h-1.5 flex-1" />
-                            <span className="w-10 text-right text-[10px] text-muted-foreground">{member.level}</span>
+                            <span className="w-10 text-right text-xs text-muted-foreground">{member.level}</span>
                         </div>
                     </div>
                 </div>
@@ -119,12 +119,12 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                         <div className="flex items-center gap-2">
                             <p className="truncate text-sm font-semibold text-foreground">{member.user?.name ?? 'Membro sem nome'}</p>
                             {isTopPerformer && (
-                                <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary">
                                     Top 1
                                 </span>
                             )}
                         </div>
-                        <p className="truncate text-[11px] text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
+                        <p className="truncate text-xs text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                     <Badge
                         variant="outline"
                         className={cn(
-                            'h-5 px-2 text-[10px]',
+                            'h-5 px-2 text-xs',
                             isTopPerformer
                                 ? 'border-primary/30 bg-primary/10 text-primary'
                                 : 'border-border bg-muted text-foreground',
@@ -140,7 +140,7 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                     >
                         {member.type_label}
                     </Badge>
-                    <p className="text-[10px] text-muted-foreground">{member.graduation_label}</p>
+                    <p className="text-xs text-muted-foreground">{member.graduation_label}</p>
                 </div>
 
                 <Metric value={member.sales} />
@@ -178,7 +178,7 @@ function MobileMetric({
 }) {
     return (
         <div className="space-y-1 rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
             <p className={cn('text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</p>
         </div>
     );

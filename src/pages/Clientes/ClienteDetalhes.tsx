@@ -18,6 +18,7 @@ import {
     CalendarClock,
     StickyNote,
     UserPlus,
+    Users,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -294,7 +295,7 @@ export default function ClienteDetalhes() {
                                                 <Mail className="w-4 h-4 text-accent" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">E-mail</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">E-mail</p>
                                                 <p className="text-sm text-on-surface break-all">{user.email || '--'}</p>
                                             </div>
                                         </div>
@@ -303,7 +304,7 @@ export default function ClienteDetalhes() {
                                                 <MessageCircle className="w-4 h-4 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">WhatsApp</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">WhatsApp</p>
                                                 {hasWhatsapp ? (
                                                     <a
                                                         href={getWhatsAppLink(whatsapp)}
@@ -324,7 +325,7 @@ export default function ClienteDetalhes() {
                                                 <Phone className="w-4 h-4 text-secondary" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Telefone</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Telefone</p>
                                                 <p className="text-sm text-on-surface">{formatWhatsApp(user.phone_number) || '--'}</p>
                                             </div>
                                         </div>
@@ -334,7 +335,7 @@ export default function ClienteDetalhes() {
                                                     <MapPin className="w-4 h-4 text-accent" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Endereço</p>
+                                                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Endereço</p>
                                                     <p className="text-sm text-on-surface">{address.address_line}, {address.number}</p>
                                                     {address.complement && <p className="text-sm text-on-surface-variant">{address.complement}</p>}
                                                     <p className="text-sm text-on-surface-variant">{address.district}</p>
@@ -348,10 +349,22 @@ export default function ClienteDetalhes() {
                                                 <Calendar className="w-4 h-4 text-on-surface-variant" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Cadastro</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Cadastro</p>
                                                 <p className="text-sm text-on-surface">{formatDate(user.created_at)}</p>
                                             </div>
                                         </div>
+                                        {user.sponsor?.user_sponsor && (
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5">
+                                                    <Users className="w-4 h-4 text-secondary" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Patrocinador</p>
+                                                    <p className="text-sm text-on-surface">{user.sponsor.user_sponsor.name}</p>
+                                                    <p className="text-xs text-on-surface-variant font-mono">@{user.sponsor.user_sponsor.login}</p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
 
@@ -365,7 +378,7 @@ export default function ClienteDetalhes() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <Package className="w-4 h-4 text-accent" />
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Total Pedidos</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Total Pedidos</p>
                                             </div>
                                             <p className="font-display text-2xl font-black text-on-surface">{orders.length}</p>
                                         </CardContent>
@@ -374,7 +387,7 @@ export default function ClienteDetalhes() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <ShoppingBag className="w-4 h-4 text-secondary" />
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Pedidos Pagos</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Pedidos Pagos</p>
                                             </div>
                                             <p className="font-display text-2xl font-black text-on-surface">{paidOrders}</p>
                                         </CardContent>
@@ -383,7 +396,7 @@ export default function ClienteDetalhes() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <ClipboardEdit className="w-4 h-4 text-primary" />
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Observações</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Observações</p>
                                             </div>
                                             <p className="font-display text-2xl font-black text-on-surface">{observations.length}</p>
                                         </CardContent>
@@ -392,7 +405,7 @@ export default function ClienteDetalhes() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <ShoppingBag className="w-4 h-4 text-primary" />
-                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Valor Total</p>
+                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Valor Total</p>
                                             </div>
                                             <p className="font-display text-xl font-black text-primary">{formatCurrency(totalValue)}</p>
                                         </CardContent>

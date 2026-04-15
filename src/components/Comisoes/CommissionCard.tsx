@@ -28,7 +28,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
             {/* ID */}
             <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                         #ID
                     </p>
                     <p className="text-sm font-mono text-on-surface-variant truncate">
@@ -39,7 +39,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
 
             {/* Cliente */}
             <div>
-                <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                     Cliente
                 </p>
                 <p className="text-sm font-medium text-on-surface truncate">
@@ -51,7 +51,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
             {/* Pedido */}
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                         Pedido
                     </p>
                     <p className="text-sm font-medium text-on-surface">
@@ -59,7 +59,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
                     </p>
                 </div>
                 <div>
-                    <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                         Data
                     </p>
                     <p className="text-sm text-on-surface-variant">
@@ -71,7 +71,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
             {/* Valores — background shift instead of border */}
             <div className="bg-surface-highest rounded-lg p-2.5 grid grid-cols-2 gap-3">
                 <div>
-                    <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                         Valor Pedido
                     </p>
                     <p className="text-sm font-medium text-secondary tabular-nums">
@@ -79,7 +79,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
                     </p>
                 </div>
                 <div>
-                    <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
                         Comissão
                     </p>
                     <p className="text-sm font-semibold text-primary tabular-nums [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.4)]">

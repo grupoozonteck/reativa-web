@@ -53,7 +53,7 @@ export default function SidebarNav({ onNav }: SidebarNavProps) {
                             />
                             <span className="flex-1 relative">{label}</span>
                             {badge !== undefined && (
-                                <Badge className="bg-blue-50 dark:bg-lime-300 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 text-[9px] px-1.5 h-4 relative">
+                                <Badge className="bg-blue-50 dark:bg-lime-300 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 text-xs px-1.5 h-4 relative">
                                     {badge}
                                 </Badge>
                             )}
