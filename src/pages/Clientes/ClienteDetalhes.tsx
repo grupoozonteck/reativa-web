@@ -62,14 +62,19 @@ export default function ClienteDetalhes() {
     const handleAccessStore = async () => {
         if (!id) return;
         setAccessingStore(true);
+        // Abrir a janela de forma síncrona antes do await para iOS/Safari não bloquear como popup
+        const newWindow = window.open('', '_blank');
         try {
             const res = await customerService.getAccessStoreLink(Number(id));
             const token = res?.data?.token;
-            if (token) {
-                window.open(`${import.meta.env.VITE_OFFICE_BASE_URL}/impersonation/${token}`, '_blank', 'noopener,noreferrer');
+            if (token && newWindow) {
+                newWindow.location.href = `${import.meta.env.VITE_OFFICE_BASE_URL}/impersonation/${token}`;
+            } else {
+                newWindow?.close();
             }
         } catch (err) {
             console.error('Erro ao obter link da loja:', err);
+            newWindow?.close();
         } finally {
             setAccessingStore(false);
         }
@@ -150,10 +155,9 @@ export default function ClienteDetalhes() {
             <div className="p-4 sm:p-6 space-y-5 max-w-screen-2xl mx-auto">
                 {/* Back */}
                 <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="default"
                     onClick={() => navigate(-1)}
-                    className="gap-2 text-on-surface-variant hover:text-primary -ml-1"
+                    className="gap-2  -ml-1"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Voltar
@@ -212,7 +216,6 @@ export default function ClienteDetalhes() {
                             {/* Action buttons */}
                             <div className="flex flex-wrap gap-2 sm:shrink-0">
                                 <Button
-                                    size="sm"
                                     onClick={handleAccessStore}
                                     disabled={accessingStore}
                                     className="gap-2 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold"
@@ -221,7 +224,7 @@ export default function ClienteDetalhes() {
                                     Acessar conta
                                 </Button>
                                 {hasWhatsapp ? (
-                                    <Button size="sm" asChild variant="outline" className="gap-2">
+                                    <Button  asChild variant="outline" className="gap-2">
                                         <a href={getWhatsAppLink(whatsapp)} target="_blank" rel="noopener noreferrer">
                                             <MessageCircle className="w-4 h-4" />
                                             WhatsApp
@@ -234,22 +237,21 @@ export default function ClienteDetalhes() {
                                     </Button>
                                 )}
                                 {reengagement && (
-                                    <Button size="sm" variant="outline" className="gap-2" onClick={() => setObservacaoModalOpen(true)}>
+                                    <Button variant="outline" className="gap-2" onClick={() => setObservacaoModalOpen(true)}>
                                         <ClipboardEdit className="w-4 h-4" />
                                         Observação
                                     </Button>
                                 )}
                                 <Button
-                                    size="sm"
                                     variant="outline"
                                     className="gap-2"
                                     onClick={() => setSponsorModalOpen(true)}
                                     disabled={!!linkedLeader}
                                 >
                                     <UserPlus className="w-4 h-4" />
-                                    {linkedLeader ? 'Leader vinculado' : 'Leader'}
+                                    {linkedLeader ? 'Lider vinculado' : 'Vincular Lider'}
                                 </Button>
-                                <Button size="sm" variant="outline" className="gap-2" onClick={() => setEditModalOpen(true)}>
+                                <Button  variant="secondary" className="gap-2" onClick={() => setEditModalOpen(true)}>
                                     <Edit className="w-4 h-4" />
                                     Editar
                                 </Button>

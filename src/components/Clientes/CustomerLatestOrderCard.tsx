@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Package, Tag, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Tag, ChevronDown, ChevronUp, Store } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,22 @@ export function CustomerLatestOrderCard({ order, orderStatusCollection }: Custom
                     <p className="font-display text-lg font-black text-secondary">{formatCurrency(order.value)}</p>
                 </div>
                 <div>
+                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Franquia</p>
+                    {order.franchise ? (
+                        <div className="flex items-start gap-1.5">
+                            <Store className="w-3.5 h-3.5 text-on-surface-variant shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-medium text-on-surface">{order.franchise.fantasy_name}</p>
+                                {(order.franchise.city?.name || order.franchise.state?.name) && (
+                                    <p className="text-xs text-on-surface-variant">
+                                        {[order.franchise.city?.name, order.franchise.state?.name].filter(Boolean).join(' - ')}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-sm text-on-surface-variant">--</p>
+                    )}
                 </div>
                 <div>
                     <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Data / Pagamento</p>

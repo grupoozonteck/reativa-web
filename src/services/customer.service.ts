@@ -90,6 +90,15 @@ export interface PersonalOrderItem {
     [key: string]: unknown;
 }
 
+export interface OrderFranchise {
+    id: number;
+    fantasy_name: string;
+    city_id?: number;
+    state_id?: number;
+    city?: { id: number; name: string };
+    state?: { id: number; name: string };
+}
+
 export interface PersonalOrder {
     id: number;
     code: number;
@@ -103,6 +112,7 @@ export interface PersonalOrder {
     delivery_type?: number | null;
     created_at: string;
     updated_at: string;
+    franchise?: OrderFranchise | null;
     personal_order_items: PersonalOrderItem[];
     [key: string]: unknown;
 }
