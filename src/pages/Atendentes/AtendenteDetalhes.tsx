@@ -10,10 +10,13 @@ import {
     Star,
     Calendar,
     Edit,
+    CheckCircle2,
+    Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { getInitials } from '@/utils/client-utils';
 import { teamService } from '@/services/team.service';
@@ -174,58 +177,108 @@ export default function AtendenteDetalhes() {
                 <StatCard label="Conversão" value={`${data.metrics.conversion_rate ? data.metrics.conversion_rate : '0'}%`} icon={RefreshCcw} iconBg="bg-amber-500" />
             </div>
 
-            {/* Info adicional */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: '180ms', opacity: 0 }}>
-                {/* Líder */}
-                <div className="solid-card p-5">
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                            <Users className="w-4 h-4 text-white" />
-                        </div>
-                        <h3 className="text-md font-semibold">Líder</h3>
-                    </div>
-                    {data.attendant.parent ? (
-                        <div className="space-y-2 text-md">
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground">Nome</span>
-                                <span className="font-medium">{data.attendant.parent.user?.name}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground">Login</span>
-                                <span className="text-muted-foreground">@{data.attendant.parent.user?.login}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground">Cargo</span>
-                                <Badge variant="outline" className={cn('text-xs px-2 h-5', typeColors[data.attendant.parent.type])}>
-                                    {data.attendant.parent.type_label}
-                                </Badge>
-                            </div>
-                        </div>
-                    ) : (
-                        <p className="text-md text-muted-foreground/60">Sem líder vinculado</p>
-                    )}
-                </div>
+            {/* Tabs: Atendimentos / Líder / Registro */}
+            <div className="animate-fade-in" style={{ animationDelay: '180ms', opacity: 0 }}>
+                <Tabs defaultValue="atendimentos">
+                    <TabsList className="mb-3">
+                        <TabsTrigger value="atendimentos" className="gap-1.5">
+                            <RefreshCcw className="w-3.5 h-3.5" />
+                            Atendimentos
+                            {data.attendant.reengagements?.length > 0 && (
+                                <span className="ml-1 text-xs bg-muted rounded-full px-1.5">{data.attendant.reengagements.length}</span>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger value="lider" className="gap-1.5">
+                            <Users className="w-3.5 h-3.5" />
+                            Líder
+                        </TabsTrigger>
+                        <TabsTrigger value="registro" className="gap-1.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            Registro
+                        </TabsTrigger>
+                    </TabsList>
 
-                {/* Informações de cadastro */}
-                <div className="solid-card p-5">
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-rose-500 flex items-center justify-center">
-                            <Calendar className="w-4 h-4 text-white" />
+                    <TabsContent value="atendimentos">
+                        <div className="solid-card p-4">
+                            {data.attendant.reengagements && data.attendant.reengagements.length > 0 ? (
+                                <div className="space-y-2">
+                                    {data.attendant.reengagements.map((r) => (
+                                        <div key={r.id} className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <Avatar className="w-8 h-8 rounded-xl shrink-0">
+                                                    <AvatarFallback className="rounded-xl text-xs font-bold">{getInitials(r.user?.name ?? '?')}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-medium truncate">{r.user?.name ?? `Usuário #${r.user_id}`}</p>
+                                                    <p className="text-xs text-muted-foreground">@{r.user?.login ?? '--'}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                {r.personal_order_id && (
+                                                    <span className="text-xs text-muted-foreground hidden sm:inline">Pedido #{r.personal_order_id}</span>
+                                                )}
+                                                <span className="text-xs text-muted-foreground hidden sm:inline">{formatDate(r.created_at)}</span>
+                                                {r.status === 2 ? (
+                                                    <Badge variant="outline" className="text-xs px-2 h-5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 gap-1">
+                                                        <CheckCircle2 className="w-3 h-3" />
+                                                        Concluído
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge variant="outline" className="text-xs px-2 h-5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 gap-1">
+                                                        <Clock className="w-3 h-3" />
+                                                        Pendente
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground/60 py-2">Nenhum atendimento registrado.</p>
+                            )}
                         </div>
-                        <h3 className="text-md font-semibold">Registro</h3>
-                    </div>
-                    <div className="space-y-2 text-md">
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Cadastrado em</span>
-                            <span className="font-medium">{formatDate(data.attendant.created_at)}</span>
-                        </div>
+                    </TabsContent>
 
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">ID interno</span>
-                            <span className="text-muted-foreground font-mono">#{data.attendant.user_id}</span>
+                    <TabsContent value="lider">
+                        <div className="solid-card p-5">
+                            {data.attendant.parent ? (
+                                <div className="space-y-2 text-md">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Nome</span>
+                                        <span className="font-medium">{data.attendant.parent.user?.name}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Login</span>
+                                        <span className="text-muted-foreground">@{data.attendant.parent.user?.login}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Cargo</span>
+                                        <Badge variant="outline" className={cn('text-xs px-2 h-5', typeColors[data.attendant.parent.type])}>
+                                            {data.attendant.parent.type_label}
+                                        </Badge>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-md text-muted-foreground/60">Sem líder vinculado</p>
+                            )}
                         </div>
-                    </div>
-                </div>
+                    </TabsContent>
+
+                    <TabsContent value="registro">
+                        <div className="solid-card p-5">
+                            <div className="space-y-2 text-md">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-muted-foreground">Cadastrado em</span>
+                                    <span className="font-medium">{formatDate(data.attendant.created_at)}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-muted-foreground">ID interno</span>
+                                    <span className="text-muted-foreground font-mono">#{data.attendant.user_id}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </TabsContent>
+                </Tabs>
             </div>
         </div>
     );

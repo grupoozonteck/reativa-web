@@ -4,10 +4,18 @@ export interface Reengagements {
     created_at: string;
     deleted_at: string | null;
     id: number;
+    user_id: number;
+    leader_id: number | null;
     personal_order_id: number | null;
     recruiter_id: number;
     status: number;
     updated_at: string;
+    user?: {
+        id: number;
+        login: string;
+        name: string;
+        email: string;
+    };
 }
 
 export interface TeamMemberPerformance {
