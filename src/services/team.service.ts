@@ -217,7 +217,8 @@ export interface AttendantShowResponse {
         conversion_rate: number;
         total_attendances: number;
         total_reactivated: number;
-        total_sales: number;
+        total_orders: number;
+        total_order_value: number;
     };
     attendant: ManagerAttendant;
     types: Record<string, string>;

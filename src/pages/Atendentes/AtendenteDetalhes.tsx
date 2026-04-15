@@ -42,11 +42,12 @@ function formatDate(dateStr: string) {
 interface StatCardProps {
     label: string;
     value: string | number;
+    helperText?: string;
     icon: React.ElementType;
     iconBg: string;
 }
 
-function StatCard({ label, value, icon: Icon, iconBg }: StatCardProps) {
+function StatCard({ label, value, helperText, icon: Icon, iconBg }: StatCardProps) {
     return (
         <div className="solid-card p-4 flex items-center gap-4">
             <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', iconBg)}>
@@ -55,6 +56,7 @@ function StatCard({ label, value, icon: Icon, iconBg }: StatCardProps) {
             <div className="min-w-0">
                 <p className="text-sm text-muted-foreground">{label}</p>
                 <p className="text-lg font-bold truncate">{value}</p>
+                {helperText ? <p className="text-xs text-muted-foreground">{helperText}</p> : null}
             </div>
         </div>
     );
@@ -160,9 +162,15 @@ export default function AtendenteDetalhes() {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-fade-in" style={{ animationDelay: '120ms', opacity: 0 }}>
-                <StatCard label="Receita" value={formatCurrency(data.metrics.commissions_received)} icon={TrendingUp} iconBg="bg-emerald-500" />
-                <StatCard label="Vendas" value={data.metrics.total_sales ? data.metrics.total_sales : '0'} icon={ShoppingCart} iconBg="bg-blue-500" />
-                <StatCard label="Reengajamentos" value={data.metrics.total_attendances ? data.metrics.total_attendances : '0'} icon={Users} iconBg="bg-violet-500" />
+                <StatCard label="Comissão recebida" value={formatCurrency(data.metrics.commissions_received)} icon={TrendingUp} iconBg="bg-emerald-500" />
+                <StatCard
+                    label="Total em vendas"
+                    value={formatCurrency(data.metrics.total_order_value)}
+                    helperText={`${data.metrics.total_orders ? data.metrics.total_orders : '0'} pedido(s)`}
+                    icon={ShoppingCart}
+                    iconBg="bg-blue-500"
+                />
+                <StatCard label="Atendimentos" value={data.metrics.total_attendances ? data.metrics.total_attendances : '0'} icon={Users} iconBg="bg-violet-500" />
                 <StatCard label="Conversão" value={`${data.metrics.conversion_rate ? data.metrics.conversion_rate : '0'}%`} icon={RefreshCcw} iconBg="bg-amber-500" />
             </div>
 
