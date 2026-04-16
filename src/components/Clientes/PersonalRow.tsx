@@ -16,6 +16,8 @@ interface PersonalRowProps {
 export function PersonalRow({ reengagement, statusRecollection }: PersonalRowProps) {
     const navigate = useNavigate();
     const user = reengagement.user;
+    const phone = user.personal_data?.whatsapp || user.personal_data?.phone_number || user.phone_number || null;
+    const avatar = user.personal_data?.avatar ?? null;
     const initials = getInitials(user.name);
     const colorClass = getAvatarColor(user.name);
     const statusStyle = statusStyleMap[reengagement.status] ?? statusStyleMap[1];
@@ -28,12 +30,20 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
             </TableCell>
             <TableCell className="py-3 px-3">
                 <div className="flex items-center gap-2">
-                    <div className={cn(
-                        'w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0',
-                        colorClass
-                    )}>
-                        {initials}
-                    </div>
+                    {avatar ? (
+                        <img
+                            src={avatar}
+                            alt={user.name}
+                            className="w-9 h-9 rounded-lg object-cover shrink-0"
+                        />
+                    ) : (
+                        <div className={cn(
+                            'w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0',
+                            colorClass
+                        )}>
+                            {initials}
+                        </div>
+                    )}
                     <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-on-surface truncate">{user.name}</p>
                         <p className="text-xs text-on-surface-variant truncate">{user.login}</p>
@@ -41,15 +51,15 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
                 </div>
             </TableCell>
             <TableCell className="py-3 px-3 w-[18%]">
-                {user.phone_number ? (
+                {phone ? (
                     <a
-                        href={getWhatsAppLink(user.phone_number)}
+                        href={getWhatsAppLink(phone)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors min-w-0"
                     >
                         <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span className="text-xs truncate">{formatWhatsApp(user.phone_number)}</span>
+                        <span className="text-xs truncate">{formatWhatsApp(phone)}</span>
                     </a>
                 ) : (
                     <span className="text-sm text-on-surface-variant">--</span>

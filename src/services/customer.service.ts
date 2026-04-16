@@ -145,19 +145,24 @@ export interface PersonalAddress {
 
 export interface UserDetail {
     id: number;
-    uuid: string;
+    uuid?: string;
     name: string;
     login: string;
     email: string;
-    phone_number: string;
-    phone_code: string;
-    country_code: string;
-    classification: string;
+    phone_number?: string | null;
+    phone_code?: string | null;
+    country_code?: string;
+    classification?: string;
     created_at: string;
-    updated_at: string;
-    personal_orders: PersonalOrder[] | null;
-    personal_data: PersonalData;
-    personal_address: PersonalAddress | null;
+    updated_at?: string;
+    // snake_case (fallback)
+    personal_orders?: PersonalOrder[] | null;
+    personal_data?: PersonalData | null;
+    personal_address?: PersonalAddress | null;
+    // camelCase (API atual)
+    personalOrders?: PersonalOrder[] | null;
+    personalData?: PersonalData | null;
+    personalAddress?: PersonalAddress | null;
     sponsor?: UserSponsor | null;
     [key: string]: unknown;
 }
@@ -233,16 +238,24 @@ export interface PersonalReengagement {
     deleted_at: string | null;
     user: {
         id: number;
-        uuid: string;
+        uuid?: string;
         name: string;
         login: string;
         email: string;
-        phone_number: string;
-        phone_code: string;
-        country_code: string;
-        classification: string;
-        created_at: string;
-        updated_at: string;
+        phone_number?: string | null;
+        phone_code?: string | null;
+        country_code?: string;
+        classification?: string;
+        created_at?: string;
+        updated_at?: string;
+        personal_data?: {
+            user_id?: number;
+            avatar?: string | null;
+            phone_code?: string | null;
+            phone_number?: string | null;
+            whatsapp_phone_code?: string | null;
+            whatsapp?: string | null;
+        } | null;
         [key: string]: unknown;
     };
     personal_order: PersonalOrder | null;

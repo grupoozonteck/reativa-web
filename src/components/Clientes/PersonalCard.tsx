@@ -15,6 +15,8 @@ interface PersonalCardProps {
 export function PersonalCard({ reengagement, statusRecollection }: PersonalCardProps) {
     const navigate = useNavigate();
     const user = reengagement.user;
+    const phone = user.personal_data?.whatsapp || user.personal_data?.phone_number || user.phone_number || null;
+    const avatar = user.personal_data?.avatar ?? null;
     const initials = getInitials(user.name);
     const colorClass = getAvatarColor(user.name);
     const statusStyle = statusStyleMap[reengagement.status] ?? statusStyleMap[1];
@@ -23,12 +25,20 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
     return (
         <div className="solid-card p-4 space-y-3">
             <div className="flex items-start gap-3">
-                <div className={cn(
-                    'w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
-                    colorClass
-                )}>
-                    {initials}
-                </div>
+                {avatar ? (
+                    <img
+                        src={avatar}
+                        alt={user.name}
+                        className="w-12 h-12 rounded-xl object-cover shrink-0"
+                    />
+                ) : (
+                    <div className={cn(
+                        'w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
+                        colorClass
+                    )}>
+                        {initials}
+                    </div>
+                )}
                 <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-on-surface truncate">{user.name}</p>
                     <p className="text-xs text-on-surface-variant truncate">{user.login}</p>
@@ -38,15 +48,15 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
 
             {/* Background shift instead of border-t */}
             <div className="bg-surface-highest rounded-lg p-2.5 flex flex-col gap-2">
-                {user.phone_number && (
+                {phone && (
                     <a
-                        href={getWhatsAppLink(user.phone_number)}
+                        href={getWhatsAppLink(phone)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors text-xs"
                     >
                         <MessageCircle className="w-3 h-3 shrink-0" />
-                        <span>{formatWhatsApp(user.phone_number)}</span>
+                        <span>{formatWhatsApp(phone)}</span>
                     </a>
                 )}
                 <div className="flex items-center justify-between gap-2">
