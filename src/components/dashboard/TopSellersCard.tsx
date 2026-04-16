@@ -24,8 +24,8 @@ function getInitials(name: string) {
 }
 
 export default function TopSellersCard({ sellers, isLoading = false }: TopSellersCardProps) {
-    const topSellers = [...sellers].sort((a, b) => b.revenue - a.revenue).slice(0, 4);
-    const max = topSellers[0]?.revenue ?? 1;
+    const topSellers = [...sellers].sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 4);
+    const max = Number(topSellers[0]?.revenue ?? 1);
 
     return (
         <div
@@ -51,7 +51,7 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                 )}
 
                 {topSellers.map((s, i) => {
-                    const pct = Math.round((s.revenue / max) * 100);
+                    const pct = Math.round((Number(s.revenue) / max) * 100);
                     return (
                         <div
                             key={`${s.user.name}-${i}`}
@@ -76,7 +76,7 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                 <div className="flex items-center justify-between mb-1.5">
                                     <span className={cn('text-sm font-semibold truncate', rankColors[i])}>{s.user.name}</span>
                                     <span className="text-sm font-bold gradient-text-blue ml-2 shrink-0">
-                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(s.revenue)}
+                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(Number(s.revenue))}
                                     </span>
                                 </div>
                                 <div className="relative h-1.5 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
