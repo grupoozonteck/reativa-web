@@ -1,0 +1,465 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-15",
+  "__export_source": "insomnia",
+  "resources": [
+    {
+      "_id": "env_reativa",
+      "_type": "environment",
+      "name": "Reativa - Produção",
+      "data": {
+        "base_url": "https://reativa-api.grupoozonteck.com",
+        "token": ""
+      }
+    },
+    {
+      "_id": "wrk_reativa",
+      "_type": "workspace",
+      "name": "Reativa API",
+      "description": "Coleção completa da API Reativa"
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "name": "🔐 Autenticação",
+      "parentId": "wrk_reativa"
+    },
+    {
+      "_id": "req_login",
+      "_type": "request",
+      "name": "Login",
+      "parentId": "fld_auth",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/login",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }, { "name": "Accept", "value": "application/json" }],
+      "body": { "mimeType": "application/json", "text": "{\n  \"login\": \"\",\n  \"password\": \"\"\n}" }
+    },
+    {
+      "_id": "req_logout",
+      "_type": "request",
+      "name": "Logout",
+      "parentId": "fld_auth",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/logout",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "body": { "mimeType": "application/json", "text": "{}" }
+    },
+    {
+      "_id": "req_user",
+      "_type": "request",
+      "name": "Usuário Autenticado",
+      "parentId": "fld_auth",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/user",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }]
+    },
+    {
+      "_id": "fld_attendants",
+      "_type": "request_group",
+      "name": "👥 Atendentes",
+      "parentId": "wrk_reativa"
+    },
+    {
+      "_id": "req_attendants_list",
+      "_type": "request",
+      "name": "Listar Atendentes",
+      "parentId": "fld_attendants",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/attendants",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "country_code", "value": "", "disabled": true },
+        { "name": "search", "value": "", "disabled": true },
+        { "name": "type", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_attendants_create",
+      "_type": "request",
+      "name": "Criar Atendente",
+      "parentId": "fld_attendants",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/create",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"user_login\": \"\",\n  \"type\": 3,\n  \"graduation\": 1,\n  \"supervisor_id\": null\n}" }
+    },
+    {
+      "_id": "req_attendants_show",
+      "_type": "request",
+      "name": "Detalhes do Atendente",
+      "parentId": "fld_attendants",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/show",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true }
+      ],
+      "pathParameters": [{ "name": "attendant", "value": "" }]
+    },
+    {
+      "_id": "req_attendants_update",
+      "_type": "request",
+      "name": "Atualizar Atendente",
+      "parentId": "fld_attendants",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/update",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"type\": null,\n  \"graduation\": null,\n  \"parent_id\": null\n}" },
+      "pathParameters": [{ "name": "attendant", "value": "" }]
+    },
+    {
+      "_id": "req_attendants_delete",
+      "_type": "request",
+      "name": "Remover Atendente",
+      "parentId": "fld_attendants",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/delete",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "body": { "mimeType": "application/json", "text": "{}" },
+      "pathParameters": [{ "name": "attendant", "value": "" }]
+    },
+    {
+      "_id": "req_attendants_children",
+      "_type": "request",
+      "name": "Equipe Subordinada",
+      "parentId": "fld_attendants",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/children",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "pathParameters": [{ "name": "attendant", "value": "" }]
+    },
+    {
+      "_id": "req_attendants_link_parent",
+      "_type": "request",
+      "name": "Vincular Supervisor",
+      "parentId": "fld_attendants",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/link-parent",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"parent_id\": \"\"\n}" },
+      "pathParameters": [{ "name": "attendant", "value": "" }]
+    },
+    {
+      "_id": "fld_commissions",
+      "_type": "request_group",
+      "name": "💰 Comissões",
+      "parentId": "wrk_reativa"
+    },
+    {
+      "_id": "req_commissions_create",
+      "_type": "request",
+      "name": "Criar Regra de Comissão",
+      "parentId": "fld_commissions",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/commissions/create",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"commission_percent\": 0.0,\n  \"min_sales\": 0.0,\n  \"max_sales\": 0.0\n}" },
+      "pathParameters": [{ "name": "attendant", "value": "" }]
+    },
+    {
+      "_id": "req_commissions_update",
+      "_type": "request",
+      "name": "Atualizar Regra de Comissão",
+      "parentId": "fld_commissions",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/commissions/:commissionAttendant/update",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"commission_percent\": 0.0,\n  \"min_sales\": 0.0,\n  \"max_sales\": 0.0\n}" },
+      "pathParameters": [
+        { "name": "attendant", "value": "" },
+        { "name": "commissionAttendant", "value": "" }
+      ]
+    },
+    {
+      "_id": "req_commissions_delete",
+      "_type": "request",
+      "name": "Remover Regra de Comissão",
+      "parentId": "fld_commissions",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/attendants/:attendant/commissions/:commissionAttendant/delete",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "body": { "mimeType": "application/json", "text": "{}" },
+      "pathParameters": [
+        { "name": "attendant", "value": "" },
+        { "name": "commissionAttendant", "value": "" }
+      ]
+    },
+    {
+      "_id": "req_commissions_personal",
+      "_type": "request",
+      "name": "Relatório Pessoal de Comissões",
+      "parentId": "fld_commissions",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/commissions",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true },
+        { "name": "order_id", "value": "", "disabled": true },
+        { "name": "login", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_commissions_network",
+      "_type": "request",
+      "name": "Relatório de Comissões da Rede",
+      "parentId": "fld_commissions",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/commissions/network",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "fld_reengagements",
+      "_type": "request_group",
+      "name": "📞 Reengajamento",
+      "parentId": "wrk_reativa"
+    },
+    {
+      "_id": "req_reengagements_list",
+      "_type": "request",
+      "name": "Listar Clientes Inativos",
+      "parentId": "fld_reengagements",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/reengagements",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "inactive_days", "value": "60", "disabled": true },
+        { "name": "has_orders", "value": "", "disabled": true },
+        { "name": "has_paid_orders", "value": "", "disabled": true },
+        { "name": "without_orders", "value": "", "disabled": true },
+        { "name": "state_id", "value": "", "disabled": true },
+        { "name": "city_id", "value": "", "disabled": true },
+        { "name": "region_id", "value": "", "disabled": true },
+        { "name": "min_orders", "value": "", "disabled": true },
+        { "name": "max_orders", "value": "", "disabled": true },
+        { "name": "search", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_reengagements_assign",
+      "_type": "request",
+      "name": "Designar Inativos a Atendente",
+      "parentId": "fld_reengagements",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/reengagements/assign",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"attendant_id\": \"\",\n  \"quantity\": 1\n}" }
+    },
+    {
+      "_id": "req_reengagements_personal",
+      "_type": "request",
+      "name": "Meus Designados",
+      "parentId": "fld_reengagements",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/reengagements/personal",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true },
+        { "name": "status", "value": "", "disabled": true },
+        { "name": "search", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_reengagements_user_show",
+      "_type": "request",
+      "name": "Detalhes do Contato",
+      "parentId": "fld_reengagements",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/reengagements/user/:user",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "pathParameters": [{ "name": "user", "value": "" }]
+    },
+    {
+      "_id": "req_reengagements_update_data",
+      "_type": "request",
+      "name": "Editar Dados do Cliente",
+      "parentId": "fld_reengagements",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/reengagements/user/:user/update-data",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"email\": null,\n  \"password\": null,\n  \"birth_date\": null,\n  \"status\": null\n}" },
+      "pathParameters": [{ "name": "user", "value": "" }]
+    },
+    {
+      "_id": "req_reengagements_update_status",
+      "_type": "request",
+      "name": "Alterar Status do Reengajamento",
+      "parentId": "fld_reengagements",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/reengagements/user/:user/update-status",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"status\": \"\"\n}" },
+      "pathParameters": [{ "name": "user", "value": "" }]
+    },
+    {
+      "_id": "req_reengagements_access_store",
+      "_type": "request",
+      "name": "Token de Acesso à Loja",
+      "parentId": "fld_reengagements",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/reengagements/user/:user/access-store",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "pathParameters": [{ "name": "user", "value": "" }]
+    },
+    {
+      "_id": "req_reengagements_observations",
+      "_type": "request",
+      "name": "Registrar Observação",
+      "parentId": "fld_reengagements",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/reengagements/:reengagement/observations",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ _.token }}" },
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": { "mimeType": "application/json", "text": "{\n  \"observation\": \"\",\n  \"next_contact_date\": \"\"\n}" },
+      "pathParameters": [{ "name": "reengagement", "value": "" }]
+    },
+    {
+      "_id": "fld_dashboard",
+      "_type": "request_group",
+      "name": "📊 Dashboard & Métricas",
+      "parentId": "wrk_reativa"
+    },
+    {
+      "_id": "req_dashboard",
+      "_type": "request",
+      "name": "Dashboard",
+      "parentId": "fld_dashboard",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/dashboard",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_leaderboard",
+      "_type": "request",
+      "name": "Leaderboard",
+      "parentId": "fld_dashboard",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/leaderboard",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_supervisor_performance",
+      "_type": "request",
+      "name": "Performance do Supervisor",
+      "parentId": "fld_dashboard",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/supervisor/performance",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_manager_performance",
+      "_type": "request",
+      "name": "Performance do Manager",
+      "parentId": "fld_dashboard",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/manager/performance",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "start_date", "value": "", "disabled": true },
+        { "name": "end_date", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "fld_locations",
+      "_type": "request_group",
+      "name": "🌎 Localidades",
+      "parentId": "wrk_reativa"
+    },
+    {
+      "_id": "req_locations_countries",
+      "_type": "request",
+      "name": "Países",
+      "parentId": "fld_locations",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/locations/countries",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }]
+    },
+    {
+      "_id": "req_locations_regions",
+      "_type": "request",
+      "name": "Regiões",
+      "parentId": "fld_locations",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/locations/regions",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [{ "name": "country_id", "value": "1" }]
+    },
+    {
+      "_id": "req_locations_states",
+      "_type": "request",
+      "name": "Estados",
+      "parentId": "fld_locations",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/locations/states",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [
+        { "name": "country_id", "value": "1" },
+        { "name": "region_id", "value": "", "disabled": true }
+      ]
+    },
+    {
+      "_id": "req_locations_cities",
+      "_type": "request",
+      "name": "Cidades",
+      "parentId": "fld_locations",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/locations/cities",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{ _.token }}" }, { "name": "Accept", "value": "application/json" }],
+      "parameters": [{ "name": "state_id", "value": "", "disabled": true }]
+    }
+  ]
+}

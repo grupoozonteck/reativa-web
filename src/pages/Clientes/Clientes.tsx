@@ -37,10 +37,14 @@ import { getRegions, getStates } from '@/services/filter.service';
 import { Field, FieldLabel } from '@/components/ui/field';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
+type SearchType = 'login' | 'email' | 'name';
 
-function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number) {
+function buildParams(page: number, search: string, searchType: SearchType, status: FilterStatus, state: string, region: string, minOrders: number) {
     const params: Record<string, number | string> = { page };
-    if (search) params.search = search;
+    if (search) {
+        params.search = search;
+        params.search_type = searchType;
+    }
     if (status === 'sem_pedidos') params.without_orders = 1;
     if (status === 'com_pedidos') params.has_orders = 1;
     if (status === 'com_pagos') params.has_paid_orders = 1;
@@ -58,6 +62,7 @@ export default function Clientes() {
 
     // Filtros aplicados (vêm da URL — disparam a requisição)
     const appliedSearch = searchParams.get('search') ?? '';
+    const appliedSearchType = (searchParams.get('search_type') as SearchType) ?? 'login';
     const appliedStatus = (searchParams.get('status') as FilterStatus) ?? 'todos';
     const appliedState = searchParams.get('state') ?? '';
     const appliedRegion = searchParams.get('region') ?? '';
@@ -66,6 +71,7 @@ export default function Clientes() {
 
     // Rascunho local (o que o usuário está editando antes de clicar em Filtrar)
     const [search, setSearch] = useState(appliedSearch);
+    const [searchType, setSearchType] = useState<SearchType>(appliedSearchType);
     const [filterStatus, setFilterStatus] = useState<FilterStatus>(appliedStatus);
     const [selectedState, setSelectedState] = useState(appliedState);
     const [selectedRegion, setSelectedRegion] = useState(appliedRegion);
@@ -73,7 +79,7 @@ export default function Clientes() {
 
     const setPage = (val: number) => setSearchParams(p => { p.set('page', String(val)); return p; }, { replace: true });
 
-    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion, appliedMinOrders);
+    const params = buildParams(page, appliedSearch, appliedSearchType, appliedStatus, appliedState, appliedRegion, appliedMinOrders);
     const { data: statesData } = useQuery({
         queryKey: ['states'],
         queryFn: getStates,
@@ -114,6 +120,7 @@ export default function Clientes() {
         || appliedRegion !== ''
         || appliedMinOrders > 0;
     const hasDraftChanges = search !== appliedSearch
+        || searchType !== appliedSearchType
         || filterStatus !== appliedStatus
         || selectedState !== appliedState
         || selectedRegion !== appliedRegion
@@ -121,7 +128,7 @@ export default function Clientes() {
 
     const handleApplyFilters = () => {
         setSearchParams(p => {
-            if (search) p.set('search', search); else p.delete('search');
+            if (search) { p.set('search', search); p.set('search_type', searchType); } else { p.delete('search'); p.delete('search_type'); }
             if (filterStatus !== 'todos') p.set('status', filterStatus); else p.delete('status');
             if (selectedState) p.set('state', selectedState); else p.delete('state');
             if (selectedRegion) p.set('region', selectedRegion); else p.delete('region');
@@ -133,6 +140,7 @@ export default function Clientes() {
 
     const handleClearFilters = () => {
         setSearch('');
+        setSearchType('login');
         setFilterStatus('todos');
         setSelectedState('');
         setSelectedRegion('');
@@ -204,17 +212,29 @@ export default function Clientes() {
 
                 {/* Linha 1: inputs */}
                 <div className="flex flex-col md:flex-row md:flex-wrap md:items-end gap-3">
-                    <Field className="flex-1 max-w-md ">
+                    <Field className="flex-1 max-w-md">
                         <FieldLabel>Buscar</FieldLabel>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
-                            <Input
-                                placeholder="Nome, login ou email..."
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                className="pl-9 h-9  w-full bg-surface-highest border-none focus-visible:ring-0"
-                                disabled={loading}
-                            />
+                        <div className="flex gap-2">
+                            <Select value={searchType} onValueChange={(val) => setSearchType(val as SearchType)}>
+                                <SelectTrigger className="h-9 text-sm w-28 shrink-0 bg-surface-highest border-none focus:ring-0">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="login">Login</SelectItem>
+                                    <SelectItem value="email">Email</SelectItem>
+                                    <SelectItem value="name">Nome</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+                                <Input
+                                    placeholder={searchType === 'login' ? 'Digite o login...' : searchType === 'email' ? 'Digite o email...' : 'Digite o nome...'}
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                    className="pl-9 h-9 w-full bg-surface-highest border-none focus-visible:ring-0"
+                                    disabled={loading}
+                                />
+                            </div>
                         </div>
                     </Field>
 

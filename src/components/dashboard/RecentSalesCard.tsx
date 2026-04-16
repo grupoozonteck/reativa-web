@@ -8,12 +8,8 @@ interface RecentSalesCardProps {
     isLoading?: boolean;
 }
 
-function getTypeConfig(type: string) {
-    const normalized = type.toLowerCase();
-    if (normalized.includes('reat')) {
-        return { label: type, color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' };
-    }
-    return { label: type, color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' };
+function getTypeConfig(_type: string) {
+    return { label: 'Reativação', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' };
 }
 
 function getInitials(name: string) {

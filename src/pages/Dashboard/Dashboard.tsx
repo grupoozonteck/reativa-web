@@ -72,7 +72,7 @@ export default function Dashboard() {
                 />
                 <StatCard
                     label="Receita Mensal"
-                    rawValue={stats?.monthly_revenue ?? 0}
+                    rawValue={Number(stats?.monthly_revenue ?? 0)}
                     displayFn={v => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(v)}
                     icon={DollarSign}
                     colorClass="text-primary"

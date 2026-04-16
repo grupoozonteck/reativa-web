@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -H \"Authorization: Bearer 745|bHvMWkrSqP6NHjkCQoTob7PI2kr8iRkddVGSJ4A79bfd8f7a\" https://reativa-api.grupoozonteck.com/api/dashboard)",
+      "Bash(python -m json.tool)",
+      "Bash(curl -sk -H \"Authorization: Bearer 745|bHvMWkrSqP6NHjkCQoTob7PI2kr8iRkddVGSJ4A79bfd8f7a\" https://reativa-api.grupoozonteck.com/api/dashboard)"
+    ]
+  }
+}
