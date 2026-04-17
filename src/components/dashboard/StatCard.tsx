@@ -26,12 +26,15 @@ export default function StatCard({
     return (
         <div
             className={cn(
-                'solid-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 cursor-default animate-fade-in'
+                'solid-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 cursor-default animate-fade-in relative overflow-hidden'
             )}
             style={{ animationDelay: `${delay ?? 0}ms`, opacity: 0 }}
         >
+            {/* Colored top accent line */}
+            <div className={cn('absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl opacity-60', bgClass.replace('/10', ''))} />
+
             <div className="flex items-center justify-between mb-4">
-                <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center', bgClass)}>
+                <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center ring-1 ring-inset', bgClass, colorClass.replace('text-', 'ring-') + '/20')}>
                     <Icon className={cn('w-5 h-5', colorClass)} />
                 </div>
                 {trend && (

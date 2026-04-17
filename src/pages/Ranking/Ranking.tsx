@@ -79,7 +79,14 @@ export default function Ranking() {
     }
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
+        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
+
+            {/* Ambient blobs */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+                <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-amber-500/4 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/4 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-80 h-80 bg-secondary/4 rounded-full blur-3xl" />
+            </div>
             <RankingHeader
                 participants={sellers.length}
                 totalRevenue={totalRevenue}

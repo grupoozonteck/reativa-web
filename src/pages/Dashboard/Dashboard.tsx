@@ -31,7 +31,15 @@ export default function Dashboard() {
     const recentSales = data?.recent_sales ?? [];
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
+        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
+
+            {/* Ambient background blobs */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-emerald-500/4 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 -left-20 w-80 h-80 bg-secondary/4 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 right-0 w-72 h-72 bg-accent/3 rounded-full blur-3xl" />
+            </div>
 
             {/* Header */}
             <div className="animate-fade-in" style={{ animationDelay: '0ms', opacity: 0 }}>

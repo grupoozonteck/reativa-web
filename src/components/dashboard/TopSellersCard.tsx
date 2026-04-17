@@ -55,7 +55,10 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                     return (
                         <div
                             key={`${s.user.name}-${i}`}
-                            className="flex items-center gap-3 animate-fade-in"
+                            className={cn(
+                                'flex items-center gap-3 animate-fade-in rounded-xl px-2 py-1.5 -mx-2 transition-colors',
+                                i === 0 ? 'bg-amber-500/5 ring-1 ring-amber-500/10' : 'hover:bg-white/3'
+                            )}
                             style={{ animationDelay: `${500 + i * 80}ms`, opacity: 0 }}
                         >
                             {/* Rank badge */}
@@ -67,7 +70,30 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                             </span>
 
                             {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full btn-primary-arena flex items-center justify-center text-xs font-bold shrink-0 shadow-md">
+                            {s.user.personal_data?.avatar ? (
+                                <img
+                                    src={s.user.personal_data.avatar}
+                                    alt={s.user.name}
+                                    className={cn(
+                                        'rounded-full object-cover shrink-0 shadow-md',
+                                        i === 0
+                                            ? 'w-10 h-10 ring-2 ring-amber-400/50 shadow-amber-500/20 shadow-lg'
+                                            : 'w-9 h-9 ring-1 ring-primary/20'
+                                    )}
+                                    onError={(e) => {
+                                        const target = e.currentTarget;
+                                        target.style.display = 'none';
+                                        (target.nextElementSibling as HTMLElement | null)?.style.setProperty('display', 'flex');
+                                    }}
+                                />
+                            ) : null}
+                            <div
+                                className={cn(
+                                    'rounded-full btn-primary-arena items-center justify-center font-bold shrink-0 shadow-md',
+                                    i === 0 ? 'w-10 h-10 text-sm' : 'w-9 h-9 text-xs'
+                                )}
+                                style={{ display: s.user.personal_data?.avatar ? 'none' : 'flex' }}
+                            >
                                 {getInitials(s.user.name)}
                             </div>
 
@@ -79,10 +105,14 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(Number(s.revenue))}
                                     </span>
                                 </div>
-                                <div className="relative h-1.5 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+                                <div className="relative h-2 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
                                     <div
                                         className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-container"
-                                        style={{ width: `${pct}%`, transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)' }}
+                                        style={{
+                                            width: `${pct}%`,
+                                            transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                                            boxShadow: '0 0 8px hsl(83 98% 64% / 0.6)',
+                                        }}
                                     />
                                 </div>
                                 <div className="flex gap-3 mt-1.5">

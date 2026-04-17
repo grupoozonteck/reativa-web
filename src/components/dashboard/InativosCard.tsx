@@ -15,18 +15,21 @@ export default function InativosCard({ summary, totalInactive, isLoading = false
             val: summary?.never_bought ?? 0,
             total: totalInactive || 1,
             color: 'from-rose-500 to-pink-600',
+            glowColor: 'rgba(244, 63, 94, 0.5)',
         },
         {
             label: '+90 dias sem compra',
             val: summary?.plus_90_days ?? 0,
             total: totalInactive || 1,
             color: 'from-amber-500 to-orange-500',
+            glowColor: 'rgba(245, 158, 11, 0.5)',
         },
         {
             label: 'Já atribuídos',
             val: summary?.already_assigned ?? 0,
             total: totalInactive || 1,
             color: 'from-secondary to-primary',
+            glowColor: 'hsl(83 98% 64% / 0.4)',
         },
     ];
 
@@ -53,12 +56,13 @@ export default function InativosCard({ summary, totalInactive, isLoading = false
                             <span className="text-muted-foreground">{item.label}</span>
                             <span className="font-bold">{item.val}</span>
                         </div>
-                        <div className="h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                             <div
                                 className={cn('h-full rounded-full bg-gradient-to-r', item.color)}
                                 style={{
                                     width: `${(item.val / item.total) * 100}%`,
                                     transition: 'width 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
+                                    boxShadow: `0 0 8px ${item.glowColor}`,
                                 }}
                             />
                         </div>

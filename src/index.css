@@ -133,7 +133,12 @@
     background: hsl(var(--surface-container-low));
     border-radius: 1rem;
     border: 1px solid hsl(var(--border) / 0.4);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .solid-card:hover {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.25), 0 8px 32px hsl(var(--primary) / 0.08), 0 2px 8px hsl(0 0% 0% / 0.2);
+    border-color: hsl(var(--primary) / 0.2);
   }
 
 
@@ -232,15 +237,39 @@
   }
 
   @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 12px 0 hsl(83 98% 64% / 0.2); }
+    50%       { box-shadow: 0 0 24px 0 hsl(83 98% 64% / 0.4); }
+  }
 
-    0%,
-    100% {
-      box-shadow: 0 0 12px 0 hsl(83 98% 64% / 0.2);
-    }
+  @keyframes ripple {
+    0%   { transform: scale(1);   opacity: 0.7; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
 
-    50% {
-      box-shadow: 0 0 24px 0 hsl(83 98% 64% / 0.4);
-    }
+  @keyframes ripple-slow {
+    0%   { transform: scale(1);   opacity: 0.5; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+
+  @keyframes shimmer-sweep {
+    0%   { transform: translateX(-100%) skewX(-12deg); }
+    100% { transform: translateX(300%)  skewX(-12deg); }
+  }
+
+  @keyframes float-up {
+    0%   { transform: translateY(0)   scale(1);    opacity: 1; }
+    100% { transform: translateY(-32px) scale(0.5); opacity: 0; }
+  }
+
+  @keyframes pulse-glow-amber {
+    0%, 100% { box-shadow: 0 0 16px 0 rgba(251, 191, 36, 0.25); }
+    50%       { box-shadow: 0 0 36px 4px rgba(251, 191, 36, 0.5); }
+  }
+
+  @keyframes border-rotate {
+    0%   { background-position: 0% 50%;   }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%;   }
   }
 }
 
@@ -269,6 +298,27 @@
 
 .animate-pulse-glow {
   animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+.animate-ripple {
+  animation: ripple 2s ease-out infinite;
+}
+
+.animate-ripple-slow {
+  animation: ripple-slow 2.4s ease-out infinite;
+  animation-delay: 0.6s;
+}
+
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 2s linear infinite;
+}
+
+.animate-pulse-glow-amber {
+  animation: pulse-glow-amber 2s ease-in-out infinite;
+}
+
+.animate-float-up {
+  animation: float-up 1.8s ease-out infinite;
 }
 
 /* ============================================================ */
