@@ -13,10 +13,19 @@ import {
     CheckCircle2,
     Clock,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { getInitials } from '@/utils/client-utils';
 import { teamService } from '@/services/team.service';
@@ -41,6 +50,26 @@ function formatDate(dateStr: string) {
         year: 'numeric',
     });
 }
+
+const attendanceListVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.06,
+            delayChildren: 0.04,
+        },
+    },
+};
+
+const attendanceItemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.22, ease: 'easeOut' as const },
+    },
+};
 
 interface StatCardProps {
     label: string;
@@ -180,19 +209,30 @@ export default function AtendenteDetalhes() {
             {/* Tabs: Atendimentos / Líder / Registro */}
             <div className="animate-fade-in" style={{ animationDelay: '180ms', opacity: 0 }}>
                 <Tabs defaultValue="atendimentos">
-                    <TabsList className="mb-3">
-                        <TabsTrigger value="atendimentos" className="gap-1.5">
+                    <TabsList className="mb-4 h-12 rounded-xl bg-surface-highest/70 p-1.5">
+                        <TabsTrigger
+                            value="atendimentos"
+                            className="gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold text-on-surface-variant data-[state=active]:bg-surface data-[state=active]:text-on-surface data-[state=active]:shadow-sm"
+                        >
                             <RefreshCcw className="w-3.5 h-3.5" />
                             Atendimentos
                             {data.attendant.reengagements?.length > 0 && (
-                                <span className="ml-1 text-xs bg-muted rounded-full px-1.5">{data.attendant.reengagements.length}</span>
+                                <span className="ml-1 rounded-full bg-surface-container px-2 py-0.5 text-xs leading-none text-on-surface">
+                                    {data.attendant.reengagements.length}
+                                </span>
                             )}
                         </TabsTrigger>
-                        <TabsTrigger value="lider" className="gap-1.5">
+                        <TabsTrigger
+                            value="lider"
+                            className="gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold text-on-surface-variant data-[state=active]:bg-surface data-[state=active]:text-on-surface data-[state=active]:shadow-sm"
+                        >
                             <Users className="w-3.5 h-3.5" />
                             Líder
                         </TabsTrigger>
-                        <TabsTrigger value="registro" className="gap-1.5">
+                        <TabsTrigger
+                            value="registro"
+                            className="gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold text-on-surface-variant data-[state=active]:bg-surface data-[state=active]:text-on-surface data-[state=active]:shadow-sm"
+                        >
                             <Calendar className="w-3.5 h-3.5" />
                             Registro
                         </TabsTrigger>
@@ -201,38 +241,112 @@ export default function AtendenteDetalhes() {
                     <TabsContent value="atendimentos">
                         <div className="solid-card p-4">
                             {data.attendant.reengagements && data.attendant.reengagements.length > 0 ? (
-                                <div className="space-y-2">
-                                    {data.attendant.reengagements.map((r) => (
-                                        <div key={r.id} className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <Avatar className="w-8 h-8 rounded-xl shrink-0">
-                                                    <AvatarFallback className="rounded-xl text-xs font-bold">{getInitials(r.user?.name ?? '?')}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-medium truncate">{r.user?.name ?? `Usuário #${r.user_id}`}</p>
-                                                    <p className="text-xs text-muted-foreground">@{r.user?.login ?? '--'}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2 shrink-0">
-                                                {r.personal_order_id && (
-                                                    <span className="text-xs text-muted-foreground hidden sm:inline">Pedido #{r.personal_order_id}</span>
-                                                )}
-                                                <span className="text-xs text-muted-foreground hidden sm:inline">{formatDate(r.created_at)}</span>
-                                                {r.status === 2 ? (
-                                                    <Badge variant="outline" className="text-xs px-2 h-5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 gap-1">
-                                                        <CheckCircle2 className="w-3 h-3" />
-                                                        Concluído
-                                                    </Badge>
-                                                ) : (
-                                                    <Badge variant="outline" className="text-xs px-2 h-5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 gap-1">
-                                                        <Clock className="w-3 h-3" />
-                                                        Pendente
-                                                    </Badge>
-                                                )}
-                                            </div>
+                                <>
+                                    <div className="hidden md:block overflow-x-auto rounded-lg border border-border/60">
+                                        <Table className="min-w-[720px]">
+                                            <TableHeader>
+                                                <TableRow className="hover:bg-transparent">
+                                                    <TableHead>Cliente</TableHead>
+                                                    <TableHead>Pedido</TableHead>
+                                                    <TableHead>Status</TableHead>
+                                                    <TableHead className="text-right">Data</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                        </Table>
+
+                                        <div className="max-h-[420px] overflow-y-auto">
+                                            <Table className="min-w-[720px]">
+                                            <TableBody>
+                                                {data.attendant.reengagements.map((r) => (
+                                                    <TableRow key={r.id} className="hover:bg-muted/40">
+                                                        <TableCell>
+                                                            <div className="flex items-center gap-3 min-w-0">
+                                                                <Avatar className="h-9 w-9 rounded-lg shrink-0">
+                                                                    <AvatarFallback className="rounded-lg text-xs font-bold">{getInitials(r.user?.name ?? '?')}</AvatarFallback>
+                                                                </Avatar>
+                                                                <div className="min-w-0">
+                                                                    <p className="text-sm font-semibold truncate">{r.user?.name ?? `Usuário #${r.user_id}`}</p>
+                                                                    <p className="text-xs text-muted-foreground truncate">@{r.user?.login ?? '--'}</p>
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-sm text-muted-foreground">
+                                                            {r.personal_order_id ? `#${r.personal_order_id}` : '--'}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {r.status === 2 ? (
+                                                                <Badge variant="outline" className="h-6 gap-1.5 rounded-full border-emerald-300/50 bg-emerald-500/10 px-2.5 text-xs font-semibold text-emerald-400">
+                                                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                                                    Concluído
+                                                                </Badge>
+                                                            ) : (
+                                                                <Badge variant="outline" className="h-6 gap-1.5 rounded-full border-amber-300/40 bg-amber-500/10 px-2.5 text-xs font-semibold text-amber-300">
+                                                                    <Clock className="h-3.5 w-3.5" />
+                                                                    Pendente
+                                                                </Badge>
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell className="text-right text-xs text-muted-foreground">
+                                                            {formatDate(r.created_at)}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+
+                                    <motion.div
+                                        className="space-y-2.5 md:hidden"
+                                        variants={attendanceListVariants}
+                                        initial="hidden"
+                                        animate="show"
+                                    >
+                                        {data.attendant.reengagements.map((r) => (
+                                            <motion.div
+                                                key={r.id}
+                                                variants={attendanceItemVariants}
+                                                whileHover={{ y: -1, scale: 1.005 }}
+                                                className="group rounded-xl border border-border/70 bg-surface/60 px-4 py-3.5 transition-colors hover:border-primary/35 hover:bg-surface"
+                                            >
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="flex min-w-0 items-start gap-3">
+                                                        <Avatar className="h-10 w-10 rounded-xl shrink-0">
+                                                            <AvatarFallback className="rounded-xl text-sm font-bold">{getInitials(r.user?.name ?? '?')}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="min-w-0">
+                                                            <div className="flex flex-wrap items-center gap-2">
+                                                                <p className="truncate text-sm font-semibold leading-tight text-on-surface">{r.user?.name ?? `Usuário #${r.user_id}`}</p>
+                                                                {r.status === 2 ? (
+                                                                    <Badge variant="outline" className="h-6 gap-1.5 rounded-full border-emerald-300/50 bg-emerald-500/10 px-2.5 text-xs font-semibold text-emerald-400">
+                                                                        <CheckCircle2 className="h-3.5 w-3.5" />
+                                                                        Concluído
+                                                                    </Badge>
+                                                                ) : (
+                                                                    <Badge variant="outline" className="h-6 gap-1.5 rounded-full border-amber-300/40 bg-amber-500/10 px-2.5 text-xs font-semibold text-amber-300">
+                                                                        <Clock className="h-3.5 w-3.5" />
+                                                                        Pendente
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                            <p className="mt-1 truncate text-xs text-on-surface-variant">@{r.user?.login ?? '--'}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-on-surface-variant">
+                                                    {r.personal_order_id ? (
+                                                        <span className="font-medium text-on-surface-variant/90">Pedido #{r.personal_order_id}</span>
+                                                    ) : (
+                                                        <span className="opacity-70">Sem pedido vinculado</span>
+                                                    )}
+                                                    <span className="hidden h-1 w-1 rounded-full bg-on-surface-variant/50 sm:inline-block" />
+                                                    <span>{formatDate(r.created_at)}</span>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </motion.div>
+                                </>
                             ) : (
                                 <p className="text-sm text-muted-foreground/60 py-2">Nenhum atendimento registrado.</p>
                             )}
