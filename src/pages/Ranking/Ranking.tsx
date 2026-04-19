@@ -38,7 +38,7 @@ export default function Ranking() {
     });
 
     const sellers = [...(data?.leaderboard ?? [])]
-        .filter((item: LeaderboardEntry) => item.type === 3)
+        .filter((item: LeaderboardEntry) => item.type === 3 && item.status  == 1)
         .sort((a, b) => {
             const revenueDiff = Number(b.revenue ?? 0) - Number(a.revenue ?? 0);
             if (revenueDiff !== 0) return revenueDiff;
