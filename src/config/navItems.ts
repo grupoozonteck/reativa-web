@@ -1,4 +1,4 @@
-import { LayoutDashboard, Trophy, UsersRound, Headphones, Bell, type LucideIcon, HandCoins, Handshake, UserCog } from 'lucide-react';
+import { LayoutDashboard, Trophy, UsersRound, Headphones, type LucideIcon, HandCoins, Handshake, UserCog } from 'lucide-react';
 
 export interface NavItem {
     to: string;
@@ -11,15 +11,15 @@ export interface NavItem {
 export const navItems: NavItem[] = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
     { to: '/ranking', label: 'Ranking', icon: Trophy },
-    { to: '/clientes', label: 'Clientes', icon: UsersRound },
-    { to: '/meus-atendimentos', label: 'Meus Atendimentos', icon: Headphones },
+    { to: '/customers', label: 'Clientes', icon: UsersRound },
+    { to: '/my-attendances', label: 'Meus Atendimentos', icon: Headphones },
     { to: '/supervisor/performance', label: 'Minha Equipe', icon: Handshake },
-    { to: '/manager/performance', label: 'Minha Operação', icon: Handshake },
-    { to: '/atendentes', label: 'Atendentes', icon: UserCog },
-    { to: '/comissoes', label: 'Comissões', icon: HandCoins },
+    { to: '/manager/performance', label: 'Minha Operacao', icon: Handshake },
+    { to: '/attendants', label: 'Atendentes', icon: UserCog },
+    { to: '/commissions', label: 'Comissoes', icon: HandCoins },
     // {
-    //     to: '/notificacoes',
-    //     label: 'Notificações',
+    //     to: '/notifications',
+    //     label: 'Notificacoes',
     //     icon: Bell,
     //     badge: saleNotifications.filter(n => n.type === 'reativacao').length,
     // },

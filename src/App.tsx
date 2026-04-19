@@ -6,16 +6,16 @@ import AppLayout from '@/layouts/AppLayout';
 import Login from '@/pages/Login/Login';
 import Dashboard from '@/pages/Dashboard/Dashboard';
 import Ranking from '@/pages/Ranking/Ranking';
-import Clientes from '@/pages/Clientes/Clientes';
-import ClienteDetalhes from '@/pages/Clientes/ClienteDetalhes';
-import MeusAtendimentos from '@/pages/Clientes/MeusAtendimentos';
+import Customers from '@/pages/Customers/Customers';
+import CustomerDetails from '@/pages/Customers/CustomerDetails';
+import MyAttendances from '@/pages/Customers/MyAttendances';
 import { Loader2 } from 'lucide-react';
-import Comissoes from './pages/Comisoes/Comissoes';
+import Commissions from './pages/Commissions/Commissions';
 import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
 import ManagerPerformance from './pages/Manager/ManagerPerformance';
-import Atendentes from './pages/Atendentes/Atendentes';
-import AtendenteDetalhes from './pages/Atendentes/AtendenteDetalhes';
-import AtendenteEditar from './pages/Atendentes/AtendenteEditar';
+import Attendants from './pages/Attendants/Attendants';
+import AttendantDetails from './pages/Attendants/AttendantDetails';
+import EditAttendant from './pages/Attendants/EditAttendant';
 import * as React from "react";
 import { ToastContainer } from 'react-toastify';
 
@@ -76,10 +76,10 @@ export default function App() {
           <Route element={<ProtectedApp />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/ranking" element={<Ranking />} />
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/clientes/:id" element={<ClienteDetalhes />} />
-            <Route path="/meus-atendimentos" element={<MeusAtendimentos />} />
-            <Route path="/comissoes" element={<Comissoes />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/customers/:id" element={<CustomerDetails />} />
+            <Route path="/my-attendances" element={<MyAttendances />} />
+            <Route path="/commissions" element={<Commissions />} />
             <Route
               path="/supervisor/performance"
               element={
@@ -97,30 +97,37 @@ export default function App() {
               }
             />
             <Route
-              path="/atendentes"
+              path="/attendants"
               element={
-                <RoleGuard route="/atendentes">
-                  <Atendentes />
+                <RoleGuard route="/attendants">
+                  <Attendants />
                 </RoleGuard>
               }
             />
             <Route
-              path="/atendentes/:id"
+              path="/attendants/:id"
               element={
-                <RoleGuard route="/atendentes">
-                  <AtendenteDetalhes />
+                <RoleGuard route="/attendants">
+                  <AttendantDetails />
                 </RoleGuard>
               }
             />
             <Route
-              path="/atendentes/:id/editar"
+              path="/attendants/:id/edit"
               element={
-                <RoleGuard route="/atendentes">
-                  <AtendenteEditar />
+                <RoleGuard route="/attendants">
+                  <EditAttendant />
                 </RoleGuard>
               }
             />
           </Route>
+          <Route path="/clientes" element={<Navigate to="/customers" replace />} />
+          <Route path="/clientes/:id" element={<Navigate to="/customers" replace />} />
+          <Route path="/meus-atendimentos" element={<Navigate to="/my-attendances" replace />} />
+          <Route path="/comissoes" element={<Navigate to="/commissions" replace />} />
+          <Route path="/atendentes" element={<Navigate to="/attendants" replace />} />
+          <Route path="/atendentes/:id" element={<Navigate to="/attendants" replace />} />
+          <Route path="/atendentes/:id/editar" element={<Navigate to="/attendants" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

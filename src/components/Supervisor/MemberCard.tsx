@@ -41,7 +41,7 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
     const xpValue = Number(member.xp ?? 0);
     const revenueValue = Number(member.revenue ?? 0);
     const isTopPerformer = index === 0;
-    const goToDetails = () => navigate(`/atendentes/${member.id}`);
+    const goToDetails = () => navigate(`/attendants/${member.id}`);
 
     return (
         <div

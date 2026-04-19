@@ -12,7 +12,7 @@ export default function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
-    const name = user?.name ?? 'Usuário';
+    const name = user?.name ?? 'UsuÃ¡rio';
     const email = user?.email ?? '';
     const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     const userRole = user?.attendant?.type_label ?? 'user';
@@ -26,7 +26,7 @@ export default function AppLayout() {
             {/* Themed background (aurora or clean white) */}
             <AuroraBackground />
 
-            {/* ── Desktop sidebar ── */}
+            {/* â”€â”€ Desktop sidebar â”€â”€ */}
             <aside
                 className="hidden lg:flex w-[220px] shrink-0 border-r border-border flex-col bg-card"
                 style={{ position: 'relative', zIndex: 10 }}
@@ -40,7 +40,7 @@ export default function AppLayout() {
                 />
             </aside>
 
-            {/* ── Mobile overlay ── */}
+            {/* â”€â”€ Mobile overlay â”€â”€ */}
             {sidebarOpen && (
                 <div className="lg:hidden fixed inset-0" style={{ zIndex: 50 }}>
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeSidebar} />
@@ -66,7 +66,7 @@ export default function AppLayout() {
                 </div>
             )}
 
-            {/* ── Main content ── */}
+            {/* â”€â”€ Main content â”€â”€ */}
             <div
                 className="flex-1 flex flex-col min-w-0 overflow-hidden"
                 style={{ position: 'relative', zIndex: 5 }}
