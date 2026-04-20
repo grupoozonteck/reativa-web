@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { queryClient } from '../lib/queryClient';
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -16,6 +17,8 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else if (config.headers.Authorization) {
+      delete config.headers.Authorization;
     }
     return config;
   },
@@ -27,6 +30,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      void queryClient.cancelQueries().finally(() => {
+        queryClient.clear();
+      });
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
