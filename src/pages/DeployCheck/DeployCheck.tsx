@@ -18,9 +18,11 @@ export default function DeployCheck() {
                     <p className="mt-2 text-2xl font-bold text-emerald-300">
                         /deploy-check
                     </p>
-                    <p className="mt-4 text-sm text-slate-400">
-                        Atualizada em 20/04/2026
-                    </p>
+                    <div className="mt-4 space-y-1 text-sm text-slate-400">
+                        <p>Atualizada em 20/04/2026</p>
+                        <p>Versao base: 5ed870a</p>
+                        <p>Inclui ajuste do top attendants e validacao de cache por usuario.</p>
+                    </div>
                 </div>
             </div>
         </main>
