@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { authService, type LoginCredentials, type User } from '../services/auth.service';
 import { AuthContext } from './context';
+import { clearClientState } from '@/lib/clearClientState';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
@@ -31,14 +32,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .catch(() => {
                     setToken(null);
                     setUser(null);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
+                    clearClientState();
                 })
                 .finally(() => setIsLoading(false));
         }
     }, [token, user]);
 
     const loginFunction = useCallback(async (credentials: LoginCredentials) => {
+        clearClientState();
+
         const response = await authService.login(credentials);
 
         // Salva o token primeiro
@@ -58,8 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } finally {
             setToken(null);
             setUser(null);
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            clearClientState();
         }
     }, []);
 

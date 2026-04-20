@@ -3,11 +3,15 @@ import { teamService } from '@/services/team.service';
 import { PerformanceHeader } from '@/components/Supervisor/PerformanceHeader';
 import { PerformanceStats } from '@/components/Supervisor/PerformanceStats';
 import { MembersList } from '@/components/Supervisor/MembersList';
+import { useAuth } from '@/contexts/useAuth';
 
 export default function SupervisorPerformance() {
+    const { user } = useAuth();
+
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['supervisor-performance'],
+        queryKey: ['supervisor-performance', user?.id],
         queryFn: () => teamService.getSupervisorPerformance(),
+        enabled: !!user?.id,
         refetchInterval: 5 * 60 * 1000,
     });
 
@@ -39,5 +43,4 @@ export default function SupervisorPerformance() {
         </div>
     );
 }
-
 

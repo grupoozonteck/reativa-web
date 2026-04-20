@@ -9,6 +9,7 @@ import { RankingHeader } from '@/components/ranking/RankingHeader';
 import { GlobalGoal } from '@/components/ranking/GlobalGoal';
 import { LeaderboardService } from '@/services/leaderboard.service';
 import type { LeaderboardEntry } from '@/components/ranking/types';
+import { useAuth } from '@/contexts/useAuth';
 
 function RankingSkeleton() {
     return (
@@ -30,9 +31,12 @@ function RankingSkeleton() {
 }
 
 export default function Ranking() {
+    const { user } = useAuth();
+
     const { data, isLoading, isFetching, isError, refetch } = useQuery({
-        queryKey: ['leaderboard'],
+        queryKey: ['leaderboard', user?.id],
         queryFn: () => LeaderboardService.getLeaderboard(),
+        enabled: !!user?.id,
         staleTime: 1000 * 60,
         refetchInterval: 1000 * 60 * 2,
     });
