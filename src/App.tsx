@@ -16,6 +16,7 @@ import ManagerPerformance from './pages/Manager/ManagerPerformance';
 import Attendants from './pages/Attendants/Attendants';
 import AttendantDetails from './pages/Attendants/AttendantDetails';
 import EditAttendant from './pages/Attendants/EditAttendant';
+import DeployCheck from './pages/DeployCheck/DeployCheck';
 import * as React from "react";
 import { ToastContainer } from 'react-toastify';
 
@@ -73,6 +74,7 @@ export default function App() {
               </GuestRoute>
             }
           />
+          <Route path="/deploy-check" element={<DeployCheck />} />
           <Route element={<ProtectedApp />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/ranking" element={<Ranking />} />
@@ -121,13 +123,13 @@ export default function App() {
               }
             />
           </Route>
-          <Route path="/clientes" element={<Navigate to="/customers" replace />} />
-          <Route path="/clientes/:id" element={<Navigate to="/customers" replace />} />
-          <Route path="/meus-atendimentos" element={<Navigate to="/my-attendances" replace />} />
-          <Route path="/comissoes" element={<Navigate to="/commissions" replace />} />
-          <Route path="/atendentes" element={<Navigate to="/attendants" replace />} />
-          <Route path="/atendentes/:id" element={<Navigate to="/attendants" replace />} />
-          <Route path="/atendentes/:id/editar" element={<Navigate to="/attendants" replace />} />
+          <Route path="/customers" element={<Navigate to="/customers" replace />} />
+          <Route path="/customers/:id" element={<Navigate to="/customers" replace />} />
+          <Route path="/my-attendances" element={<Navigate to="/my-attendances" replace />} />
+          <Route path="/commissions" element={<Navigate to="/commissions" replace />} />
+          <Route path="/attendants" element={<Navigate to="/attendants" replace />} />
+          <Route path="/attendants/:id" element={<Navigate to="/attendants" replace />} />
+          <Route path="/attendants/:id/edit" element={<Navigate to="/attendants" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
