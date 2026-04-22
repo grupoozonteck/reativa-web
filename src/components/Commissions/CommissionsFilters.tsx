@@ -30,7 +30,7 @@ export function CommissionsFilters({
                 <Search className="w-4 h-4 text-on-surface-variant" />
                 <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
                 {hasActiveFilters && (
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                    <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
                         ativo
                     </Badge>
                 )}

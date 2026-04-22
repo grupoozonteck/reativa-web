@@ -18,7 +18,6 @@ import {
     CalendarClock,
     StickyNote,
     UserPlus,
-    Users,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,8 +42,8 @@ import {
     formatCurrency,
 } from '@/utils/client-utils';
 import { customerService } from '@/services/customer.service';
-import { EditCustomerModal } from '@/components/Customers/EditCustomerModal';
-import { AddObservationModal } from '@/components/Customers/AddObservationModal';
+import { EditClienteModal } from '@/components/Customers/EditClienteModal';
+import { AddObservacaoModal } from '@/components/Customers/AddObservacaoModal';
 import { InformSponsorModal } from '@/components/Customers/InformSponsorModal';
 import { CustomerLatestOrderCard } from '@/components/Customers/CustomerLatestOrderCard';
 import { reengagementStatusMap } from '@/utils/color-ultis';
@@ -52,9 +51,9 @@ import { orderStatusStyleMap } from '@/config/orderStatus';
 import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 
 
-export default function CustomerDetails() {
+export default function ClienteDetalhes() {
     const [editModalOpen, setEditModalOpen] = useState(false);
-    const [observationModalOpen, setObservationModalOpen] = useState(false);
+    const [observacaoModalOpen, setObservacaoModalOpen] = useState(false);
     const [sponsorModalOpen, setSponsorModalOpen] = useState(false);
     const [accessingStore, setAccessingStore] = useState(false);
     const { id } = useParams<{ id: string }>();
@@ -63,19 +62,14 @@ export default function CustomerDetails() {
     const handleAccessStore = async () => {
         if (!id) return;
         setAccessingStore(true);
-        // Abrir a janela de forma síncrona antes do await para iOS/Safari não bloquear como popup
-        const newWindow = window.open('', '_blank');
         try {
             const res = await customerService.getAccessStoreLink(Number(id));
             const token = res?.data?.token;
-            if (token && newWindow) {
-                newWindow.location.href = `${import.meta.env.VITE_OFFICE_BASE_URL}/impersonation/${token}`;
-            } else {
-                newWindow?.close();
+            if (token) {
+                window.open(`${import.meta.env.VITE_OFFICE_BASE_URL}/impersonation/${token}`, '_blank', 'noopener,noreferrer');
             }
         } catch (err) {
             console.error('Erro ao obter link da loja:', err);
-            newWindow?.close();
         } finally {
             setAccessingStore(false);
         }
@@ -111,14 +105,13 @@ export default function CustomerDetails() {
         );
     }
 
-    const personalData = user.personalData ?? user.personal_data ?? null;
-    const whatsapp = personalData?.whatsapp || personalData?.phone_number || user.phone_number;
+    const whatsapp = user.personal_data?.whatsapp || user.phone_number;
     const initials = getInitials(user.name);
     const avatarColor = getAvatarColor(user.name);
-    const orders = (user.personalOrders ?? user.personal_orders ?? []).slice().sort(
+    const orders = (user.personal_orders ?? []).slice().sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
-    const address = user.personalAddress ?? user.personal_address ?? null;
+    const address = user.personal_address;
     const reengStatus = reengagement ? reengagementStatusMap[reengagement.status] : null;
     const hasWhatsapp = !!whatsapp;
     const observations = reengagement?.observations ?? [];
@@ -128,20 +121,20 @@ export default function CustomerDetails() {
 
     return (
         <>
-            <EditCustomerModal
+            <EditClienteModal
                 open={editModalOpen}
                 onClose={() => setEditModalOpen(false)}
                 userId={user.id}
                 initialEmail={user.email}
-                initialBirthDate={personalData?.birth_date?.slice(0, 10) ?? ''}
+                initialBirthDate={user.personal_data?.birth_date?.slice(0, 10) ?? ''}
                 initialStatus={reengagement?.status ?? 1}
                 statusOptions={statusMap}
                 onUpdated={() => refetch()}
             />
             {reengagement && (
-                <AddObservationModal
-                    open={observationModalOpen}
-                    onClose={() => setObservationModalOpen(false)}
+                <AddObservacaoModal
+                    open={observacaoModalOpen}
+                    onClose={() => setObservacaoModalOpen(false)}
                     reengagementId={reengagement.id}
                     onUpdated={() => refetch()}
                 />
@@ -157,9 +150,10 @@ export default function CustomerDetails() {
             <div className="p-4 sm:p-6 space-y-5 max-w-screen-2xl mx-auto">
                 {/* Back */}
                 <Button
-                    variant="default"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => navigate(-1)}
-                    className="gap-2  -ml-1"
+                    className="gap-2 text-on-surface-variant hover:text-primary -ml-1"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Voltar
@@ -170,9 +164,9 @@ export default function CustomerDetails() {
                     <CardContent className="p-5 sm:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                             {/* Avatar */}
-                            {personalData?.avatar ? (
+                            {user.personal_data?.avatar ? (
                                 <img
-                                    src={personalData.avatar}
+                                    src={user.personal_data.avatar}
                                     alt={user.name}
                                     className="w-16 h-16 rounded-2xl object-cover shrink-0"
                                 />
@@ -218,6 +212,7 @@ export default function CustomerDetails() {
                             {/* Action buttons */}
                             <div className="flex flex-wrap gap-2 sm:shrink-0">
                                 <Button
+                                    size="sm"
                                     onClick={handleAccessStore}
                                     disabled={accessingStore}
                                     className="gap-2 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold"
@@ -226,7 +221,7 @@ export default function CustomerDetails() {
                                     Acessar conta
                                 </Button>
                                 {hasWhatsapp ? (
-                                    <Button  asChild variant="outline" className="gap-2">
+                                    <Button size="sm" asChild variant="outline" className="gap-2">
                                         <a href={getWhatsAppLink(whatsapp)} target="_blank" rel="noopener noreferrer">
                                             <MessageCircle className="w-4 h-4" />
                                             WhatsApp
@@ -239,21 +234,22 @@ export default function CustomerDetails() {
                                     </Button>
                                 )}
                                 {reengagement && (
-                                    <Button variant="outline" className="gap-2" onClick={() => setObservationModalOpen(true)}>
+                                    <Button size="sm" variant="outline" className="gap-2" onClick={() => setObservacaoModalOpen(true)}>
                                         <ClipboardEdit className="w-4 h-4" />
                                         Observação
                                     </Button>
                                 )}
                                 <Button
+                                    size="sm"
                                     variant="outline"
                                     className="gap-2"
                                     onClick={() => setSponsorModalOpen(true)}
                                     disabled={!!linkedLeader}
                                 >
                                     <UserPlus className="w-4 h-4" />
-                                    {linkedLeader ? 'Lider vinculado' : 'Vincular Lider'}
+                                    {linkedLeader ? 'Leader vinculado' : 'Leader'}
                                 </Button>
-                                <Button  variant="secondary" className="gap-2" onClick={() => setEditModalOpen(true)}>
+                                <Button size="sm" variant="outline" className="gap-2" onClick={() => setEditModalOpen(true)}>
                                     <Edit className="w-4 h-4" />
                                     Editar
                                 </Button>
@@ -296,7 +292,7 @@ export default function CustomerDetails() {
                                                 <Mail className="w-4 h-4 text-accent" />
                                             </div>
                                             <div>
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">E-mail</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">E-mail</p>
                                                 <p className="text-sm text-on-surface break-all">{user.email || '--'}</p>
                                             </div>
                                         </div>
@@ -305,7 +301,7 @@ export default function CustomerDetails() {
                                                 <MessageCircle className="w-4 h-4 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">WhatsApp</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">WhatsApp</p>
                                                 {hasWhatsapp ? (
                                                     <a
                                                         href={getWhatsAppLink(whatsapp)}
@@ -326,8 +322,8 @@ export default function CustomerDetails() {
                                                 <Phone className="w-4 h-4 text-secondary" />
                                             </div>
                                             <div>
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Telefone</p>
-                                                <p className="text-sm text-on-surface">{formatWhatsApp(personalData?.phone_number || user.phone_number) || '--'}</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Telefone</p>
+                                                <p className="text-sm text-on-surface">{formatWhatsApp(user.phone_number) || '--'}</p>
                                             </div>
                                         </div>
                                         {address && (
@@ -336,7 +332,7 @@ export default function CustomerDetails() {
                                                     <MapPin className="w-4 h-4 text-accent" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Endereço</p>
+                                                    <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Endereço</p>
                                                     <p className="text-sm text-on-surface">{address.address_line}, {address.number}</p>
                                                     {address.complement && <p className="text-sm text-on-surface-variant">{address.complement}</p>}
                                                     <p className="text-sm text-on-surface-variant">{address.district}</p>
@@ -350,22 +346,10 @@ export default function CustomerDetails() {
                                                 <Calendar className="w-4 h-4 text-on-surface-variant" />
                                             </div>
                                             <div>
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Cadastro</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Cadastro</p>
                                                 <p className="text-sm text-on-surface">{formatDate(user.created_at)}</p>
                                             </div>
                                         </div>
-                                        {user.sponsor?.user_sponsor && (
-                                            <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5">
-                                                    <Users className="w-4 h-4 text-secondary" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs uppercase tracking-wider text-on-surface-variant mb-0.5">Patrocinador</p>
-                                                    <p className="text-sm text-on-surface">{user.sponsor.user_sponsor.name}</p>
-                                                    <p className="text-xs text-on-surface-variant font-mono">@{user.sponsor.user_sponsor.login}</p>
-                                                </div>
-                                            </div>
-                                        )}
                                     </CardContent>
                                 </Card>
 
@@ -379,7 +363,7 @@ export default function CustomerDetails() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <Package className="w-4 h-4 text-accent" />
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Total Pedidos</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Total Pedidos</p>
                                             </div>
                                             <p className="font-display text-2xl font-black text-on-surface">{orders.length}</p>
                                         </CardContent>
@@ -388,7 +372,7 @@ export default function CustomerDetails() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <ShoppingBag className="w-4 h-4 text-secondary" />
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Pedidos Pagos</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Pedidos Pagos</p>
                                             </div>
                                             <p className="font-display text-2xl font-black text-on-surface">{paidOrders}</p>
                                         </CardContent>
@@ -397,7 +381,7 @@ export default function CustomerDetails() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <ClipboardEdit className="w-4 h-4 text-primary" />
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Observações</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Observações</p>
                                             </div>
                                             <p className="font-display text-2xl font-black text-on-surface">{observations.length}</p>
                                         </CardContent>
@@ -406,7 +390,7 @@ export default function CustomerDetails() {
                                         <CardContent className="p-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <ShoppingBag className="w-4 h-4 text-primary" />
-                                                <p className="text-xs uppercase tracking-wider text-on-surface-variant">Valor Total</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Valor Total</p>
                                             </div>
                                             <p className="font-display text-xl font-black text-primary">{formatCurrency(totalValue)}</p>
                                         </CardContent>
@@ -482,7 +466,7 @@ export default function CustomerDetails() {
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-on-surface-variant">{observations.length} {observations.length === 1 ? 'observação registrada' : 'observações registradas'}</p>
                             {reengagement && (
-                                <Button size="sm" variant="outline" className="gap-2" onClick={() => setObservationModalOpen(true)}>
+                                <Button size="sm" variant="outline" className="gap-2" onClick={() => setObservacaoModalOpen(true)}>
                                     <ClipboardEdit className="w-4 h-4" />
                                     Nova observação
                                 </Button>
@@ -495,7 +479,7 @@ export default function CustomerDetails() {
                                     <StickyNote className="w-8 h-8 text-on-surface-variant/30" />
                                     <p className="text-sm text-on-surface-variant/50">Nenhuma observação registrada ainda.</p>
                                     {reengagement && (
-                                        <Button size="sm" variant="outline" className="gap-2 mt-1" onClick={() => setObservationModalOpen(true)}>
+                                        <Button size="sm" variant="outline" className="gap-2 mt-1" onClick={() => setObservacaoModalOpen(true)}>
                                             <ClipboardEdit className="w-4 h-4" />
                                             Registrar primeira observação
                                         </Button>

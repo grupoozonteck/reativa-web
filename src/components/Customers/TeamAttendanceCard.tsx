@@ -3,18 +3,19 @@ import { Button } from '@/components/ui/button';
 import { Eye, MessageCircle, UserRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/utils/client-utils';
+import { getInitials, getAvatarColor, formatDate, formatWhatsApp, getWhatsAppLink } from '@/utils/client-utils';
 import { statusStyleMap } from '@/utils/color-ultis';
 import type { PersonalReengagement } from '@/services/customer.service';
 
-interface PersonalCardProps {
+interface TeamAttendanceCardProps {
     reengagement: PersonalReengagement;
     statusRecollection: Record<string, string>;
 }
 
-export function PersonalCard({ reengagement, statusRecollection }: PersonalCardProps) {
+export function TeamAttendanceCard({ reengagement, statusRecollection }: TeamAttendanceCardProps) {
     const navigate = useNavigate();
     const user = reengagement.user;
+    const recruiter = reengagement.recruiter;
     const leader = reengagement.leader;
     const whatsapp = user.personal_data?.whatsapp || user.personal_data?.phone_number || user.phone_number;
     const initials = getInitials(user.name);
@@ -59,8 +60,21 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
                     <div className="flex items-center gap-1.5 min-w-0">
                         <UserRound className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
                         <div className="min-w-0">
-                            <p className="text-xs font-medium text-on-surface truncate">{leader.name || leader.login}</p>
+                            <span className="text-[11px] uppercase tracking-wide font-semibold text-on-surface-variant mr-1">Líder:</span>
+                            <span className="text-xs font-medium text-on-surface truncate">{leader.name || leader.login}</span>
                             <p className="text-[11px] text-on-surface-variant truncate">@{leader.login}</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Atendente */}
+                {recruiter && (
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <UserRound className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
+                        <div className="min-w-0">
+                            <span className="text-[11px] uppercase tracking-wide font-semibold text-on-surface-variant mr-1">Atendente:</span>
+                            <span className="text-xs font-medium text-on-surface truncate">{recruiter.name}</span>
+                            <p className="text-[11px] text-on-surface-variant truncate">@{recruiter.login}</p>
                         </div>
                     </div>
                 )}

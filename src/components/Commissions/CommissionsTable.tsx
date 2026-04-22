@@ -104,22 +104,22 @@ export function CommissionsTable({
                     <Table>
                         <TableHeader>
                             <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
-                                <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     #ID
                                 </TableHead>
-                                <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Cliente
                                 </TableHead>
-                                <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Número do Pedido
                                 </TableHead>
-                                <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-right">
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
                                     Valor do Pedido
                                 </TableHead>
-                                <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-right">
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
                                     Comissão
                                 </TableHead>
-                                <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Data
                                 </TableHead>
                             </TableRow>

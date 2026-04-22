@@ -40,7 +40,7 @@ interface CreateAttendantModalProps {
     open: boolean;
     onClose: () => void;
     supervisors: AttendantLeaderOption[];
-    manager?: AttendantLeaderOption | null;
+    gestor?: AttendantLeaderOption | null;
     types: Record<string, string>;
     graduates: Record<string, string>;
     onCreated?: () => void;
@@ -50,13 +50,13 @@ export function CreateAttendantModal({
     open,
     onClose,
     supervisors,
-    manager,
+    gestor,
     types,
     graduates,
     onCreated,
 }: CreateAttendantModalProps) {
     const [userLogin, setUserLogin] = useState('');
-    const [selectedLeaderId, setSelectedLeaderId] = useState('');
+    const [supervisorId, setSupervisorId] = useState('');
     const [type, setType] = useState('');
     const [graduation, setGraduation] = useState('');
     const [loading, setLoading] = useState(false);
@@ -70,8 +70,8 @@ export function CreateAttendantModal({
 
     const leaderOptions = useMemo(() => {
         if (isCreatingSupervisor) {
-            return manager
-                ? [{ id: manager.id, name: manager.name, login: manager.login }]
+            return gestor
+                ? [{ id: gestor.id, name: gestor.name, login: gestor.login }]
                 : [];
         }
 
@@ -80,20 +80,20 @@ export function CreateAttendantModal({
             name: supervisor.name,
             login: supervisor.login,
         }));
-    }, [manager, isCreatingSupervisor, supervisors]);
+    }, [gestor, isCreatingSupervisor, supervisors]);
 
     useEffect(() => {
-        if (!selectedLeaderId) return;
+        if (!supervisorId) return;
 
-        const selectedLeaderIsAvailable = leaderOptions.some((leader) => String(leader.id) === selectedLeaderId);
+        const selectedLeaderIsAvailable = leaderOptions.some((leader) => String(leader.id) === supervisorId);
         if (!selectedLeaderIsAvailable) {
-            setSelectedLeaderId('');
+            setSupervisorId('');
         }
-    }, [leaderOptions, selectedLeaderId]);
+    }, [leaderOptions, supervisorId]);
 
     function resetForm() {
         setUserLogin('');
-        setSelectedLeaderId('');
+        setSupervisorId('');
         setType('');
         setGraduation('');
         setError(null);
@@ -107,7 +107,7 @@ export function CreateAttendantModal({
     }
 
     async function handleSubmit() {
-        if (!userLogin || !selectedLeaderId || !type || !graduation) {
+        if (!userLogin || !supervisorId || !type || !graduation) {
             setError('Preencha todos os campos.');
             return;
         }
@@ -117,7 +117,7 @@ export function CreateAttendantModal({
         try {
             await teamService.createAttendant({
                 user_login: userLogin,
-                supervisor_id: Number(selectedLeaderId),
+                supervisor_id: Number(supervisorId),
                 type: Number(type),
                 graduation: Number(graduation),
             });
@@ -167,7 +167,7 @@ export function CreateAttendantModal({
 
                     <div className="space-y-1.5">
                         <Label>{isCreatingSupervisor ? 'Gestor' : 'Lider'}</Label>
-                        <Select value={selectedLeaderId} onValueChange={setSelectedLeaderId} disabled={loading || !type}>
+                        <Select value={supervisorId} onValueChange={setSupervisorId} disabled={loading || !type}>
                             <SelectTrigger>
                                 <SelectValue
                                     placeholder={isCreatingSupervisor ? 'Selecione o gestor' : 'Selecione o lider'}

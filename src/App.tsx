@@ -9,6 +9,7 @@ import Ranking from '@/pages/Ranking/Ranking';
 import Customers from '@/pages/Customers/Customers';
 import CustomerDetails from '@/pages/Customers/CustomerDetails';
 import MyAttendances from '@/pages/Customers/MyAttendances';
+import TeamAttendances from '@/pages/Customers/TeamAttendances';
 import { Loader2 } from 'lucide-react';
 import Commissions from './pages/Commissions/Commissions';
 import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
@@ -16,6 +17,7 @@ import ManagerPerformance from './pages/Manager/ManagerPerformance';
 import Attendants from './pages/Attendants/Attendants';
 import AttendantDetails from './pages/Attendants/AttendantDetails';
 import EditAttendant from './pages/Attendants/EditAttendant';
+import DeployCheck from './pages/DeployCheck/DeployCheck';
 import * as React from "react";
 import { ToastContainer } from 'react-toastify';
 
@@ -73,12 +75,21 @@ export default function App() {
               </GuestRoute>
             }
           />
+          <Route path="/deploy-check" element={<DeployCheck />} />
           <Route element={<ProtectedApp />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/customers/:id" element={<CustomerDetails />} />
             <Route path="/my-attendances" element={<MyAttendances />} />
+            <Route
+              path="/team-attendances"
+              element={
+                <RoleGuard route="/team-attendances">
+                  <TeamAttendances />
+                </RoleGuard>
+              }
+            />
             <Route path="/commissions" element={<Commissions />} />
             <Route
               path="/supervisor/performance"
@@ -121,13 +132,14 @@ export default function App() {
               }
             />
           </Route>
-          <Route path="/clientes" element={<Navigate to="/customers" replace />} />
-          <Route path="/clientes/:id" element={<Navigate to="/customers" replace />} />
-          <Route path="/meus-atendimentos" element={<Navigate to="/my-attendances" replace />} />
-          <Route path="/comissoes" element={<Navigate to="/commissions" replace />} />
-          <Route path="/atendentes" element={<Navigate to="/attendants" replace />} />
-          <Route path="/atendentes/:id" element={<Navigate to="/attendants" replace />} />
-          <Route path="/atendentes/:id/editar" element={<Navigate to="/attendants" replace />} />
+          <Route path="/customers" element={<Navigate to="/customers" replace />} />
+          <Route path="/customers/:id" element={<Navigate to="/customers" replace />} />
+          <Route path="/my-attendances" element={<Navigate to="/my-attendances" replace />} />
+          <Route path="/team-attendances" element={<Navigate to="/team-attendances" replace />} />
+          <Route path="/commissions" element={<Navigate to="/commissions" replace />} />
+          <Route path="/attendants" element={<Navigate to="/attendants" replace />} />
+          <Route path="/attendants/:id" element={<Navigate to="/attendants" replace />} />
+          <Route path="/attendants/:id/edit" element={<Navigate to="/attendants" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

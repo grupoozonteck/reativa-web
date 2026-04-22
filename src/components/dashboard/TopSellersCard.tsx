@@ -24,7 +24,7 @@ function getInitials(name: string) {
 }
 
 export default function TopSellersCard({ sellers, isLoading = false }: TopSellersCardProps) {
-    const topSellers = [...sellers].sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 4);
+    const topSellers = [...sellers].sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 6);
     const max = Number(topSellers[0]?.revenue ?? 1);
 
     return (
@@ -45,7 +45,7 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                 </Badge>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
                 {!isLoading && topSellers.length === 0 && (
                     <p className="text-xs text-muted-foreground">Sem dados de atendentes no momento.</p>
                 )}

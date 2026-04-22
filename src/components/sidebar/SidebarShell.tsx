@@ -20,7 +20,7 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
     return (
         <div className="flex flex-col h-full">
 
-            {/* â”€â”€ Brand â”€â”€ */}
+            {/* ── Brand ── */}
             <div className="px-5 py-5 border-b border-border">
                 <div className="flex items-center gap-3">
                     <div className="relative  p-2 rounded-xl">
@@ -33,15 +33,15 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
                 </div>
             </div>
 
-            {/* â”€â”€ Section label â”€â”€ */}
+            {/* ── Section label ── */}
             <div className="px-5 pt-5 pb-2">
-                <p className="font-bold text-muted-foreground/80 uppercase text-sm">NavegaÃ§Ã£o {userRole}</p>
+                <p className="font-bold text-muted-foreground/80 uppercase text-sm">Acesso {userRole}</p>
             </div>
 
-            {/* â”€â”€ Nav â”€â”€ */}
+            {/* ── Nav ── */}
             <SidebarNav onNav={onNav} />
 
-            {/* â”€â”€ User footer â”€â”€ */}
+            {/* ── User footer ── */}
             <div className="px-3 py-4 border-t border-border">
                 <div className="flex items-center gap-2 px-2.5 py-2.5 rounded-xl bg-muted">
                     <Avatar className="w-8 h-8 shrink-0">
@@ -51,7 +51,7 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
                     </Avatar>
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold truncate leading-tight">{name}</p>
-                        <p className="text-xs text-muted-foreground truncate leading-tight">{email}</p>
+                        <p className="text-[10px] text-muted-foreground truncate leading-tight">{email}</p>
                     </div>
                     <ThemeToggleButton />
                     <Button

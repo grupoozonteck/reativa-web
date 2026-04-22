@@ -3,11 +3,15 @@ import { teamService } from '@/services/team.service';
 import { ManagerHeader } from '@/components/Manager/ManagerHeader';
 import { ManagerStats } from '@/components/Manager/ManagerStats';
 import { SupervisorTeamList } from '@/components/Manager/SupervisorTeamList';
+import { useAuth } from '@/contexts/useAuth';
 
 export default function ManagerPerformance() {
+    const { user } = useAuth();
+
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['manager-performance'],
+        queryKey: ['manager-performance', user?.id],
         queryFn: () => teamService.getManagerPerformance(),
+        enabled: !!user?.id,
         refetchInterval: 5 * 60 * 1000,
     });
 

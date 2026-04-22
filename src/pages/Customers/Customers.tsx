@@ -37,14 +37,10 @@ import { getRegions, getStates } from '@/services/filter.service';
 import { Field, FieldLabel } from '@/components/ui/field';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
-type SearchType = 'login' | 'email' | 'name';
 
-function buildParams(page: number, search: string, searchType: SearchType, status: FilterStatus, state: string, region: string, minOrders: number) {
+function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number) {
     const params: Record<string, number | string> = { page };
-    if (search) {
-        params.search = search;
-        params.search_type = searchType;
-    }
+    if (search) params.search = search;
     if (status === 'sem_pedidos') params.without_orders = 1;
     if (status === 'com_pedidos') params.has_orders = 1;
     if (status === 'com_pagos') params.has_paid_orders = 1;
@@ -56,13 +52,12 @@ function buildParams(page: number, search: string, searchType: SearchType, statu
 
 
 // ─── Main ────────────────────────────────────────────────────────────────────
-export default function Customers() {
+export default function Clientes() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Filtros aplicados (vêm da URL — disparam a requisição)
     const appliedSearch = searchParams.get('search') ?? '';
-    const appliedSearchType = (searchParams.get('search_type') as SearchType) ?? 'login';
     const appliedStatus = (searchParams.get('status') as FilterStatus) ?? 'todos';
     const appliedState = searchParams.get('state') ?? '';
     const appliedRegion = searchParams.get('region') ?? '';
@@ -71,15 +66,14 @@ export default function Customers() {
 
     // Rascunho local (o que o usuário está editando antes de clicar em Filtrar)
     const [search, setSearch] = useState(appliedSearch);
-    const [searchType, setSearchType] = useState<SearchType>(appliedSearchType);
     const [filterStatus, setFilterStatus] = useState<FilterStatus>(appliedStatus);
-    const [selectedStateId, setSelectedStateId] = useState(appliedState);
-    const [selectedRegionId, setSelectedRegionId] = useState(appliedRegion);
-    const [minimumOrders, setMinimumOrders] = useState(appliedMinOrders);
+    const [selectedState, setSelectedState] = useState(appliedState);
+    const [selectedRegion, setSelectedRegion] = useState(appliedRegion);
+    const [minOrders, setMinOrders] = useState(appliedMinOrders);
 
     const setPage = (val: number) => setSearchParams(p => { p.set('page', String(val)); return p; }, { replace: true });
 
-    const params = buildParams(page, appliedSearch, appliedSearchType, appliedStatus, appliedState, appliedRegion, appliedMinOrders);
+    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion, appliedMinOrders);
     const { data: statesData } = useQuery({
         queryKey: ['states'],
         queryFn: getStates,
@@ -110,8 +104,8 @@ export default function Customers() {
 
 
     const allStates: { id: number; name: string; uf: string; region_id: number }[] = statesData ?? [];
-    const states = selectedRegionId
-        ? allStates.filter(s => String(s.region_id) === selectedRegionId)
+    const states = selectedRegion
+        ? allStates.filter(s => String(s.region_id) === selectedRegion)
         : allStates;
     const loading = isLoading;
     const hasActiveFilters = appliedSearch !== ''
@@ -120,19 +114,18 @@ export default function Customers() {
         || appliedRegion !== ''
         || appliedMinOrders > 0;
     const hasDraftChanges = search !== appliedSearch
-        || searchType !== appliedSearchType
         || filterStatus !== appliedStatus
-        || selectedStateId !== appliedState
-        || selectedRegionId !== appliedRegion
-        || minimumOrders !== appliedMinOrders;
+        || selectedState !== appliedState
+        || selectedRegion !== appliedRegion
+        || minOrders !== appliedMinOrders;
 
     const handleApplyFilters = () => {
         setSearchParams(p => {
-            if (search) { p.set('search', search); p.set('search_type', searchType); } else { p.delete('search'); p.delete('search_type'); }
+            if (search) p.set('search', search); else p.delete('search');
             if (filterStatus !== 'todos') p.set('status', filterStatus); else p.delete('status');
-            if (selectedStateId) p.set('state', selectedStateId); else p.delete('state');
-            if (selectedRegionId) p.set('region', selectedRegionId); else p.delete('region');
-            if (minimumOrders > 0) p.set('min_orders', String(minimumOrders)); else p.delete('min_orders');
+            if (selectedState) p.set('state', selectedState); else p.delete('state');
+            if (selectedRegion) p.set('region', selectedRegion); else p.delete('region');
+            if (minOrders > 0) p.set('min_orders', String(minOrders)); else p.delete('min_orders');
             p.set('page', '1');
             return p;
         }, { replace: true });
@@ -140,11 +133,10 @@ export default function Customers() {
 
     const handleClearFilters = () => {
         setSearch('');
-        setSearchType('login');
         setFilterStatus('todos');
-        setSelectedStateId('');
-        setSelectedRegionId('');
-        setMinimumOrders(0);
+        setSelectedState('');
+        setSelectedRegion('');
+        setMinOrders(0);
         setSearchParams(new URLSearchParams(), { replace: true });
     };
 
@@ -204,7 +196,7 @@ export default function Customers() {
                     <Filter className="w-4 h-4 text-on-surface-variant" />
                     <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
                     {hasActiveFilters && (
-                        <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
                             ativo
                         </Badge>
                     )}
@@ -212,35 +204,23 @@ export default function Customers() {
 
                 {/* Linha 1: inputs */}
                 <div className="flex flex-col md:flex-row md:flex-wrap md:items-end gap-3">
-                    <Field className="flex-1 max-w-md">
+                    <Field className="flex-1 max-w-md ">
                         <FieldLabel>Buscar</FieldLabel>
-                        <div className="flex gap-2">
-                            <Select value={searchType} onValueChange={(val) => setSearchType(val as SearchType)}>
-                                <SelectTrigger className="h-9 text-sm w-28 shrink-0 bg-surface-highest border-none focus:ring-0">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="login">Login</SelectItem>
-                                    <SelectItem value="email">Email</SelectItem>
-                                    <SelectItem value="name">Nome</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
-                                <Input
-                                    placeholder={searchType === 'login' ? 'Digite o login...' : searchType === 'email' ? 'Digite o email...' : 'Digite o nome...'}
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    className="pl-9 h-9 w-full bg-surface-highest border-none focus-visible:ring-0"
-                                    disabled={loading}
-                                />
-                            </div>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+                            <Input
+                                placeholder="Nome, login ou email..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="pl-9 h-9  w-full bg-surface-highest border-none focus-visible:ring-0"
+                                disabled={loading}
+                            />
                         </div>
                     </Field>
 
                     <Field className="w-full md:w-44">
                         <FieldLabel>Região</FieldLabel>
-                        <Select value={selectedRegionId} onValueChange={(val) => setSelectedRegionId(val === 'todos' ? '' : val)}>
+                        <Select value={selectedRegion} onValueChange={(val) => setSelectedRegion(val === 'todos' ? '' : val)}>
                             <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
                                 <SelectValue placeholder="Todas as regiões" />
                             </SelectTrigger>
@@ -255,7 +235,7 @@ export default function Customers() {
 
                     <Field className="w-full md:w-44">
                         <FieldLabel>Estado</FieldLabel>
-                        <Select value={selectedStateId} onValueChange={(val) => setSelectedStateId(val === 'todos' ? '' : val)} disabled={isFetching}>
+                        <Select value={selectedState} onValueChange={(val) => setSelectedState(val === 'todos' ? '' : val)} disabled={isFetching}>
                             <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
                                 <SelectValue placeholder="Todos os estados" />
                             </SelectTrigger>
@@ -272,8 +252,8 @@ export default function Customers() {
                         <FieldLabel>Mínimo de Pedidos</FieldLabel>
                         <Input
                             type="number"
-                            value={minimumOrders}
-                            onChange={(e) => setMinimumOrders(Number(e.target.value) || 0)}
+                            value={minOrders}
+                            onChange={(e) => setMinOrders(Number(e.target.value) || 0)}
                             className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0"
                             placeholder="0"
                         />
@@ -349,50 +329,48 @@ export default function Customers() {
                     {/* Vista Desktop - Tabela */}
                     <div className="hidden md:block">
                         <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                            </Table>
-                        </div>
-                        <div className="overflow-y-auto max-h-[600px] overflow-x-auto">
-                            <Table>
-                                <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
-                                    {loading ? (
-                                        Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
-                                    ) : clients.length === 0 ? (
-                                        <TableRow className="border-none">
-                                            <TableCell colSpan={5} className="text-center py-16">
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <Users className="w-8 h-8 text-on-surface-variant/30" />
-                                                    <p className="text-on-surface-variant text-sm">
-                                                        Nenhum cliente encontrado
-                                                        {hasActiveFilters && ' com os filtros aplicados'}
-                                                    </p>
-                                                    {hasActiveFilters && (
-                                                        <button
-                                                            onClick={handleClearFilters}
-                                                            className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
-                                                        >
-                                                            Limpar filtros
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </TableCell>
+                            <div className="overflow-y-auto max-h-[600px]">
+                                <Table>
+                                    <TableHeader className="sticky top-0 z-10">
+                                        <TableRow className="border-none hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
                                         </TableRow>
-                                    ) : (
-                                        clients.map(client => (
-                                            <ClientRow key={client.id} client={client} />
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+                                        {loading ? (
+                                            Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+                                        ) : clients.length === 0 ? (
+                                            <TableRow className="border-none">
+                                                <TableCell colSpan={5} className="text-center py-16">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <Users className="w-8 h-8 text-on-surface-variant/30" />
+                                                        <p className="text-on-surface-variant text-sm">
+                                                            Nenhum cliente encontrado
+                                                            {hasActiveFilters && ' com os filtros aplicados'}
+                                                        </p>
+                                                        {hasActiveFilters && (
+                                                            <button
+                                                                onClick={handleClearFilters}
+                                                                className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
+                                                            >
+                                                                Limpar filtros
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            clients.map(client => (
+                                                <ClientRow key={client.id} client={client} />
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         </div>
                     </div>
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { UserCog, RefreshCcw, Plus } from 'lucide-react';
 import { teamService, type AttendantsFilters } from '@/services/team.service';
+import { utilsService } from '@/services/utils.service';
 import { AttendantsList } from '@/components/Attendants/AttendantsList';
 import { AttendantsFiltersBar } from '@/components/Attendants/AttendantsFiltersBar';
 import { CreateAttendantModal } from '@/components/Attendants/CreateAttendantModal';
@@ -9,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 
-export default function Attendants() {
+export default function Atendentes() {
     const [filters, setFilters] = useState<AttendantsFilters>({});
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const debouncedSearch = useDebounce(filters.search ?? '', 400);
@@ -31,13 +32,30 @@ export default function Attendants() {
         refetchInterval: 5 * 60 * 1000,
     });
 
-    const attendantsData = attendantsQuery.data;
-    const attendants = attendantsData?.attendants?.data ?? [];
-    const total = attendantsData?.attendants?.meta?.total;
+    const utilsQuery = useQuery({
+        queryKey: ['attendant-utils'],
+        queryFn: async () => {
+            const [types, graduates, status] = await Promise.all([
+                utilsService.getAttendantTypesMap(),
+                utilsService.getAttendantGraduatesMap(),
+                utilsService.getAttendantStatusMap(),
+            ]);
+
+            return { types, graduates, status };
+        },
+        staleTime: 1000 * 60 * 60 * 12,
+        gcTime: 1000 * 60 * 60 * 24,
+    });
+
+    const data = attendantsQuery.data;
+    const attendants = data?.attendants?.data ?? [];
+    const total = data?.attendants?.meta?.total;
+    const resolvedTypes = utilsQuery.data?.types ?? data?.types ?? {};
+    const resolvedGraduates = utilsQuery.data?.graduates ?? data?.graduates ?? {};
     const isLoading = attendantsQuery.isLoading;
-    const isFetching = attendantsQuery.isFetching || supportQuery.isFetching;
-    const refreshPageData = async () => {
-        await Promise.all([attendantsQuery.refetch(), supportQuery.refetch()]);
+    const isFetching = attendantsQuery.isFetching || supportQuery.isFetching || utilsQuery.isFetching;
+    const refetch = async () => {
+        await Promise.all([attendantsQuery.refetch(), supportQuery.refetch(), utilsQuery.refetch()]);
     };
 
     return (
@@ -66,7 +84,7 @@ export default function Attendants() {
                                 Novo Atendente
                             </Button>
                             <Button
-                                onClick={() => refreshPageData()}
+                                onClick={() => refetch()}
                                 variant="secondary"
                                 disabled={isFetching}
                                 className="gap-2"
@@ -81,7 +99,8 @@ export default function Attendants() {
                 {/* Filtros */}
                 <AttendantsFiltersBar
                     filters={filters}
-                    meta={attendantsData}
+                    types={resolvedTypes}
+                    countries={data?.countries ?? []}
                     onChange={setFilters}
                 />
 
@@ -98,10 +117,10 @@ export default function Attendants() {
                     open={createModalOpen}
                     onClose={() => setCreateModalOpen(false)}
                     supervisors={supportQuery.data?.supervisors ?? []}
-                    manager={supportQuery.data?.gestor ?? null}
-                    types={attendantsData?.types ?? {}}
-                    graduates={attendantsData?.graduates ?? {}}
-                    onCreated={() => refreshPageData()}
+                    gestor={supportQuery.data?.gestor ?? null}
+                    types={resolvedTypes}
+                    graduates={resolvedGraduates}
+                    onCreated={() => refetch()}
                 />
             </div>
         </div>

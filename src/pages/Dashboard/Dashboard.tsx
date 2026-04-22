@@ -20,8 +20,9 @@ export default function Dashboard() {
     const name = user?.name ?? 'Usuário';
 
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['dashboard'],
+        queryKey: ['dashboard', user?.id],
         queryFn: () => dashboardService.getDashboard(),
+        enabled: !!user?.id,
         refetchInterval: 5 * 60 * 1000,
     });
 

@@ -4,20 +4,20 @@ import { Badge } from '@/components/ui/badge';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Eye, MessageCircle, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/utils/client-utils';
+import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime } from '@/utils/client-utils';
 import { statusStyleMap } from '@/utils/color-ultis';
 import type { PersonalReengagement } from '@/services/customer.service';
 
-interface PersonalRowProps {
+interface TeamAttendanceRowProps {
     reengagement: PersonalReengagement;
     statusRecollection: Record<string, string>;
 }
 
-export function PersonalRow({ reengagement, statusRecollection }: PersonalRowProps) {
+export function TeamAttendanceRow({ reengagement, statusRecollection }: TeamAttendanceRowProps) {
     const navigate = useNavigate();
     const user = reengagement.user;
+    const recruiter = reengagement.recruiter;
     const leader = reengagement.leader;
-    const whatsapp = user.personal_data?.whatsapp || user.personal_data?.phone_number || user.phone_number;
     const initials = getInitials(user.name);
     const colorClass = getAvatarColor(user.name);
     const statusStyle = statusStyleMap[reengagement.status] ?? statusStyleMap[1];
@@ -26,7 +26,7 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
     return (
         <TableRow className="border-none even:bg-surface-container/30 hover:bg-surface-high/50 transition-colors">
             {/* ID */}
-            <TableCell className="py-3 w-[7%] px-3">
+            <TableCell className="py-3 w-[6%] px-3">
                 <span className="text-xs text-on-surface-variant font-mono">#{user.id}</span>
             </TableCell>
 
@@ -46,31 +46,30 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
                 </div>
             </TableCell>
 
-            {/* WhatsApp */}
-            <TableCell className="py-3 px-3 w-[16%]">
-                {whatsapp ? (
-                    <a
-                        href={getWhatsAppLink(whatsapp)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors min-w-0"
-                    >
-                        <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span className="text-xs truncate">{formatWhatsApp(whatsapp)}</span>
-                    </a>
+
+
+            {/* Líder */}
+            <TableCell className="py-3 px-3 w-[14%]">
+                {leader ? (
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <UserRound className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
+                        <div className="min-w-0">
+                            <p className="text-xs font-medium text-on-surface truncate">{leader.name}</p>
+                            <p className="text-on-surface-variant truncate">@{leader.login}</p>
+                        </div>
+                    </div>
                 ) : (
                     <span className="text-sm text-on-surface-variant">--</span>
                 )}
             </TableCell>
 
-            {/* Líder */}
-            <TableCell className="py-3 px-3 w-[18%]">
-                {leader ? (
+            {/* Atendente */}
+            <TableCell className="py-3 px-3 w-[14%]">
+                {recruiter ? (
                     <div className="flex items-center gap-1.5 min-w-0">
                         <UserRound className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
                         <div className="min-w-0">
-                            <p className="text-xs font-medium text-on-surface truncate">{leader.name || leader.login}</p>
-                            <p className="text-[11px] text-on-surface-variant truncate">@{leader.login}</p>
+                            <p className="text-on-surface-variant truncate">@{recruiter.login}</p>
                         </div>
                     </div>
                 ) : (
@@ -79,7 +78,7 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
             </TableCell>
 
             {/* Status */}
-            <TableCell className="py-3 text-center w-[18%] px-3">
+            <TableCell className="py-3 text-center w-[16%] px-3">
                 <Badge className={cn('border gap-1 whitespace-nowrap justify-center w-full', statusStyle.color)}>
                     <div className={cn('w-1 h-1 rounded-full shrink-0', statusStyle.dotColor)} />
                     <span className="truncate">{statusLabel}</span>
@@ -87,16 +86,17 @@ export function PersonalRow({ reengagement, statusRecollection }: PersonalRowPro
             </TableCell>
 
             {/* Início */}
-            <TableCell className="py-3 text-center w-[12%] px-3">
+            <TableCell className="py-3 text-center w-[10%] px-3">
                 <span className="text-xs text-on-surface-variant tabular-nums">
-                    {formatDate(reengagement.created_at)}
+                    {formatDateTime(reengagement.created_at)}
                 </span>
             </TableCell>
 
             {/* Ações */}
-            <TableCell className="py-3 text-center w-[9%] px-3">
+            <TableCell className="py-3 text-center w-[8%] px-3">
                 <Button
                     size="sm"
+                    disabled
                     onClick={() => navigate(`/customers/${user.id}`)}
                     className="h-7 text-xs px-2 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold whitespace-nowrap"
                 >

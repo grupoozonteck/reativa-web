@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
+    AlertCircle,
     ArrowLeft,
     Coins,
     Loader2,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { teamService } from '@/services/team.service';
+import { utilsService } from '@/services/utils.service';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
@@ -25,10 +27,9 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
-import { formatCurrency, formatCurrencyInput, formatPercent, getInitials, parseCurrencyInput, toCurrencyInputValue } from '@/utils/client-utils';
+import { getInitials } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { typeColors } from '@/utils/color-ultis';
-import type { AttendantLeaderOption } from '@/services/team.service';
 
 function extractApiErrorMessage(err: unknown, fallback: string) {
     if (!(err instanceof Object) || !('response' in err)) {
@@ -59,19 +60,7 @@ function extractApiErrorMessage(err: unknown, fallback: string) {
 
     return message ?? fallback;
 }
-
-const initialCommissionFormState = {
-    commissionPercent: '',
-    minSales: '',
-    maxSales: '',
-    error: null as string | null,
-    editingCommissionId: null as number | null,
-};
-
-const EMPTY_TYPES: Record<string, string> = {};
-const EMPTY_SUPERVISORS: AttendantLeaderOption[] = [];
-
-export default function EditAttendant() {
+export default function AtendenteEditar() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
@@ -82,12 +71,17 @@ export default function EditAttendant() {
     const [error, setError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
-    const [isCommissionModalOpen, setIsCommissionModalOpen] = useState(false);
-    const [commissionForm, setCommissionForm] = useState(initialCommissionFormState);
-    const [isSavingCommissionRange, setIsSavingCommissionRange] = useState(false);
-    const [commissionIdBeingDeleted, setCommissionIdBeingDeleted] = useState<number | null>(null);
-    const [commissionIdPendingDelete, setCommissionIdPendingDelete] = useState<number | null>(null);
-    const [isSaveConfirmationOpen, setIsSaveConfirmationOpen] = useState(false);
+    const [commissionModalOpen, setCommissionModalOpen] = useState(false);
+    const [commissionPercent, setCommissionPercent] = useState('');
+    const [minSales, setMinSales] = useState('');
+    const [maxSales, setMaxSales] = useState('');
+    const [commissionError, setCommissionError] = useState<string | null>(null);
+    const [isSavingCommission, setIsSavingCommission] = useState(false);
+    const [editingCommissionId, setEditingCommissionId] = useState<number | null>(null);
+    const [deletingCommissionId, setDeletingCommissionId] = useState<number | null>(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [pendingDeleteCommissionId, setPendingDeleteCommissionId] = useState<number | null>(null);
+    const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
 
     const detailQuery = useQuery({
         queryKey: ['attendant-detail', id],
@@ -101,23 +95,39 @@ export default function EditAttendant() {
         queryFn: () => teamService.getAttendantFormSupport(),
     });
 
+    const utilsQuery = useQuery({
+        queryKey: ['attendant-utils'],
+        queryFn: async () => {
+            const [typesMap, graduatesMap, statusMap] = await Promise.all([
+                utilsService.getAttendantTypesMap(),
+                utilsService.getAttendantGraduatesMap(),
+                utilsService.getAttendantStatusMap(),
+            ]);
+
+            return { typesMap, graduatesMap, statusMap };
+        },
+        staleTime: 1000 * 60 * 60 * 12,
+        gcTime: 1000 * 60 * 60 * 24,
+    });
+
     const attendant = detailQuery.data?.attendant;
-    const types = detailQuery.data?.types ?? EMPTY_TYPES;
-    const graduates = detailQuery.data?.graduates ?? {};
-    const supervisors = supportQuery.data?.supervisors ?? EMPTY_SUPERVISORS;
-    const manager = supportQuery.data?.gestor ?? null;
-    const isEditingManager = attendant?.type === 1;
+    const types = utilsQuery.data?.typesMap ?? detailQuery.data?.types ?? {};
+    const graduates = utilsQuery.data?.graduatesMap ?? detailQuery.data?.graduates ?? {};
+    const attendantStatus = utilsQuery.data?.statusMap ?? { '0': 'Inativo', '1': 'Ativo' };
+    const supervisors = supportQuery.data?.supervisors ?? [];
+    const gestor = supportQuery.data?.gestor ?? null;
+    const isEditingGestor = attendant?.type === 1;
     const isSupervisorType = type === '2';
 
     const availableTypes = useMemo(
-        () => Object.entries(types).filter(([key]) => key !== '1' || isEditingManager),
-        [isEditingManager, types],
+        () => Object.entries(types).filter(([key]) => key !== '1' || isEditingGestor),
+        [isEditingGestor, types],
     );
 
     const leaderOptions = useMemo(() => {
         if (isSupervisorType) {
-            return manager
-                ? [{ id: manager.id, name: manager.name, login: manager.login, status: manager.status ?? null }]
+            return gestor
+                ? [{ id: gestor.id, name: gestor.name, login: gestor.login, status: gestor.status ?? null }]
                 : [];
         }
 
@@ -127,7 +137,7 @@ export default function EditAttendant() {
             login: supervisor.login,
             status: supervisor.status ?? null,
         }));
-    }, [manager, isSupervisorType, supervisors]);
+    }, [gestor, isSupervisorType, supervisors]);
 
     const selectedLeader =
         selectedSupervisorId === 'none'
@@ -154,28 +164,67 @@ export default function EditAttendant() {
 
 
     const commissionRanges = attendant?.commissions_attendant ?? attendant?.commissions ?? [];
-    const isEditingCommission = commissionForm.editingCommissionId !== null;
-    const isLoading = detailQuery.isLoading || supportQuery.isLoading;
+    const isLoading = detailQuery.isLoading || supportQuery.isLoading || utilsQuery.isLoading;
     const isError = detailQuery.isError || supportQuery.isError || !attendant;
 
+    function formatMoney(value: number | string | undefined) {
+        if (value === undefined || value === null || value === '') return '--';
+        const numericValue = typeof value === 'string' ? Number(value) : value;
+        if (Number.isNaN(numericValue)) return '--';
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(numericValue);
+    }
+
+    function formatPercent(value: number | string | undefined) {
+        if (value === undefined || value === null || value === '') return '--';
+        const numericValue = typeof value === 'string' ? Number(value) : value;
+        if (Number.isNaN(numericValue)) return '--';
+        return `${numericValue.toFixed(2)}%`;
+    }
+
+    function formatCurrencyInput(value: string) {
+        const digitsOnly = value.replace(/\D/g, '');
+        if (!digitsOnly) return '';
+        const numericValue = Number(digitsOnly) / 100;
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(numericValue);
+    }
+
+    function parseCurrencyInput(value: string) {
+        const digitsOnly = value.replace(/\D/g, '');
+        if (!digitsOnly) return Number.NaN;
+        return Number(digitsOnly) / 100;
+    }
+
+    function toCurrencyInputValue(value: number | string | undefined) {
+        if (value === undefined || value === null || value === '') return '';
+        return formatCurrencyInput(String(value));
+    }
+
     function resetCommissionForm() {
-        setCommissionForm(initialCommissionFormState);
+        setCommissionPercent('');
+        setMinSales('');
+        setMaxSales('');
+        setCommissionError(null);
+        setEditingCommissionId(null);
     }
 
     function openCreateCommissionModal() {
         resetCommissionForm();
-        setIsCommissionModalOpen(true);
+        setCommissionModalOpen(true);
     }
 
     function openEditCommissionModal(commission: { id: number; commission_percent?: number | string; value?: number | string; min_sales?: number | string; max_sales?: number | string }) {
-        setCommissionForm({
-            editingCommissionId: commission.id,
-            commissionPercent: String(commission.commission_percent ?? commission.value ?? ''),
-            minSales: toCurrencyInputValue(commission.min_sales),
-            maxSales: toCurrencyInputValue(commission.max_sales),
-            error: null,
-        });
-        setIsCommissionModalOpen(true);
+        setEditingCommissionId(commission.id);
+        setCommissionPercent(String(commission.commission_percent ?? commission.value ?? ''));
+        setMinSales(toCurrencyInputValue(commission.min_sales));
+        setMaxSales(toCurrencyInputValue(commission.max_sales));
+        setCommissionError(null);
+        setCommissionModalOpen(true);
     }
 
     async function handleSubmit() {
@@ -209,51 +258,27 @@ export default function EditAttendant() {
     async function handleSaveCommission() {
         if (!id) return;
 
-        const { commissionPercent, minSales, maxSales, editingCommissionId } = commissionForm;
         const parsedPercent = Number(commissionPercent);
         const parsedMinSales = parseCurrencyInput(minSales);
         const parsedMaxSales = parseCurrencyInput(maxSales);
 
         if (!commissionPercent || !minSales || !maxSales) {
-            setCommissionForm((prev) => ({ ...prev, error: 'Preencha percentual, venda minima e venda maxima.' }));
+            setCommissionError('Preencha percentual, venda minima e venda maxima.');
             return;
         }
 
         if ([parsedPercent, parsedMinSales, parsedMaxSales].some((value) => Number.isNaN(value))) {
-            setCommissionForm((prev) => ({ ...prev, error: 'Informe apenas numeros validos para a faixa de comissao.' }));
+            setCommissionError('Informe apenas numeros validos para a faixa de comissao.');
             return;
         }
 
         if (parsedMinSales > parsedMaxSales) {
-            setCommissionForm((prev) => ({ ...prev, error: 'A venda minima nao pode ser maior que a venda maxima.' }));
+            setCommissionError('A venda minima nao pode ser maior que a venda maxima.');
             return;
         }
 
-        const hasOverlappingRange = commissionRanges.some((commission) => {
-            if (editingCommissionId && commission.id === editingCommissionId) {
-                return false;
-            }
-
-            const existingMin = Number(commission.min_sales);
-            const existingMax = Number(commission.max_sales);
-
-            if (Number.isNaN(existingMin) || Number.isNaN(existingMax)) {
-                return false;
-            }
-
-            return parsedMinSales <= existingMax && parsedMaxSales >= existingMin;
-        });
-
-        if (hasOverlappingRange) {
-            setCommissionForm((prev) => ({
-                ...prev,
-                error: 'Essa faixa cruza com outra ja cadastrada. Ajuste os valores para nao sobrepor.',
-            }));
-            return;
-        }
-
-        setIsSavingCommissionRange(true);
-        setCommissionForm((prev) => ({ ...prev, error: null }));
+        setIsSavingCommission(true);
+        setCommissionError(null);
 
         try {
             if (editingCommissionId) {
@@ -273,7 +298,7 @@ export default function EditAttendant() {
             }
 
             resetCommissionForm();
-            setIsCommissionModalOpen(false);
+            setCommissionModalOpen(false);
             await detailQuery.refetch();
         } catch (err: unknown) {
             const message = extractApiErrorMessage(
@@ -282,15 +307,15 @@ export default function EditAttendant() {
                     ? 'Nao foi possivel atualizar a faixa de comissao.'
                     : 'Nao foi possivel criar a faixa de comissao.',
             );
-            setCommissionForm((prev) => ({ ...prev, error: message }));
+            setCommissionError(message);
             toast.error(message);
         } finally {
-            setIsSavingCommissionRange(false);
+            setIsSavingCommission(false);
         }
     }
 
     async function handleDeleteCommission(commissionId: number) {
-        setCommissionIdBeingDeleted(commissionId);
+        setDeletingCommissionId(commissionId);
         try {
             await teamService.deleteAttendantCommission(commissionId);
             toast.success('Faixa de comissao excluida com sucesso.');
@@ -299,26 +324,28 @@ export default function EditAttendant() {
             const message = extractApiErrorMessage(err, 'Nao foi possivel excluir a faixa de comissao.');
             toast.error(message);
         } finally {
-            setCommissionIdBeingDeleted(null);
+            setDeletingCommissionId(null);
         }
     }
 
     function requestDeleteCommission(commissionId: number) {
-        setCommissionIdPendingDelete(commissionId);
+        setPendingDeleteCommissionId(commissionId);
+        setDeleteConfirmOpen(true);
     }
 
     async function confirmDeleteCommission() {
-        if (!commissionIdPendingDelete) return;
-        await handleDeleteCommission(commissionIdPendingDelete);
-        setCommissionIdPendingDelete(null);
+        if (!pendingDeleteCommissionId) return;
+        await handleDeleteCommission(pendingDeleteCommissionId);
+        setDeleteConfirmOpen(false);
+        setPendingDeleteCommissionId(null);
     }
 
     function requestSaveChanges() {
-        setIsSaveConfirmationOpen(true);
+        setSaveConfirmOpen(true);
     }
 
     async function confirmSaveChanges() {
-        setIsSaveConfirmationOpen(false);
+        setSaveConfirmOpen(false);
         await handleSubmit();
     }
 
@@ -341,16 +368,16 @@ export default function EditAttendant() {
     return (
         <div className="min-h-screen p-4 py-12 md:p-12 max-w-screen-2xl mx-auto space-y-5">
             <Dialog
-                open={isCommissionModalOpen}
+                open={commissionModalOpen}
                 onOpenChange={(open) => {
-                    if (isSavingCommissionRange) return;
-                    setIsCommissionModalOpen(open);
+                    if (isSavingCommission) return;
+                    setCommissionModalOpen(open);
                     if (!open) resetCommissionForm();
                 }}
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEditingCommission ? 'Editar faixa de comissao' : 'Nova faixa de comissao'}</DialogTitle>
+                        <DialogTitle>{editingCommissionId ? 'Editar faixa de comissao' : 'Nova faixa de comissao'}</DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-4">
@@ -360,9 +387,9 @@ export default function EditAttendant() {
                                 id="commission-min-sales"
                                 type="text"
                                 inputMode="decimal"
-                                value={commissionForm.minSales}
-                                onChange={(e) => setCommissionForm((prev) => ({ ...prev, minSales: formatCurrencyInput(e.target.value) }))}
-                                disabled={isSavingCommissionRange}
+                                value={minSales}
+                                onChange={(e) => setMinSales(formatCurrencyInput(e.target.value))}
+                                disabled={isSavingCommission}
                                 placeholder="R$ 0,00"
                             />
                         </Field>
@@ -373,9 +400,9 @@ export default function EditAttendant() {
                                 id="commission-max-sales"
                                 type="text"
                                 inputMode="decimal"
-                                value={commissionForm.maxSales}
-                                onChange={(e) => setCommissionForm((prev) => ({ ...prev, maxSales: formatCurrencyInput(e.target.value) }))}
-                                disabled={isSavingCommissionRange}
+                                value={maxSales}
+                                onChange={(e) => setMaxSales(formatCurrencyInput(e.target.value))}
+                                disabled={isSavingCommission}
                                 placeholder="R$ 0,00"
                             />
                         </Field>
@@ -387,46 +414,45 @@ export default function EditAttendant() {
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                value={commissionForm.commissionPercent}
-                                onChange={(e) => setCommissionForm((prev) => ({ ...prev, commissionPercent: e.target.value }))}
-                                disabled={isSavingCommissionRange}
+                                value={commissionPercent}
+                                onChange={(e) => setCommissionPercent(e.target.value)}
+                                disabled={isSavingCommission}
                                 placeholder="5"
                             />
                             <FieldDescription>Ex.: `5` para 5% nessa faixa.</FieldDescription>
                         </Field>
 
-                        {commissionForm.error && (
+                        {commissionError && (
                             <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
-                                {commissionForm.error}
+                                {commissionError}
                             </div>
                         )}
                     </div>
 
                     <DialogFooter>
-                        <Button variant="destructive" onClick={() => setIsCommissionModalOpen(false)} disabled={isSavingCommissionRange}>
+                        <Button variant="destructive" onClick={() => setCommissionModalOpen(false)} disabled={isSavingCommission}>
                             <X className="w-4 h-4" />
                             Cancelar
                         </Button>
                         <Button
                             onClick={handleSaveCommission}
-                            disabled={isSavingCommissionRange}
+                            disabled={isSavingCommission}
                         >
-                            {isSavingCommissionRange ? <Loader2 className="w-4 h-4 animate-spin" /> : (isEditingCommission ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
-                            {isSavingCommissionRange
-                                ? (isEditingCommission ? 'Salvando faixa...' : 'Criando faixa...')
-                                : (isEditingCommission ? 'Salvar faixa' : 'Criar faixa')}
+                            {isSavingCommission ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingCommissionId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
+                            {isSavingCommission
+                                ? (editingCommissionId ? 'Salvando faixa...' : 'Criando faixa...')
+                                : (editingCommissionId ? 'Salvar faixa' : 'Criar faixa')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <Dialog
-                open={commissionIdPendingDelete !== null}
+                open={deleteConfirmOpen}
                 onOpenChange={(open) => {
-                    if (commissionIdBeingDeleted !== null) return;
-                    if (!open) {
-                        setCommissionIdPendingDelete(null);
-                    }
+                    if (deletingCommissionId !== null) return;
+                    setDeleteConfirmOpen(open);
+                    if (!open) setPendingDeleteCommissionId(null);
                 }}
             >
                 <DialogContent className="sm:max-w-md">
@@ -440,30 +466,31 @@ export default function EditAttendant() {
                         <Button
                             variant="outline"
                             onClick={() => {
-                                setCommissionIdPendingDelete(null);
+                                setDeleteConfirmOpen(false);
+                                setPendingDeleteCommissionId(null);
                             }}
-                            disabled={commissionIdBeingDeleted !== null}
+                            disabled={deletingCommissionId !== null}
                         >
                             Cancelar
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={confirmDeleteCommission}
-                            disabled={commissionIdBeingDeleted !== null}
+                            disabled={deletingCommissionId !== null}
                             className="gap-2"
                         >
-                            {commissionIdBeingDeleted !== null ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            {commissionIdBeingDeleted !== null ? 'Excluindo...' : 'Excluir faixa'}
+                            {deletingCommissionId !== null ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            {deletingCommissionId !== null ? 'Excluindo...' : 'Excluir faixa'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <Dialog
-                open={isSaveConfirmationOpen}
+                open={saveConfirmOpen}
                 onOpenChange={(open) => {
                     if (isSaving) return;
-                    setIsSaveConfirmationOpen(open);
+                    setSaveConfirmOpen(open);
                 }}
             >
                 <DialogContent className="sm:max-w-md">
@@ -476,7 +503,7 @@ export default function EditAttendant() {
                     <DialogFooter>
                         <Button
                             variant="outline"
-                            onClick={() => setIsSaveConfirmationOpen(false)}
+                            onClick={() => setSaveConfirmOpen(false)}
                             disabled={isSaving}
                         >
                             Cancelar
@@ -567,6 +594,9 @@ export default function EditAttendant() {
                                 <span className="text-muted-foreground">Lider atual</span>
                                 <div className="flex flex-col items-end gap-1 text-right">
                                     <span className="font-medium">{attendant.parent?.user?.name ?? 'Sem lider vinculado'}</span>
+                                    {attendant.parent?.user?.name ? (
+                                        <StatusBadge status={attendant.parent.status ?? null} />
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
@@ -583,15 +613,15 @@ export default function EditAttendant() {
                         <FieldGroup className="gap-5 md:grid md:grid-cols-2">
                             <Field>
                                 <FieldLabel htmlFor="attendant-type">Cargo</FieldLabel>
-                                <Select value={type} onValueChange={setType} disabled={isSaving || isEditingManager}>
+                                <Select value={type} onValueChange={setType} disabled={isSaving || isEditingGestor}>
                                     <SelectTrigger id="attendant-type">
                                         <SelectValue placeholder="Selecione o cargo" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {availableTypes.map(([key, label]) => (
-                                            <SelectItem key={key} value={key}>
-                                                {label}
-                                            </SelectItem>
+                                        <SelectItem key={key} value={key}>
+                                            {label}
+                                        </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -620,8 +650,11 @@ export default function EditAttendant() {
                                         <SelectValue placeholder="Selecione o status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="1">Ativo</SelectItem>
-                                        <SelectItem value="0">Inativo</SelectItem>
+                                        {Object.entries(attendantStatus).map(([key, label]) => (
+                                            <SelectItem key={key} value={key}>
+                                                {label}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </Field>
@@ -697,26 +730,25 @@ export default function EditAttendant() {
                             ) : (
                                 <div className="space-y-3">
                                     {commissionRanges.map((commission) => (
-                                        <div key={commission.id} className="rounded-xl border border-border/60 px-4 py-4 bg-slate-950/20">
+                                        <div key={commission.id} className="rounded-xl border border-border/60 px-4 py-4">
                                             <div className="flex flex-wrap items-center justify-between gap-3">
-                                                <div className="space-y-1">
-                                                    <div className="inline-flex items-center rounded-full border border-amber-300/60 bg-amber-500/15 px-2.5 py-1 text-xs font-bold text-amber-300">
-                                                        ID #{commission.id}
-                                                    </div>
-                                                    <p className="font-semibold text-base">
-                                                        {formatCurrency(commission.min_sales)} ate {formatCurrency(commission.max_sales)}
+                                                <div>
+                                                    <p className="font-semibold">
+                                                        {formatMoney(commission.min_sales)} ate {formatMoney(commission.max_sales)}
                                                     </p>
                                                     <p className="text-sm text-muted-foreground">
                                                         {formatPercent(commission.commission_percent ?? commission.value)} de comissao
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
+                                                    <Badge variant="outline">#{commission.id}</Badge>
                                                     <Button
                                                         type="button"
                                                         size="sm"
-                                                        className="gap-1.5 bg-sky-600 text-white hover:bg-sky-500"
+                                                        variant="outline"
+                                                        className="gap-1.5"
                                                         onClick={() => openEditCommissionModal(commission)}
-                                                        disabled={isSavingCommissionRange || commissionIdBeingDeleted === commission.id}
+                                                        disabled={isSavingCommission || deletingCommissionId === commission.id}
                                                     >
                                                         <Pencil className="w-3.5 h-3.5" />
                                                         Editar
@@ -724,11 +756,12 @@ export default function EditAttendant() {
                                                     <Button
                                                         type="button"
                                                         size="sm"
-                                                        className="gap-1.5 bg-rose-600 text-white hover:bg-rose-500"
+                                                        variant="destructive"
+                                                        className="gap-1.5"
                                                         onClick={() => requestDeleteCommission(commission.id)}
-                                                        disabled={isSavingCommissionRange || commissionIdBeingDeleted === commission.id}
+                                                        disabled={isSavingCommission || deletingCommissionId === commission.id}
                                                     >
-                                                        {commissionIdBeingDeleted === commission.id ? (
+                                                        {deletingCommissionId === commission.id ? (
                                                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                                         ) : (
                                                             <Trash2 className="w-3.5 h-3.5" />

@@ -8,14 +8,14 @@ import { CommissionsFilters } from '@/components/Commissions/CommissionsFilters'
 import { DollarSign, TrendingUp, FileText } from 'lucide-react';
 
 
-export default function Commissions() {
+export default function Comissoes() {
     const [search, setSearch] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [page, setPage] = useState(1);
 
     const { data, isLoading, isFetching, isError } = useQuery({
-        queryKey: ['commissions', search, startDate, endDate, page],
+        queryKey: ['comissoes', search, startDate, endDate, page],
         queryFn: () => financialService.getCommissions({
             login: search || undefined,
             start_date: startDate || undefined,
