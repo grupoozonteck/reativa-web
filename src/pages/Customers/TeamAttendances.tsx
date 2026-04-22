@@ -30,15 +30,15 @@ import {
 } from '@/components/ui/table';
 import { SkeletonRow } from '@/components/Customers/SkeletonRow';
 import { SkeletonStat } from '@/components/Customers/SkeletonStat';
-import { PersonalRow } from '@/components/Customers/PersonalRow';
-import { PersonalCard } from '@/components/Customers/PersonalCard';
+import { TeamAttendanceRow } from '@/components/Customers/TeamAttendanceRow';
+import { TeamAttendanceCard } from '@/components/Customers/TeamAttendanceCard';
 import { Pagination } from '@/components/ui/pagination';
 import { cn } from '@/lib/utils';
 import { customerService } from '@/services/customer.service';
 import { utilsService } from '@/services/utils.service';
 
 
-export default function MyAttendances() {
+export default function TeamAttendances() {
     const navigate = useNavigate();
     const now = new Date();
     const currentYear = now.getFullYear();
@@ -59,8 +59,8 @@ export default function MyAttendances() {
     const effectiveEndDate = appliedStartDate && !appliedEndDate ? today : (appliedEndDate || undefined);
 
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['my-reengagements', page, appliedSearch, appliedStartDate, effectiveEndDate, appliedStatusFilter],
-        queryFn: () => customerService.getPersonalReengagements({
+        queryKey: ['team-reengagements', page, appliedSearch, appliedStartDate, effectiveEndDate, appliedStatusFilter],
+        queryFn: () => customerService.getTeamReengagements({
             page,
             search: appliedSearch || undefined,
             start_date: appliedStartDate || undefined,
@@ -127,9 +127,9 @@ export default function MyAttendances() {
         || statusFilter !== appliedStatusFilter;
 
     const statsCards = [
-        { label: 'Meus Atendimentos', value: totalAttendances, icon: Headphones, color: 'text-secondary', iconBg: 'bg-secondary/10', iconColor: 'text-secondary' },
-        { label: 'Reativados por Mim', value: totalReactivated, icon: RefreshCcw, color: 'text-primary [text-shadow:0_0_10px_hsl(83_98%_64%_/_0.35)]', iconBg: 'bg-primary/10', iconColor: 'text-primary' },
-        { label: 'Minha Conversao', value: `${conversionRate}%`, icon: TrendingUp, color: 'text-accent', iconBg: 'bg-accent/10', iconColor: 'text-accent' },
+        { label: 'Atendimentos da Equipe', value: totalAttendances, icon: Headphones, color: 'text-secondary', iconBg: 'bg-secondary/10', iconColor: 'text-secondary' },
+        { label: 'Reativados pela Equipe', value: totalReactivated, icon: RefreshCcw, color: 'text-primary [text-shadow:0_0_10px_hsl(83_98%_64%_/_0.35)]', iconBg: 'bg-primary/10', iconColor: 'text-primary' },
+        { label: 'Conversao da Equipe', value: `${conversionRate}%`, icon: TrendingUp, color: 'text-accent', iconBg: 'bg-accent/10', iconColor: 'text-accent' },
     ];
 
     return (
@@ -140,10 +140,10 @@ export default function MyAttendances() {
                         <div className="bg-secondary/10 rounded-lg p-1.5">
                             <Headphones className="w-5 h-5 text-secondary" />
                         </div>
-                        <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">Meus Atendimentos</h1>
+                        <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">Atendimentos da Equipe</h1>
                     </div>
                     <p className="text-on-surface-variant text-sm mt-0.5 hidden sm:block ml-0.5">
-                        Clientes que voce esta reativando no periodo selecionado
+                        Reativacoes conduzidas pelos membros da sua equipe no periodo selecionado
                     </p>
                 </div>
                 <Button
@@ -193,11 +193,11 @@ export default function MyAttendances() {
                 >
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1.5fr)_160px_160px_220px]">
                         <Field>
-                            <FieldLabel htmlFor="my-attendances-search">Buscar</FieldLabel>
+                            <FieldLabel htmlFor="team-attendances-search">Buscar</FieldLabel>
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                                 <Input
-                                    id="my-attendances-search"
+                                    id="team-attendances-search"
                                     placeholder="Pesquisar por nome, email ou WhatsApp..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
@@ -216,9 +216,9 @@ export default function MyAttendances() {
                         </Field>
 
                         <Field>
-                            <FieldLabel htmlFor="my-attendances-start-date">Data inicial</FieldLabel>
+                            <FieldLabel htmlFor="team-attendances-start-date">Data inicial</FieldLabel>
                             <Input
-                                id="my-attendances-start-date"
+                                id="team-attendances-start-date"
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
@@ -227,9 +227,9 @@ export default function MyAttendances() {
                         </Field>
 
                         <Field>
-                            <FieldLabel htmlFor="my-attendances-end-date">Data final</FieldLabel>
+                            <FieldLabel htmlFor="team-attendances-end-date">Data final</FieldLabel>
                             <Input
-                                id="my-attendances-end-date"
+                                id="team-attendances-end-date"
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
@@ -238,9 +238,9 @@ export default function MyAttendances() {
                         </Field>
 
                         <Field>
-                            <FieldLabel htmlFor="my-attendances-status">Status</FieldLabel>
+                            <FieldLabel htmlFor="team-attendances-status">Status</FieldLabel>
                             <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
-                                <SelectTrigger id="my-attendances-status" className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                                <SelectTrigger id="team-attendances-status" className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
                                     <SelectValue placeholder="Todos os status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -296,34 +296,21 @@ export default function MyAttendances() {
             </div>
 
             <div className="solid-card overflow-hidden animate-fade-in">
-                <div className="px-5 py-4 bg-surface-highest/60 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-on-surface-variant" />
-                        <h2 className="font-display text-sm font-semibold text-on-surface">Clientes em Atendimento</h2>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        {showingFrom > 0 && !isLoading && (
-                            <span className="bg-surface-container rounded-full px-2.5 py-0.5 text-xs text-on-surface-variant">
-                                Exibindo {showingFrom}-{showingTo}
-                            </span>
-                        )}
-                    </div>
-                </div>
 
-                {/* Tabela — desktop */}
+
                 <div className="hidden md:block">
                     <div className="overflow-x-auto">
                         <div className="overflow-y-auto max-h-[600px]">
                             <Table>
-                                <TableHeader className="sticky top-0 z-10">
+                                <TableHeader className="sticky bg-surface-highest top-0 z-10">
                                     <TableRow className="border-none hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[7%] px-3">ID</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-3">Cliente</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[16%] px-3">WhatsApp</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[18%] px-3">Lider</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[18%] px-3">Status</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-3">Inicio</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[9%] px-3">Acoes</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant w-[6%] px-3">ID</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant px-3">Cliente</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant w-[14%] px-3">Lider</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant w-[14%] px-3">Atendente</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[16%] px-3">Status</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[10%] px-3">Inicio</TableHead>
+                                        <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[8%] px-3">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
@@ -331,7 +318,7 @@ export default function MyAttendances() {
                                         Array.from({ length: 6 }).map((_, idx) => <SkeletonRow key={idx} />)
                                     ) : allReengagements.length === 0 ? (
                                         <TableRow className="border-none">
-                                            <TableCell colSpan={7} className="text-center py-16">
+                                            <TableCell colSpan={8} className="text-center py-16">
                                                 <div className="flex flex-col items-center gap-2">
                                                     <Users className="w-8 h-8 text-on-surface-variant/30" />
                                                     <p className="text-on-surface-variant text-sm">
@@ -350,7 +337,7 @@ export default function MyAttendances() {
                                         </TableRow>
                                     ) : (
                                         allReengagements.map((reengagement) => (
-                                            <PersonalRow key={reengagement.id} reengagement={reengagement} statusRecollection={statusRecollection ?? {}} />
+                                            <TeamAttendanceRow key={reengagement.id} reengagement={reengagement} statusRecollection={statusRecollection ?? {}} />
                                         ))
                                     )}
                                 </TableBody>
@@ -359,7 +346,6 @@ export default function MyAttendances() {
                     </div>
                 </div>
 
-                {/* Cards — mobile */}
                 <div className="md:hidden">
                     <div className="max-h-[600px] overflow-y-auto p-4 space-y-3">
                         {isLoading ? (
@@ -392,7 +378,7 @@ export default function MyAttendances() {
                         ) : (
                             <div className={cn('space-y-3 transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
                                 {allReengagements.map((reengagement) => (
-                                    <PersonalCard key={reengagement.id} reengagement={reengagement} statusRecollection={statusRecollection ?? {}} />
+                                    <TeamAttendanceCard key={reengagement.id} reengagement={reengagement} statusRecollection={statusRecollection ?? {}} />
                                 ))}
                             </div>
                         )}
@@ -413,3 +399,5 @@ export default function MyAttendances() {
         </div>
     );
 }
+
+

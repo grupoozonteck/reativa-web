@@ -16,6 +16,11 @@ export interface Reengagements {
         name: string;
         email: string;
     };
+    recruiter?: {
+        id: number;
+        name: string;
+        login: string;
+    };
 }
 
 export interface TeamMemberPerformance {
@@ -161,16 +166,24 @@ export interface AttendantLeaderOption {
 
 export interface ICommissions {
     id: number;
+    user_id?: number;
     attendant_id?: number;
+    order_id?: number | null;
     order_value: number | string;
     value: number | string;
     status: string;
     created_at: string;
     updated_at?: string;
     deleted_at?: string | null;
+    description_extra?: string;
     commission_percent?: number | string;
     min_sales?: number | string;
     max_sales?: number | string;
+}
+
+export interface AttendantDetailFilters {
+    start_date?: string;
+    end_date?: string;
 }
 
 export interface ManagerAttendant {
@@ -461,8 +474,13 @@ export const teamService = {
         return response.data;
     },
 
-    getAttendantById: async (id: number): Promise<{ success: boolean; data: AttendantShowResponse }> => {
-        const response = await api.get<{ success: boolean; data: AttendantShowResponse }>(`/api/attendants/${id}/show`);
+    getAttendantById: async (id: number, filters: AttendantDetailFilters = {}): Promise<{ success: boolean; data: AttendantShowResponse }> => {
+        const response = await api.get<{ success: boolean; data: AttendantShowResponse }>(`/api/attendants/${id}/show`, {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         return response.data;
     },
 

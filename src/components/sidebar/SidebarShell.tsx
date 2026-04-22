@@ -35,7 +35,7 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
 
             {/* ── Section label ── */}
             <div className="px-5 pt-5 pb-2">
-                <p className="font-bold text-muted-foreground/80 uppercase text-sm">Navegação {userRole}</p>
+                <p className="font-bold text-muted-foreground/80 uppercase text-sm">Acesso {userRole}</p>
             </div>
 
             {/* ── Nav ── */}

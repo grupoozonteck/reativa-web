@@ -259,6 +259,16 @@ export interface PersonalReengagement {
         [key: string]: unknown;
     };
     personal_order: PersonalOrder | null;
+    recruiter?: {
+        id: number;
+        name: string;
+        login: string;
+    } | null;
+    leader?: {
+        id: number;
+        name?: string | null;
+        login: string;
+    } | null;
 }
 
 export interface PersonalReengagementPagination {
@@ -286,6 +296,15 @@ export interface PersonalReengagementResponse {
         commissions_received: number;
         conversion_rate: number;
     };
+}
+
+export interface TeamReengagementQueryParams {
+    page?: number;
+    start_date?: string;
+    end_date?: string;
+    search?: string;
+    status?: number;
+    recruiter_id?: number;
 }
 
 // === Service ===
@@ -397,6 +416,21 @@ export const customerService = {
                 ...(params.search && { search: params.search }),
                 ...(params.order_id && { order_id: params.order_id }),
                 ...(params.status !== undefined && { status: params.status }),
+            },
+        });
+        return response.data;
+    },
+
+    /** Lista de clientes atendidos pela equipe */
+    getTeamReengagements: async (params: TeamReengagementQueryParams = {}) => {
+        const response = await api.get<PersonalReengagementResponse>('/api/reengagements/team', {
+            params: {
+                page: params.page ?? 1,
+                ...(params.start_date && { start_date: params.start_date }),
+                ...(params.end_date && { end_date: params.end_date }),
+                ...(params.search && { search: params.search }),
+                ...(params.status !== undefined && { status: params.status }),
+                ...(params.recruiter_id !== undefined && { recruiter_id: params.recruiter_id }),
             },
         });
         return response.data;

@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
     { to: '/ranking', label: 'Ranking', icon: Trophy },
     { to: '/customers', label: 'Clientes', icon: UsersRound },
     { to: '/my-attendances', label: 'Meus Atendimentos', icon: Headphones },
+    { to: '/team-attendances', label: 'Atend. Equipe', icon: Headphones },
     { to: '/supervisor/performance', label: 'Minha Equipe', icon: Handshake },
     { to: '/manager/performance', label: 'Minha Operacao', icon: Handshake },
     { to: '/attendants', label: 'Atendentes', icon: UserCog },

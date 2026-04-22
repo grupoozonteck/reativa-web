@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { teamService } from '@/services/team.service';
+import { utilsService } from '@/services/utils.service';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
@@ -94,9 +95,25 @@ export default function AtendenteEditar() {
         queryFn: () => teamService.getAttendantFormSupport(),
     });
 
+    const utilsQuery = useQuery({
+        queryKey: ['attendant-utils'],
+        queryFn: async () => {
+            const [typesMap, graduatesMap, statusMap] = await Promise.all([
+                utilsService.getAttendantTypesMap(),
+                utilsService.getAttendantGraduatesMap(),
+                utilsService.getAttendantStatusMap(),
+            ]);
+
+            return { typesMap, graduatesMap, statusMap };
+        },
+        staleTime: 1000 * 60 * 60 * 12,
+        gcTime: 1000 * 60 * 60 * 24,
+    });
+
     const attendant = detailQuery.data?.attendant;
-    const types = detailQuery.data?.types ?? {};
-    const graduates = detailQuery.data?.graduates ?? {};
+    const types = utilsQuery.data?.typesMap ?? detailQuery.data?.types ?? {};
+    const graduates = utilsQuery.data?.graduatesMap ?? detailQuery.data?.graduates ?? {};
+    const attendantStatus = utilsQuery.data?.statusMap ?? { '0': 'Inativo', '1': 'Ativo' };
     const supervisors = supportQuery.data?.supervisors ?? [];
     const gestor = supportQuery.data?.gestor ?? null;
     const isEditingGestor = attendant?.type === 1;
@@ -147,7 +164,7 @@ export default function AtendenteEditar() {
 
 
     const commissionRanges = attendant?.commissions_attendant ?? attendant?.commissions ?? [];
-    const isLoading = detailQuery.isLoading || supportQuery.isLoading;
+    const isLoading = detailQuery.isLoading || supportQuery.isLoading || utilsQuery.isLoading;
     const isError = detailQuery.isError || supportQuery.isError || !attendant;
 
     function formatMoney(value: number | string | undefined) {
@@ -602,9 +619,9 @@ export default function AtendenteEditar() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {availableTypes.map(([key, label]) => (
-                                            <SelectItem key={key} value={key}>
-                                                {label}
-                                            </SelectItem>
+                                        <SelectItem key={key} value={key}>
+                                            {label}
+                                        </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -633,8 +650,11 @@ export default function AtendenteEditar() {
                                         <SelectValue placeholder="Selecione o status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="1">Ativo</SelectItem>
-                                        <SelectItem value="0">Inativo</SelectItem>
+                                        {Object.entries(attendantStatus).map(([key, label]) => (
+                                            <SelectItem key={key} value={key}>
+                                                {label}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </Field>

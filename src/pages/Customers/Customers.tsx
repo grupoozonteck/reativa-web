@@ -329,50 +329,48 @@ export default function Clientes() {
                     {/* Vista Desktop - Tabela */}
                     <div className="hidden md:block">
                         <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
-                                        <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                            </Table>
-                        </div>
-                        <div className="overflow-y-auto max-h-[600px] overflow-x-auto">
-                            <Table>
-                                <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
-                                    {loading ? (
-                                        Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
-                                    ) : clients.length === 0 ? (
-                                        <TableRow className="border-none">
-                                            <TableCell colSpan={5} className="text-center py-16">
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <Users className="w-8 h-8 text-on-surface-variant/30" />
-                                                    <p className="text-on-surface-variant text-sm">
-                                                        Nenhum cliente encontrado
-                                                        {hasActiveFilters && ' com os filtros aplicados'}
-                                                    </p>
-                                                    {hasActiveFilters && (
-                                                        <button
-                                                            onClick={handleClearFilters}
-                                                            className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
-                                                        >
-                                                            Limpar filtros
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </TableCell>
+                            <div className="overflow-y-auto max-h-[600px]">
+                                <Table>
+                                    <TableHeader className="sticky top-0 z-10">
+                                        <TableRow className="border-none hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
                                         </TableRow>
-                                    ) : (
-                                        clients.map(client => (
-                                            <ClientRow key={client.id} client={client} />
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+                                        {loading ? (
+                                            Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+                                        ) : clients.length === 0 ? (
+                                            <TableRow className="border-none">
+                                                <TableCell colSpan={5} className="text-center py-16">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <Users className="w-8 h-8 text-on-surface-variant/30" />
+                                                        <p className="text-on-surface-variant text-sm">
+                                                            Nenhum cliente encontrado
+                                                            {hasActiveFilters && ' com os filtros aplicados'}
+                                                        </p>
+                                                        {hasActiveFilters && (
+                                                            <button
+                                                                onClick={handleClearFilters}
+                                                                className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
+                                                            >
+                                                                Limpar filtros
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            clients.map(client => (
+                                                <ClientRow key={client.id} client={client} />
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         </div>
                     </div>
 

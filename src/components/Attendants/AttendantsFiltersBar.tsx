@@ -2,18 +2,20 @@ import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { type AttendantsFilters, type AttendantsResponse } from '@/services/team.service';
+import { type AttendantsFilters } from '@/services/team.service';
 
 interface AttendantsFiltersProps {
     filters: AttendantsFilters;
-    meta?: AttendantsResponse;
+    types?: Record<string, string>;
+    countries?: {
+        acronym: string;
+        code: string;
+        name: string;
+    }[];
     onChange: (filters: AttendantsFilters) => void;
 }
 
-export function AttendantsFiltersBar({ filters, meta, onChange }: AttendantsFiltersProps) {
-    const types = meta?.types ?? {};
-    const countries = meta?.countries ?? [];
-
+export function AttendantsFiltersBar({ filters, types = {}, countries = [], onChange }: AttendantsFiltersProps) {
     const hasActiveFilters = filters.search || filters.type || filters.country_code;
 
     function clearFilters() {

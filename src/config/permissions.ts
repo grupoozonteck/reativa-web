@@ -31,6 +31,7 @@ export const roleConfigs: Record<number, RoleConfig> = {
  */
 const restrictedRoutes: Record<string, number[]> = {
     '/equipe': [UserRole.GERENTE, UserRole.SUPERVISOR],
+    '/team-attendances': [UserRole.GERENTE, UserRole.SUPERVISOR],
     '/supervisor/performance': [UserRole.SUPERVISOR],
     '/manager/performance': [UserRole.GERENTE],
     '/attendants': [UserRole.GERENTE, UserRole.SUPERVISOR],
@@ -63,6 +64,7 @@ export function hasMinRole(userType: number | undefined, minRole: UserRoleType):
  */
 const hiddenNavItems: Record<string, number[]> = {
     '/equipe': [UserRole.GERENTE, UserRole.SUPERVISOR],
+    '/team-attendances': [UserRole.GERENTE, UserRole.SUPERVISOR],
     '/supervisor/performance': [UserRole.SUPERVISOR],
     '/manager/performance': [UserRole.GERENTE],
     '/attendants': [UserRole.GERENTE, UserRole.SUPERVISOR],

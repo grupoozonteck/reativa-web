@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { UserCog, RefreshCcw, Plus } from 'lucide-react';
 import { teamService, type AttendantsFilters } from '@/services/team.service';
+import { utilsService } from '@/services/utils.service';
 import { AttendantsList } from '@/components/Attendants/AttendantsList';
 import { AttendantsFiltersBar } from '@/components/Attendants/AttendantsFiltersBar';
 import { CreateAttendantModal } from '@/components/Attendants/CreateAttendantModal';
@@ -31,13 +32,30 @@ export default function Atendentes() {
         refetchInterval: 5 * 60 * 1000,
     });
 
+    const utilsQuery = useQuery({
+        queryKey: ['attendant-utils'],
+        queryFn: async () => {
+            const [types, graduates, status] = await Promise.all([
+                utilsService.getAttendantTypesMap(),
+                utilsService.getAttendantGraduatesMap(),
+                utilsService.getAttendantStatusMap(),
+            ]);
+
+            return { types, graduates, status };
+        },
+        staleTime: 1000 * 60 * 60 * 12,
+        gcTime: 1000 * 60 * 60 * 24,
+    });
+
     const data = attendantsQuery.data;
     const attendants = data?.attendants?.data ?? [];
     const total = data?.attendants?.meta?.total;
+    const resolvedTypes = utilsQuery.data?.types ?? data?.types ?? {};
+    const resolvedGraduates = utilsQuery.data?.graduates ?? data?.graduates ?? {};
     const isLoading = attendantsQuery.isLoading;
-    const isFetching = attendantsQuery.isFetching || supportQuery.isFetching;
+    const isFetching = attendantsQuery.isFetching || supportQuery.isFetching || utilsQuery.isFetching;
     const refetch = async () => {
-        await Promise.all([attendantsQuery.refetch(), supportQuery.refetch()]);
+        await Promise.all([attendantsQuery.refetch(), supportQuery.refetch(), utilsQuery.refetch()]);
     };
 
     return (
@@ -81,7 +99,8 @@ export default function Atendentes() {
                 {/* Filtros */}
                 <AttendantsFiltersBar
                     filters={filters}
-                    meta={data}
+                    types={resolvedTypes}
+                    countries={data?.countries ?? []}
                     onChange={setFilters}
                 />
 
@@ -99,8 +118,8 @@ export default function Atendentes() {
                     onClose={() => setCreateModalOpen(false)}
                     supervisors={supportQuery.data?.supervisors ?? []}
                     gestor={supportQuery.data?.gestor ?? null}
-                    types={data?.types ?? {}}
-                    graduates={data?.graduates ?? {}}
+                    types={resolvedTypes}
+                    graduates={resolvedGraduates}
                     onCreated={() => refetch()}
                 />
             </div>
