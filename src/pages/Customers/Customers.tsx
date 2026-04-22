@@ -37,8 +37,19 @@ import { getRegions, getStates } from '@/services/filter.service';
 import { Field, FieldLabel } from '@/components/ui/field';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
+type SearchType = 'login' | 'email' | 'name';
 
-function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number) {
+const SEARCH_TYPE_OPTIONS: Array<{ value: SearchType; label: string }> = [
+    { value: 'login', label: 'Login' },
+    { value: 'email', label: 'E-mail' },
+    { value: 'name', label: 'Nome' },
+];
+
+function isSearchType(value: string | null): value is SearchType {
+    return value === 'login' || value === 'email' || value === 'name';
+}
+
+function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number, searchType: string) {
     const params: Record<string, number | string> = { page };
     if (search) params.search = search;
     if (status === 'sem_pedidos') params.without_orders = 1;
@@ -47,6 +58,7 @@ function buildParams(page: number, search: string, status: FilterStatus, state: 
     if (state) params.state_id = state;
     if (region) params.region_id = region;
     if (minOrders) params.min_orders = minOrders;
+    if (searchType) params.search_type = searchType;
     return params;
 }
 
@@ -57,7 +69,10 @@ export default function Clientes() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Filtros aplicados (vêm da URL — disparam a requisição)
+
     const appliedSearch = searchParams.get('search') ?? '';
+    const rawSearchType = searchParams.get('search_type');
+    const appliedSearchType = isSearchType(rawSearchType) ? rawSearchType : 'login';
     const appliedStatus = (searchParams.get('status') as FilterStatus) ?? 'todos';
     const appliedState = searchParams.get('state') ?? '';
     const appliedRegion = searchParams.get('region') ?? '';
@@ -70,10 +85,11 @@ export default function Clientes() {
     const [selectedState, setSelectedState] = useState(appliedState);
     const [selectedRegion, setSelectedRegion] = useState(appliedRegion);
     const [minOrders, setMinOrders] = useState(appliedMinOrders);
+    const [searchType, setSearchType] = useState(appliedSearchType);
 
     const setPage = (val: number) => setSearchParams(p => { p.set('page', String(val)); return p; }, { replace: true });
 
-    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion, appliedMinOrders);
+    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion, appliedMinOrders, appliedSearchType);
     const { data: statesData } = useQuery({
         queryKey: ['states'],
         queryFn: getStates,
@@ -109,11 +125,13 @@ export default function Clientes() {
         : allStates;
     const loading = isLoading;
     const hasActiveFilters = appliedSearch !== ''
+        || appliedSearchType !== 'login'
         || appliedStatus !== 'todos'
         || appliedState !== ''
         || appliedRegion !== ''
         || appliedMinOrders > 0;
     const hasDraftChanges = search !== appliedSearch
+        || searchType !== appliedSearchType
         || filterStatus !== appliedStatus
         || selectedState !== appliedState
         || selectedRegion !== appliedRegion
@@ -122,6 +140,7 @@ export default function Clientes() {
     const handleApplyFilters = () => {
         setSearchParams(p => {
             if (search) p.set('search', search); else p.delete('search');
+            if (searchType !== 'login') p.set('search_type', searchType); else p.delete('search_type');
             if (filterStatus !== 'todos') p.set('status', filterStatus); else p.delete('status');
             if (selectedState) p.set('state', selectedState); else p.delete('state');
             if (selectedRegion) p.set('region', selectedRegion); else p.delete('region');
@@ -133,6 +152,7 @@ export default function Clientes() {
 
     const handleClearFilters = () => {
         setSearch('');
+        setSearchType('login');
         setFilterStatus('todos');
         setSelectedState('');
         setSelectedRegion('');
@@ -209,13 +229,27 @@ export default function Clientes() {
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                             <Input
-                                placeholder="Nome, login ou email..."
+                                placeholder={`Pesquisar por ${SEARCH_TYPE_OPTIONS.find(option => option.value === searchType)?.label.toLowerCase() ?? 'login'}...`}
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                                 className="pl-9 h-9  w-full bg-surface-highest border-none focus-visible:ring-0"
                                 disabled={loading}
                             />
                         </div>
+                    </Field>
+
+                    <Field className="w-full md:w-44">
+                        <FieldLabel>Tipo de busca</FieldLabel>
+                        <Select value={searchType} onValueChange={(val) => setSearchType(val as SearchType)} disabled={loading}>
+                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                                <SelectValue placeholder="Selecione o tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {SEARCH_TYPE_OPTIONS.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </Field>
 
                     <Field className="w-full md:w-44">
