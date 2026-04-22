@@ -1,7 +1,17 @@
 import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { authService, type LoginCredentials, type User } from '../services/auth.service';
 import { AuthContext } from './context';
-import { clearClientState } from '@/lib/clearClientState';
+import { queryClient } from '../lib/queryClient';
+
+async function clearSessionCache() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+}
+
+function clearStoredSession() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
@@ -32,14 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .catch(() => {
                     setToken(null);
                     setUser(null);
-                    clearClientState();
+                    clearStoredSession();
+                    void clearSessionCache();
                 })
                 .finally(() => setIsLoading(false));
         }
     }, [token, user]);
 
     const loginFunction = useCallback(async (credentials: LoginCredentials) => {
-        clearClientState();
+        await clearSessionCache();
 
         const response = await authService.login(credentials);
 
@@ -58,9 +69,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             await authService.logout();
         } finally {
+            await clearSessionCache();
             setToken(null);
             setUser(null);
-            clearClientState();
+            clearStoredSession();
         }
     }, []);
 
