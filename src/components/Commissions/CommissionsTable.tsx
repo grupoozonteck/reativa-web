@@ -26,6 +26,14 @@ interface CommissionItem {
             name: string;
         };
         value: number | string;
+        customer_reengagement?: {
+            attendant?: {
+                user?: {
+                    login?: string;
+                    name?: string;
+                };
+            };
+        };
     };
 }
 
@@ -58,22 +66,20 @@ export function CommissionsTable({
 }: CommissionsTableProps) {
     return (
         <div className="space-y-4 animate-fade-in">
-            {/* Header */}
             <div className="px-3 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                 <div className="flex items-center gap-2">
-                    <h2 className="font-display text-base font-semibold text-on-surface">Detalhes das Comissões</h2>
+                    <h2 className="font-display text-base font-semibold text-on-surface">Detalhes das Comissoes</h2>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                     {showingFrom > 0 && !isLoading && (
                         <span className="bg-surface-container rounded-full px-2.5 py-0.5 text-xs text-on-surface-variant">
-                            Exibindo {showingFrom}–{showingTo}
+                            Exibindo {showingFrom}-{showingTo}
                         </span>
                     )}
                 </div>
             </div>
 
-            {/* Mobile: Cards View */}
             <div className="block md:hidden">
                 {isLoading ? (
                     <div className="space-y-3 px-3">
@@ -83,11 +89,11 @@ export function CommissionsTable({
                     </div>
                 ) : isError ? (
                     <div className="text-center py-8 text-sm text-destructive">
-                        Erro ao carregar comissões. Tente atualizar.
+                        Erro ao carregar comissoes. Tente atualizar.
                     </div>
                 ) : items.length === 0 ? (
                     <div className="text-center py-8 text-sm text-on-surface-variant">
-                        Nenhuma comissão encontrada.
+                        Nenhuma comissao encontrada.
                     </div>
                 ) : (
                     <div className="space-y-3 px-3">
@@ -98,7 +104,6 @@ export function CommissionsTable({
                 )}
             </div>
 
-            {/* Desktop: Table View */}
             <div className="hidden md:block solid-card overflow-hidden">
                 <div className="overflow-x-auto">
                     <Table>
@@ -111,13 +116,16 @@ export function CommissionsTable({
                                     Cliente
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
-                                    Número do Pedido
+                                    Atendente
+                                </TableHead>
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                                    Numero do Pedido
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
                                     Valor do Pedido
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
-                                    Comissão
+                                    Comissao
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Data
@@ -129,21 +137,21 @@ export function CommissionsTable({
                             {isLoading ? (
                                 Array.from({ length: 6 }).map((_, index) => (
                                     <TableRow key={`skeleton-${index}`} className="border-none">
-                                        <TableCell className="py-4 sm:py-5" colSpan={7}>
+                                        <TableCell className="py-4 sm:py-5" colSpan={8}>
                                             <div className="h-4 w-full bg-surface-container animate-pulse rounded-md" />
                                         </TableCell>
                                     </TableRow>
                                 ))
                             ) : isError ? (
                                 <TableRow className="border-none">
-                                    <TableCell colSpan={7} className="text-center py-8 sm:py-10 text-sm text-destructive">
-                                        Erro ao carregar comissões. Tente atualizar.
+                                    <TableCell colSpan={8} className="text-center py-8 sm:py-10 text-sm text-destructive">
+                                        Erro ao carregar comissoes. Tente atualizar.
                                     </TableCell>
                                 </TableRow>
                             ) : items.length === 0 ? (
                                 <TableRow className="border-none">
-                                    <TableCell colSpan={7} className="text-center py-8 sm:py-10 text-sm text-on-surface-variant">
-                                        Nenhuma comissão encontrada.
+                                    <TableCell colSpan={8} className="text-center py-8 sm:py-10 text-sm text-on-surface-variant">
+                                        Nenhuma comissao encontrada.
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -159,6 +167,14 @@ export function CommissionsTable({
                                             <p className="text-on-surface font-medium">{item.personal_order?.user?.name ?? 'NA'}</p>
                                             <p className="text-on-surface-variant text-xs">
                                                 ({item.personal_order?.user?.login ?? 'NA'})
+                                            </p>
+                                        </TableCell>
+                                        <TableCell className="text-xs sm:text-sm">
+                                            <p className="text-on-surface font-medium">
+                                                {item.personal_order?.customer_reengagement?.attendant?.user?.name ?? 'NA'}
+                                            </p>
+                                            <p className="text-on-surface-variant text-xs">
+                                                ({item.personal_order?.customer_reengagement?.attendant?.user?.login ?? 'NA'})
                                             </p>
                                         </TableCell>
                                         <TableCell className="text-xs sm:text-sm text-on-surface-variant">
@@ -181,7 +197,6 @@ export function CommissionsTable({
                 </div>
             </div>
 
-            {/* Pagination */}
             {(hasPrevPage || hasNextPage) && !isLoading && (
                 <div className="px-3 md:px-0">
                     <Pagination

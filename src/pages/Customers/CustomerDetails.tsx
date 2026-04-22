@@ -105,13 +105,16 @@ export default function ClienteDetalhes() {
         );
     }
 
-    const whatsapp = user.personal_data?.whatsapp || user.phone_number;
+    const personalData = user.personal_data ?? user.personalData ?? null;
+    const personalAddress = user.personal_address ?? user.personalAddress ?? null;
+    const whatsapp = personalData?.whatsapp || personalData?.phone_number || user.phone_number;
+    const phoneNumber = personalData?.phone_number || user.phone_number;
     const initials = getInitials(user.name);
     const avatarColor = getAvatarColor(user.name);
-    const orders = (user.personal_orders ?? []).slice().sort(
+    const orders = (user.personal_orders ?? user.personalOrders ?? []).slice().sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
-    const address = user.personal_address;
+    const address = personalAddress;
     const reengStatus = reengagement ? reengagementStatusMap[reengagement.status] : null;
     const hasWhatsapp = !!whatsapp;
     const observations = reengagement?.observations ?? [];
@@ -126,7 +129,7 @@ export default function ClienteDetalhes() {
                 onClose={() => setEditModalOpen(false)}
                 userId={user.id}
                 initialEmail={user.email}
-                initialBirthDate={user.personal_data?.birth_date?.slice(0, 10) ?? ''}
+                initialBirthDate={personalData?.birth_date?.slice(0, 10) ?? ''}
                 initialStatus={reengagement?.status ?? 1}
                 statusOptions={statusMap}
                 onUpdated={() => refetch()}
@@ -164,9 +167,9 @@ export default function ClienteDetalhes() {
                     <CardContent className="p-5 sm:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                             {/* Avatar */}
-                            {user.personal_data?.avatar ? (
+                            {personalData?.avatar ? (
                                 <img
-                                    src={user.personal_data.avatar}
+                                    src={personalData.avatar}
                                     alt={user.name}
                                     className="w-16 h-16 rounded-2xl object-cover shrink-0"
                                 />
@@ -323,7 +326,7 @@ export default function ClienteDetalhes() {
                                             </div>
                                             <div>
                                                 <p className="text-[10px] uppercase tracking-wider text-on-surface-variant mb-0.5">Telefone</p>
-                                                <p className="text-sm text-on-surface">{formatWhatsApp(user.phone_number) || '--'}</p>
+                                                <p className="text-sm text-on-surface">{formatWhatsApp(phoneNumber) || '--'}</p>
                                             </div>
                                         </div>
                                         {address && (
