@@ -83,9 +83,9 @@ export default function ClienteDetalhes() {
     });
 
     const user = data?.user ?? null;
-    const reengagement = data?.customerReengagement ?? null;
-    const statusMap = data?.statusReengagements ?? {};
-    const orderStatusCollection = data?.statusOrderCollection ?? {};
+    const reengagement = data?.customer_reengagement ?? null;
+    const statusMap = data?.status_reengagements ?? {};
+    const orderStatusCollection = data?.status_order_collection ?? {};
     const linkedLeader = reengagement?.leader ?? null;
 
     if (isLoading) {

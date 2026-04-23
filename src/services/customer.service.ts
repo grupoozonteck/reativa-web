@@ -219,9 +219,9 @@ export interface UserDetailResponse {
     success: boolean;
     data: {
         user: UserDetail;
-        customerReengagement: CustomerReengagement;
-        statusReengagements: Record<string, string>;
-        statusOrderCollection: Record<string, string>;
+        customer_reengagement: CustomerReengagement;
+        status_reengagements: Record<string, string>;
+        status_order_collection: Record<string, string>;
     };
 }
 
