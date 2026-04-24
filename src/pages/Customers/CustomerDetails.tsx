@@ -50,6 +50,14 @@ import { reengagementStatusMap } from '@/utils/color-ultis';
 import { orderStatusStyleMap } from '@/config/orderStatus';
 import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 
+function buildStoreAccessUrl(token: string, apiUrl?: string) {
+    if (apiUrl) return apiUrl;
+
+    const officeBaseUrl = import.meta.env.VITE_OFFICE_BASE_URL ?? '';
+    const baseUrl = officeBaseUrl.replace(/\/$/, '');
+
+    return `${baseUrl}/impersonation/${token}`;
+}
 
 export default function ClienteDetalhes() {
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -61,14 +69,30 @@ export default function ClienteDetalhes() {
 
     const handleAccessStore = async () => {
         if (!id) return;
+
+        const storeWindow = window.open('about:blank', '_blank');
+        if (storeWindow) {
+            storeWindow.opener = null;
+        }
+
         setAccessingStore(true);
         try {
             const res = await customerService.getAccessStoreLink(Number(id));
             const token = res?.data?.token;
-            if (token) {
-                window.open(`${import.meta.env.VITE_OFFICE_BASE_URL}/impersonation/${token}`, '_blank', 'noopener,noreferrer');
+            const accessUrl = token ? buildStoreAccessUrl(token, res?.data?.url) : null;
+
+            if (!accessUrl) {
+                storeWindow?.close();
+                return;
+            }
+
+            if (storeWindow) {
+                storeWindow.location.href = accessUrl;
+            } else {
+                window.location.assign(accessUrl);
             }
         } catch (err) {
+            storeWindow?.close();
             console.error('Erro ao obter link da loja:', err);
         } finally {
             setAccessingStore(false);
