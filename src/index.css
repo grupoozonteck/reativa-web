@@ -59,7 +59,7 @@
   .dark {
     /* Base surfaces — tonal depth via background shifts, no borders */
     --background: 222 68% 7%;
-    /* #060e20 — Level 0: obsidian base */
+    /* #001E21 — Level 0: obsidian base */
     --foreground: 210 30% 90%;
 
     --card: 222 50% 10%;
@@ -84,9 +84,10 @@
     --muted: 222 42% 16%;
     --muted-foreground: 210 15% 52%;
 
-    /* Accent / Tertiary — energetic pink #ff86c3 */
+    /* Accent / Tertiary — energetic */
     --accent: 330 100% 76%;
     --accent-foreground: 222 68% 7%;
+
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
@@ -348,4 +349,53 @@
   transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
   background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary-container)));
   box-shadow: 0 0 8px hsl(var(--primary) / 0.4);
+}
+
+.date-input-trigger {
+  cursor: pointer;
+  box-shadow: none !important;
+  background-color: hsl(var(--surface-container-highest));
+  color: hsl(var(--on-surface));
+}
+
+.date-input-trigger:focus,
+.date-input-trigger:focus-visible,
+.date-input-trigger:hover {
+  outline: none;
+  box-shadow: none !important;
+  border-color: hsl(var(--border) / 0.6);
+}
+
+.dark .date-input-trigger {
+  color-scheme: dark;
+}
+
+.date-input-trigger::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 1;
+}
+
+:root .date-input-trigger::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+.dark .date-input-trigger::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+}
+
+.date-input-trigger::-webkit-datetime-edit,
+.date-input-trigger::-webkit-date-and-time-value {
+  color: inherit;
+}
+
+.field-focus {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.field-focus:focus,
+.field-focus:focus-visible,
+.field-focus[data-state="open"] {
+  outline: none;
+  border-color: hsl(var(--outline-variant) / 0.95) !important;
+  box-shadow: 0 0 0 1px hsl(var(--outline-variant) / 0.75), 0 8px 20px hsl(222 70% 5% / 0.18) !important;
 }
