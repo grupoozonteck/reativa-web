@@ -11,6 +11,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
     { to: '/ranking', label: 'Ranking', icon: Trophy },
+    { to: '/supervisor/ranking', label: 'Rank Supervisores', icon: Trophy },
     { to: '/customers', label: 'Clientes', icon: UsersRound },
     { to: '/my-attendances', label: 'Meus Atendimentos', icon: Headphones },
     { to: '/team-attendances', label: 'Atend. Equipe', icon: Headphones },

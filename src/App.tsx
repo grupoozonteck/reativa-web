@@ -13,6 +13,7 @@ import TeamAttendances from '@/pages/Customers/TeamAttendances';
 import { Loader2 } from 'lucide-react';
 import Commissions from './pages/Commissions/Commissions';
 import SupervisorPerformance from './pages/Supervisor/SupervisorPerformance';
+import SupervisorRanking from './pages/Supervisor/SupervisorRanking';
 import ManagerPerformance from './pages/Manager/ManagerPerformance';
 import Attendants from './pages/Attendants/Attendants';
 import AttendantDetails from './pages/Attendants/AttendantDetails';
@@ -92,6 +93,14 @@ export default function App() {
             />
             <Route path="/commissions" element={<Commissions />} />
             <Route
+              path="/supervisor/ranking"
+              element={
+                <RoleGuard route="/supervisor/ranking">
+                  <SupervisorRanking />
+                </RoleGuard>
+              }
+            />
+            <Route
               path="/supervisor/performance"
               element={
                 <RoleGuard route="/supervisor/performance">
@@ -137,6 +146,7 @@ export default function App() {
           <Route path="/my-attendances" element={<Navigate to="/my-attendances" replace />} />
           <Route path="/team-attendances" element={<Navigate to="/team-attendances" replace />} />
           <Route path="/commissions" element={<Navigate to="/commissions" replace />} />
+          <Route path="/supervisor/ranking" element={<Navigate to="/supervisor/ranking" replace />} />
           <Route path="/attendants" element={<Navigate to="/attendants" replace />} />
           <Route path="/attendants/:id" element={<Navigate to="/attendants" replace />} />
           <Route path="/attendants/:id/edit" element={<Navigate to="/attendants" replace />} />
