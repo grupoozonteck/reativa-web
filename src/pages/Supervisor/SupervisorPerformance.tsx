@@ -65,19 +65,17 @@ export default function SupervisorPerformance() {
             <PerformanceHeader isFetching={isFetching} onRefresh={refetch} />
 
             <DateRangeFilterCard
-                title="Filtro da performance"
-                description="Esse periodo segue para o backend como start_date e end_date na performance do supervisor."
+                title="Periodo"
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
-                onRefresh={() => refetch()}
                 isFetching={isFetching}
                 hasActiveFilters={hasActiveFilters}
                 hasDraftChanges={hasDraftChanges}
-                applyLabel="Filtrar performance"
+                applyLabel="Filtrar"
                 startId="supervisor-performance-start-date"
                 endId="supervisor-performance-end-date"
             />

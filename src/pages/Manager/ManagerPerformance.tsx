@@ -57,19 +57,17 @@ export default function ManagerPerformance() {
             <ManagerHeader isFetching={isFetching} onRefresh={refetch} />
 
             <DateRangeFilterCard
-                title="Filtro gerencial"
-                description="O resumo e a lista de supervisores passam start_date e end_date para o backend."
+                title="Periodo"
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
-                onRefresh={() => refetch()}
                 isFetching={isFetching}
                 hasActiveFilters={hasActiveFilters}
                 hasDraftChanges={hasDraftChanges}
-                applyLabel="Filtrar periodo"
+                applyLabel="Filtrar"
                 startId="manager-performance-start-date"
                 endId="manager-performance-end-date"
             />

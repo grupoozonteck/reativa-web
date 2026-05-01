@@ -100,19 +100,17 @@ export default function Dashboard() {
             </div>
 
             <DateRangeFilterCard
-                title="Filtro de periodo"
-                description="Essas datas acompanham as metricas do dashboard como start_date e end_date."
+                title="Periodo"
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
-                onRefresh={() => refetch()}
                 isFetching={isFetching}
                 hasActiveFilters={hasActiveFilters}
                 hasDraftChanges={hasDraftChanges}
-                applyLabel="Filtrar dashboard"
+                applyLabel="Filtrar"
                 startId="dashboard-start-date"
                 endId="dashboard-end-date"
             />

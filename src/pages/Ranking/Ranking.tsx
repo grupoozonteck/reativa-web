@@ -130,19 +130,17 @@ export default function Ranking() {
             />
 
             <DateRangeFilterCard
-                title="Filtro do ranking"
-                description="O backend recebe start_date e end_date para recalcular o ranking no periodo."
+                title="Periodo"
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
-                onRefresh={() => refetch()}
                 isFetching={isFetching}
                 hasActiveFilters={hasActiveFilters}
                 hasDraftChanges={hasDraftChanges}
-                applyLabel="Filtrar ranking"
+                applyLabel="Filtrar"
                 startId="ranking-start-date"
                 endId="ranking-end-date"
             />
