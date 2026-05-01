@@ -43,9 +43,19 @@ export interface DashboardData {
     recent_sales: RecentSale[];
 }
 
+export interface DashboardFilters {
+    start_date?: string;
+    end_date?: string;
+}
+
 export const dashboardService = {
-    getDashboard: async (): Promise<DashboardData> => {
-        const response = await api.get<{ data?: DashboardData } | DashboardData>('/api/dashboard');
+    getDashboard: async (filters: DashboardFilters = {}): Promise<DashboardData> => {
+        const response = await api.get<{ data?: DashboardData } | DashboardData>('/api/dashboard', {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         const payload = ('data' in response.data && response.data.data)
             ? response.data.data
             : response.data as DashboardData;

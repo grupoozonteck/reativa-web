@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { UserX, DollarSign, TrendingUp, Users, Award, RefreshCcw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/useAuth';
 import { Button } from '@/components/ui/button';
 import StatCard from '@/components/dashboard/StatCard';
@@ -7,6 +9,8 @@ import TopSellersCard from '@/components/dashboard/TopSellersCard';
 import InativosCard from '@/components/dashboard/InativosCard';
 import RecentSalesCard from '@/components/dashboard/RecentSalesCard';
 import { dashboardService } from '@/services/dashboard.service';
+import { DateRangeFilterCard } from '@/components/filters/DateRangeFilterCard';
+import { getCurrentMonthDateRange } from '@/utils/date-range';
 
 function getGreeting() {
     const h = new Date().getHours();
@@ -17,14 +21,44 @@ function getGreeting() {
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const name = user?.name ?? 'Usuário';
+    const name = user?.name ?? 'Usuario';
+    const [searchParams, setSearchParams] = useSearchParams();
+    const defaultRange = getCurrentMonthDateRange();
+    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
+    const [startDate, setStartDate] = useState(appliedStartDate);
+    const [endDate, setEndDate] = useState(appliedEndDate);
 
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['dashboard', user?.id],
-        queryFn: () => dashboardService.getDashboard(),
+        queryKey: ['dashboard', user?.id, appliedStartDate, appliedEndDate],
+        queryFn: () => dashboardService.getDashboard({
+            start_date: appliedStartDate || undefined,
+            end_date: appliedEndDate || undefined,
+        }),
         enabled: !!user?.id,
         refetchInterval: 5 * 60 * 1000,
     });
+
+    const hasActiveFilters = appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
+    const hasDraftChanges = startDate !== appliedStartDate || endDate !== appliedEndDate;
+
+    const handleApplyFilters = () => {
+        setSearchParams((params) => {
+            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
+            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
+            return params;
+        }, { replace: true });
+    };
+
+    const handleClearFilters = () => {
+        setStartDate(defaultRange.startDate);
+        setEndDate(defaultRange.endDate);
+        setSearchParams((params) => {
+            params.delete('start_date');
+            params.delete('end_date');
+            return params;
+        }, { replace: true });
+    };
 
     const stats = data?.stats;
     const inactiveSummary = data?.inactive_clients_summary;
@@ -33,8 +67,6 @@ export default function Dashboard() {
 
     return (
         <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
-
-            {/* Ambient background blobs */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
                 <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-emerald-500/4 rounded-full blur-3xl" />
@@ -42,7 +74,6 @@ export default function Dashboard() {
                 <div className="absolute top-1/4 right-0 w-72 h-72 bg-accent/3 rounded-full blur-3xl" />
             </div>
 
-            {/* Header */}
             <div className="animate-fade-in" style={{ animationDelay: '0ms', opacity: 0 }}>
                 <div className="flex items-center justify-between gap-3 mb-1">
                     <div className="flex items-center gap-2">
@@ -65,15 +96,32 @@ export default function Dashboard() {
                         {isFetching ? 'Atualizando...' : 'Atualizar'}
                     </Button>
                 </div>
-                <p className="text-muted-foreground text-sm ml-3">Visão geral do sistema de reativação</p>
+                <p className="text-muted-foreground text-sm ml-3">Visao geral do sistema de reativacao</p>
             </div>
 
-            {/* Stats grid */}
+            <DateRangeFilterCard
+                title="Filtro de periodo"
+                description="Essas datas acompanham as metricas do dashboard como start_date e end_date."
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+                onApply={handleApplyFilters}
+                onClear={handleClearFilters}
+                onRefresh={() => refetch()}
+                isFetching={isFetching}
+                hasActiveFilters={hasActiveFilters}
+                hasDraftChanges={hasDraftChanges}
+                applyLabel="Filtrar dashboard"
+                startId="dashboard-start-date"
+                endId="dashboard-end-date"
+            />
+
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <StatCard
                     label="Clientes Inativos"
                     rawValue={stats?.inactive_customers ?? 0}
-                    displayFn={v =>  new Intl.NumberFormat('pt-BR').format(v)}
+                    displayFn={v => new Intl.NumberFormat('pt-BR').format(v)}
                     icon={UserX}
                     colorClass="text-accent"
                     bgClass="bg-accent/10"
@@ -99,7 +147,7 @@ export default function Dashboard() {
                     delay={240}
                 />
                 <StatCard
-                    label="Taxa de Conversão"
+                    label="Taxa de Conversao"
                     rawValue={stats?.conversion_rate ?? 0}
                     displayFn={v => `${v}%`}
                     icon={TrendingUp}
@@ -110,7 +158,6 @@ export default function Dashboard() {
                 />
             </div>
 
-            {/* Bottom grid */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                 <TopSellersCard sellers={topAttendants} isLoading={isLoading} />
                 <div className="lg:col-span-2 flex flex-col gap-4">

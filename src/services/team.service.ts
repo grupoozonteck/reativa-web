@@ -61,6 +61,11 @@ export interface SupervisorPerformanceResponse {
     members: TeamMemberPerformance[];
 }
 
+export interface PerformanceFilters {
+    start_date?: string;
+    end_date?: string;
+}
+
 function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPerformanceResponse {
     if (Array.isArray(payload)) {
         return {
@@ -426,13 +431,23 @@ function normalizeLeaderOptions(payload: unknown): AttendantLeaderOption[] {
 }
 
 export const teamService = {
-    getSupervisorPerformance: async (): Promise<SupervisorPerformanceResponse> => {
-        const response = await api.get('/api/supervisor/performance');
+    getSupervisorPerformance: async (filters: PerformanceFilters = {}): Promise<SupervisorPerformanceResponse> => {
+        const response = await api.get('/api/supervisor/performance', {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         return normalizeSupervisorPerformanceResponse(response.data);
     },
 
-    getManagerPerformance: async (): Promise<ManagerPerformanceResponse> => {
-        const response = await api.get<ManagerPerformanceResponse>('/api/manager/performance');
+    getManagerPerformance: async (filters: PerformanceFilters = {}): Promise<ManagerPerformanceResponse> => {
+        const response = await api.get<ManagerPerformanceResponse>('/api/manager/performance', {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         return response.data;
     },
 
