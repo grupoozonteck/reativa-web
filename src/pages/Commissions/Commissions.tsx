@@ -1,38 +1,64 @@
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { formatCurrency } from '@/utils/client-utils';
 import { financialService } from '../../services/financial.service';
 import { CommissionStatCard } from '@/components/Commissions/CommissionStatCard';
 import { CommissionsTable } from '@/components/Commissions/CommissionsTable';
 import { CommissionsFilters } from '@/components/Commissions/CommissionsFilters';
 import { DollarSign, TrendingUp, FileText } from 'lucide-react';
+import { getCurrentMonthDateRange } from '@/utils/date-range';
 
 
 export default function Comissoes() {
-    const [search, setSearch] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const defaultRange = getCurrentMonthDateRange();
+    const appliedSearch = searchParams.get('login') ?? '';
+    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
+    const [search, setSearch] = useState(appliedSearch);
+    const [startDate, setStartDate] = useState(appliedStartDate);
+    const [endDate, setEndDate] = useState(appliedEndDate);
     const [page, setPage] = useState(1);
 
     const { data, isLoading, isFetching, isError } = useQuery({
-        queryKey: ['comissoes', search, startDate, endDate, page],
+        queryKey: ['comissoes', appliedSearch, appliedStartDate, appliedEndDate, page],
         queryFn: () => financialService.getCommissions({
-            login: search || undefined,
-            start_date: startDate || undefined,
-            end_date: endDate || undefined,
+            login: appliedSearch || undefined,
+            start_date: appliedStartDate || undefined,
+            end_date: appliedEndDate || undefined,
             page,
         }),
         placeholderData: keepPreviousData,
     });
 
-    const clearFilters = () => {
-        setSearch('');
-        setStartDate('');
-        setEndDate('');
+    const handleApplyFilters = () => {
         setPage(1);
+        setSearchParams((params) => {
+            if (search.trim()) params.set('login', search.trim()); else params.delete('login');
+            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
+            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
+            if (page !== 1) params.delete('page');
+            return params;
+        }, { replace: true });
     };
 
-    const hasActiveFilters = !!search || !!startDate || !!endDate;
+    const clearFilters = () => {
+        setSearch('');
+        setStartDate(defaultRange.startDate);
+        setEndDate(defaultRange.endDate);
+        setPage(1);
+        setSearchParams((params) => {
+            params.delete('login');
+            params.delete('start_date');
+            params.delete('end_date');
+            params.delete('page');
+            return params;
+        }, { replace: true });
+    };
+
+    const hasActiveFilters = !!appliedSearch || appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
+    const hasDraftChanges = search !== appliedSearch || startDate !== appliedStartDate || endDate !== appliedEndDate;
 
     const items = data?.data?.commissions?.data ?? [];
     const totalCommissions = Number(data?.data?.total_commissions_value ?? 0);
@@ -79,8 +105,11 @@ export default function Comissoes() {
                 onSearchChange={setSearch}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
+                onApplyFilters={handleApplyFilters}
                 onClearFilters={clearFilters}
                 hasActiveFilters={hasActiveFilters}
+                hasDraftChanges={hasDraftChanges}
+                isFetching={isFetching}
             />
 
             {/* Stat Cards */}

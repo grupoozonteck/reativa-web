@@ -1,30 +1,6 @@
 import { formatCurrency, formatDateTime } from '@/utils/client-utils';
-
-interface CommissionItem {
-    id?: number;
-    order_id?: number;
-    attendant_name?: string;
-    customer_name?: string;
-    order_value?: number | string;
-    value?: number | string;
-    status?: string;
-    created_at?: string;
-    personal_order: {
-        user: {
-            login: string;
-            name: string;
-        };
-        value: number | string;
-        customer_reengagement?: {
-            attendant?: {
-                user?: {
-                    login?: string;
-                    name?: string;
-                };
-            };
-        };
-    };
-}
+import { CommissionDetailsDialog } from './CommissionDetailsDialog';
+import type { CommissionItem } from './types';
 
 interface CommissionCardProps {
     item: CommissionItem;
@@ -85,6 +61,15 @@ export function CommissionCard({ item }: CommissionCardProps) {
                 </div>
             </div>
 
+            <div>
+                <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
+                    Descricao
+                </p>
+                <p className="text-sm text-on-surface line-clamp-2">
+                    {item.description_extra?.trim() || 'Sem descricao informada.'}
+                </p>
+            </div>
+
             <div className="bg-surface-highest rounded-lg p-2.5 grid grid-cols-2 gap-3">
                 <div>
                     <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
@@ -103,6 +88,11 @@ export function CommissionCard({ item }: CommissionCardProps) {
                     </p>
                 </div>
             </div>
+
+            <CommissionDetailsDialog
+                item={item}
+                triggerClassName="h-9 w-full justify-center gap-1.5 text-xs"
+            />
         </div>
     );
 }

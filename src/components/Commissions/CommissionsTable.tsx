@@ -10,32 +10,8 @@ import { formatCurrency, formatDateTime } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { Pagination } from '@/components/ui/pagination';
 import { CommissionCard } from './CommissionCard';
-
-interface CommissionItem {
-    id?: number;
-    order_id?: number;
-    attendant_name?: string;
-    customer_name?: string;
-    order_value?: number | string;
-    value?: number | string;
-    status?: string;
-    created_at?: string;
-    personal_order: {
-        user: {
-            login: string;
-            name: string;
-        };
-        value: number | string;
-        customer_reengagement?: {
-            attendant?: {
-                user?: {
-                    login?: string;
-                    name?: string;
-                };
-            };
-        };
-    };
-}
+import { CommissionDetailsDialog } from './CommissionDetailsDialog';
+import type { CommissionItem } from './types';
 
 interface CommissionsTableProps {
     items: CommissionItem[];
@@ -116,6 +92,9 @@ export function CommissionsTable({
                                     Cliente
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                                    Descricao
+                                </TableHead>
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Atendente
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
@@ -129,6 +108,9 @@ export function CommissionsTable({
                                 </TableHead>
                                 <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Data
+                                </TableHead>
+                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
+                                    Acao
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -164,17 +146,21 @@ export function CommissionsTable({
                                             {item.id ?? 'NA'}
                                         </TableCell>
                                         <TableCell className="text-xs sm:text-sm">
-                                            <p className="text-on-surface font-medium">{item.personal_order?.user?.name ?? 'NA'}</p>
+                                            <p className="text-on-surface font-medium">
+                                                {item.personal_order?.user?.name ?? 'NA'}
+                                            </p>
                                             <p className="text-on-surface-variant text-xs">
                                                 ({item.personal_order?.user?.login ?? 'NA'})
                                             </p>
                                         </TableCell>
-                                        <TableCell className="text-xs sm:text-sm">
-                                            <p className="text-on-surface font-medium">
-                                                {item.personal_order?.customer_reengagement?.attendant?.user?.name ?? 'NA'}
+                                        <TableCell className="max-w-[320px] text-xs sm:text-sm">
+                                            <p className="text-on-surface font-medium line-clamp-2">
+                                                {item.description_extra?.trim() || 'Sem descricao informada.'}
                                             </p>
+                                        </TableCell>
+                                        <TableCell className="text-xs sm:text-sm">
                                             <p className="text-on-surface-variant text-xs">
-                                                ({item.personal_order?.customer_reengagement?.attendant?.user?.login ?? 'NA'})
+                                                {item.personal_order?.customer_reengagement?.attendant?.user?.login ?? 'NA'}
                                             </p>
                                         </TableCell>
                                         <TableCell className="text-xs sm:text-sm text-on-surface-variant">
@@ -188,6 +174,12 @@ export function CommissionsTable({
                                         </TableCell>
                                         <TableCell className="text-xs sm:text-sm text-on-surface-variant">
                                             {item.created_at ? formatDateTime(item.created_at) : 'NA'}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <CommissionDetailsDialog
+                                                item={item}
+                                                triggerClassName="h-8 gap-1.5 px-3 text-xs"
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 ))
