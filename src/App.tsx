@@ -83,7 +83,14 @@ export default function App() {
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/customers/:id" element={<CustomerDetails />} />
-            <Route path="/reengagements/generate" element={<GenerateRecruitment />} />
+            <Route
+              path="/reengagements/generate"
+              element={
+                <RoleGuard route="/reengagements/generate">
+                  <GenerateRecruitment />
+                </RoleGuard>
+              }
+            />
             <Route path="/my-attendances" element={<MyAttendances />} />
             <Route
               path="/team-attendances"

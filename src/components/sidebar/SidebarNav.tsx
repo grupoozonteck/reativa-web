@@ -14,7 +14,7 @@ export default function SidebarNav({ onNav }: SidebarNavProps) {
     return (
         <nav className="flex-1 px-3 pb-4">
             <div className="space-y-1">
-                {items.map((item) => {
+                {items.map((item) => {''
                     const Icon = item.icon;
 
                     return (
