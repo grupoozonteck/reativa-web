@@ -307,6 +307,12 @@ export interface TeamReengagementQueryParams {
     recruiter_id?: number;
 }
 
+export interface GenerateReengagementPayload {
+    leader_id: number;
+    recruiter_id: number;
+    order_id: number;
+}
+
 // === Service ===
 
 export const customerService = {
@@ -396,6 +402,11 @@ export const customerService = {
     /** Registra observação e agenda próximo contato */
     addObservation: async (reengagementId: number, data: { observation: string; next_contact_date: string }) => {
         const response = await api.post(`/api/reengagements/${reengagementId}/observations`, data);
+        return response.data;
+    },
+
+    generateReengagement: async (data: GenerateReengagementPayload) => {
+        const response = await api.post('/api/reengagements/generate', data);
         return response.data;
     },
 

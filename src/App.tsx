@@ -8,6 +8,7 @@ import Dashboard from '@/pages/Dashboard/Dashboard';
 import Ranking from '@/pages/Ranking/Ranking';
 import Customers from '@/pages/Customers/Customers';
 import CustomerDetails from '@/pages/Customers/CustomerDetails';
+import GenerateRecruitment from '@/pages/Customers/GenerateRecruitment';
 import MyAttendances from '@/pages/Customers/MyAttendances';
 import TeamAttendances from '@/pages/Customers/TeamAttendances';
 import { Loader2 } from 'lucide-react';
@@ -82,6 +83,7 @@ export default function App() {
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/customers/:id" element={<CustomerDetails />} />
+            <Route path="/reengagements/generate" element={<GenerateRecruitment />} />
             <Route path="/my-attendances" element={<MyAttendances />} />
             <Route
               path="/team-attendances"
@@ -143,6 +145,7 @@ export default function App() {
           </Route>
           <Route path="/customers" element={<Navigate to="/customers" replace />} />
           <Route path="/customers/:id" element={<Navigate to="/customers" replace />} />
+          <Route path="/reengagements/generate" element={<Navigate to="/reengagements/generate" replace />} />
           <Route path="/my-attendances" element={<Navigate to="/my-attendances" replace />} />
           <Route path="/team-attendances" element={<Navigate to="/team-attendances" replace />} />
           <Route path="/commissions" element={<Navigate to="/commissions" replace />} />
