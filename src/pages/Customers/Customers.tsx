@@ -37,16 +37,17 @@ import { getRegions, getStates } from '@/services/filter.service';
 import { Field, FieldLabel } from '@/components/ui/field';
 
 type FilterStatus = 'todos' | 'sem_pedidos' | 'com_pedidos' | 'com_pagos';
-type SearchType = 'login' | 'email' | 'name';
+type SearchType = 'login' | 'email' | 'name' | 'document';
 
 const SEARCH_TYPE_OPTIONS: Array<{ value: SearchType; label: string }> = [
     { value: 'login', label: 'Login' },
     { value: 'email', label: 'E-mail' },
     { value: 'name', label: 'Nome' },
+    { value: 'document', label: 'Documento' },
 ];
 
 function isSearchType(value: string | null): value is SearchType {
-    return value === 'login' || value === 'email' || value === 'name';
+    return value === 'login' || value === 'email' || value === 'name' || value === 'document';
 }
 
 function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number, searchType: string) {
