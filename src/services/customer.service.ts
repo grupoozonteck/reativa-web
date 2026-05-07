@@ -90,6 +90,20 @@ export interface PersonalOrderItem {
     [key: string]: unknown;
 }
 
+export interface OrderFranchise {
+    id: number;
+    fantasy_name: string;
+    address_line?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    zip_code?: string;
+    city_id?: number;
+    state_id?: number;
+    city?: { id: number; name: string };
+    state?: { id: number; name: string };
+}
+
 export interface PersonalOrder {
     id: number;
     code: number;
@@ -103,6 +117,7 @@ export interface PersonalOrder {
     delivery_type?: number | null;
     created_at: string;
     updated_at: string;
+    franchise?: OrderFranchise | null;
     personal_order_items: PersonalOrderItem[];
     [key: string]: unknown;
 }
@@ -130,19 +145,25 @@ export interface PersonalAddress {
 
 export interface UserDetail {
     id: number;
-    uuid: string;
+    uuid?: string;
     name: string;
     login: string;
     email: string;
-    phone_number: string;
-    phone_code: string;
-    country_code: string;
-    classification: string;
+    phone_number?: string | null;
+    phone_code?: string | null;
+    country_code?: string;
+    classification?: string;
     created_at: string;
-    updated_at: string;
-    personal_orders: PersonalOrder[] | null;
-    personal_data: PersonalData;
-    personal_address: PersonalAddress | null;
+    updated_at?: string;
+    // snake_case (fallback)
+    personal_orders?: PersonalOrder[] | null;
+    personal_data?: PersonalData | null;
+    personal_address?: PersonalAddress | null;
+    // camelCase (API atual)
+    personalOrders?: PersonalOrder[] | null;
+    personalData?: PersonalData | null;
+    personalAddress?: PersonalAddress | null;
+    sponsor?: UserSponsor | null;
     [key: string]: unknown;
 }
 
@@ -178,13 +199,29 @@ export interface SponsorLeader {
     }
 }
 
+export interface UserSponsor {
+    id: number;
+    user_id: number;
+    sponsor: number;
+    sponsor_changed: string | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    operator_id: number | null;
+    user_sponsor: {
+        id: number;
+        login: string;
+        name: string;
+    };
+}
+
 export interface UserDetailResponse {
     success: boolean;
     data: {
         user: UserDetail;
-        customerReengagement: CustomerReengagement;
-        statusReengagements: Record<string, string>;
-        statusOrderCollection: Record<string, string>;
+        customer_reengagement: CustomerReengagement;
+        status_reengagements: Record<string, string>;
+        status_order_collection: Record<string, string>;
     };
 }
 
@@ -201,19 +238,37 @@ export interface PersonalReengagement {
     deleted_at: string | null;
     user: {
         id: number;
-        uuid: string;
+        uuid?: string;
         name: string;
         login: string;
         email: string;
-        phone_number: string;
-        phone_code: string;
-        country_code: string;
-        classification: string;
-        created_at: string;
-        updated_at: string;
+        phone_number?: string | null;
+        phone_code?: string | null;
+        country_code?: string;
+        classification?: string;
+        created_at?: string;
+        updated_at?: string;
+        personal_data?: {
+            user_id?: number;
+            avatar?: string | null;
+            phone_code?: string | null;
+            phone_number?: string | null;
+            whatsapp_phone_code?: string | null;
+            whatsapp?: string | null;
+        } | null;
         [key: string]: unknown;
     };
     personal_order: PersonalOrder | null;
+    recruiter?: {
+        id: number;
+        name: string;
+        login: string;
+    } | null;
+    leader?: {
+        id: number;
+        name?: string | null;
+        login: string;
+    } | null;
 }
 
 export interface PersonalReengagementPagination {
@@ -241,6 +296,21 @@ export interface PersonalReengagementResponse {
         commissions_received: number;
         conversion_rate: number;
     };
+}
+
+export interface TeamReengagementQueryParams {
+    page?: number;
+    start_date?: string;
+    end_date?: string;
+    search?: string;
+    status?: number;
+    recruiter_id?: number;
+}
+
+export interface GenerateReengagementPayload {
+    leader_id: number;
+    recruiter_id: number;
+    order_id: number;
 }
 
 // === Service ===
@@ -335,6 +405,11 @@ export const customerService = {
         return response.data;
     },
 
+    generateReengagement: async (data: GenerateReengagementPayload) => {
+        const response = await api.post('/api/reengagements/generate', data);
+        return response.data;
+    },
+
     /** Lista de clientes que EU estou atendendo */
     getPersonalReengagements: async (params: {
         page?: number;
@@ -352,6 +427,21 @@ export const customerService = {
                 ...(params.search && { search: params.search }),
                 ...(params.order_id && { order_id: params.order_id }),
                 ...(params.status !== undefined && { status: params.status }),
+            },
+        });
+        return response.data;
+    },
+
+    /** Lista de clientes atendidos pela equipe */
+    getTeamReengagements: async (params: TeamReengagementQueryParams = {}) => {
+        const response = await api.get<PersonalReengagementResponse>('/api/reengagements/team', {
+            params: {
+                page: params.page ?? 1,
+                ...(params.start_date && { start_date: params.start_date }),
+                ...(params.end_date && { end_date: params.end_date }),
+                ...(params.search && { search: params.search }),
+                ...(params.status !== undefined && { status: params.status }),
+                ...(params.recruiter_id !== undefined && { recruiter_id: params.recruiter_id }),
             },
         });
         return response.data;

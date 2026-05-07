@@ -24,8 +24,8 @@ function getInitials(name: string) {
 }
 
 export default function TopSellersCard({ sellers, isLoading = false }: TopSellersCardProps) {
-    const topSellers = [...sellers].sort((a, b) => b.revenue - a.revenue).slice(0, 4);
-    const max = topSellers[0]?.revenue ?? 1;
+    const topSellers = [...sellers].sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 6);
+    const max = Number(topSellers[0]?.revenue ?? 1);
 
     return (
         <div
@@ -39,23 +39,26 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                     <span className="w-2 h-2 rounded-full bg-primary" />
                     Top Atendentes — Mês
                 </h2>
-                <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse inline-block" />
                     Ao vivo
                 </Badge>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
                 {!isLoading && topSellers.length === 0 && (
                     <p className="text-xs text-muted-foreground">Sem dados de atendentes no momento.</p>
                 )}
 
                 {topSellers.map((s, i) => {
-                    const pct = Math.round((s.revenue / max) * 100);
+                    const pct = Math.round((Number(s.revenue) / max) * 100);
                     return (
                         <div
                             key={`${s.user.name}-${i}`}
-                            className="flex items-center gap-3 animate-fade-in"
+                            className={cn(
+                                'flex items-center gap-3 animate-fade-in rounded-xl px-2 py-1.5 -mx-2 transition-colors',
+                                i === 0 ? 'bg-amber-500/5 ring-1 ring-amber-500/10' : 'hover:bg-white/3'
+                            )}
                             style={{ animationDelay: `${500 + i * 80}ms`, opacity: 0 }}
                         >
                             {/* Rank badge */}
@@ -67,7 +70,30 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                             </span>
 
                             {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full btn-primary-arena flex items-center justify-center text-xs font-bold shrink-0 shadow-md">
+                            {s.user.personal_data?.avatar ? (
+                                <img
+                                    src={s.user.personal_data.avatar}
+                                    alt={s.user.name}
+                                    className={cn(
+                                        'rounded-full object-cover shrink-0 shadow-md',
+                                        i === 0
+                                            ? 'w-10 h-10 ring-2 ring-amber-400/50 shadow-amber-500/20 shadow-lg'
+                                            : 'w-9 h-9 ring-1 ring-primary/20'
+                                    )}
+                                    onError={(e) => {
+                                        const target = e.currentTarget;
+                                        target.style.display = 'none';
+                                        (target.nextElementSibling as HTMLElement | null)?.style.setProperty('display', 'flex');
+                                    }}
+                                />
+                            ) : null}
+                            <div
+                                className={cn(
+                                    'rounded-full btn-primary-arena items-center justify-center font-bold shrink-0 shadow-md',
+                                    i === 0 ? 'w-10 h-10 text-sm' : 'w-9 h-9 text-xs'
+                                )}
+                                style={{ display: s.user.personal_data?.avatar ? 'none' : 'flex' }}
+                            >
                                 {getInitials(s.user.name)}
                             </div>
 
@@ -76,20 +102,24 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                 <div className="flex items-center justify-between mb-1.5">
                                     <span className={cn('text-sm font-semibold truncate', rankColors[i])}>{s.user.name}</span>
                                     <span className="text-sm font-bold gradient-text-blue ml-2 shrink-0">
-                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(s.revenue)}
+                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(Number(s.revenue))}
                                     </span>
                                 </div>
-                                <div className="relative h-1.5 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
+                                <div className="relative h-2 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
                                     <div
                                         className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-container"
-                                        style={{ width: `${pct}%`, transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)' }}
+                                        style={{
+                                            width: `${pct}%`,
+                                            transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                                            boxShadow: '0 0 8px hsl(83 98% 64% / 0.6)',
+                                        }}
                                     />
                                 </div>
                                 <div className="flex gap-3 mt-1.5">
-                                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
                                         <ShoppingCart className="w-2.5 h-2.5" />{s.sales} vendas
                                     </span>
-                                    <span className="text-[10px] text-muted-foreground">{s.conversion}% conv.</span>
+                                    <span className="text-xs text-muted-foreground">{s.conversion}% conv.</span>
                                 </div>
                             </div>
                         </div>

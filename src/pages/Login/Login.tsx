@@ -86,7 +86,7 @@ export default function Login() {
                             )}
 
                             <div className="space-y-2">
-                                <Label htmlFor="email-input" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/80">
+                                <Label htmlFor="email-input" className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300/80">
                                     E-mail
                                 </Label>
                                 <div className="relative">
@@ -105,7 +105,7 @@ export default function Login() {
 
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="password-input" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300/80">
+                                    <Label htmlFor="password-input" className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300/80">
                                         Senha
                                     </Label>
                                     <button

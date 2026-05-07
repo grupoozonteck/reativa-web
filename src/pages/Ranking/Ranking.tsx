@@ -1,15 +1,19 @@
+import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PodiumSection } from '@/components/ranking/PodiumSection';
 import { LeaderboardList } from '@/components/ranking/LeaderboardList';
 import { RankingStats } from '@/components/ranking/RankingStats';
 import { RankingHeader } from '@/components/ranking/RankingHeader';
-import { FieldActivity } from '@/components/ranking/FieldActivity';
 import { GlobalGoal } from '@/components/ranking/GlobalGoal';
 import { LeaderboardService } from '@/services/leaderboard.service';
 import type { LeaderboardEntry } from '@/components/ranking/types';
+import { useAuth } from '@/contexts/useAuth';
+import { DateRangeFilterCard } from '@/components/filters/DateRangeFilterCard';
+import { getCurrentMonthDateRange } from '@/utils/date-range';
 
 function RankingSkeleton() {
     return (
@@ -31,24 +35,55 @@ function RankingSkeleton() {
 }
 
 export default function Ranking() {
+    const { user } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const defaultRange = getCurrentMonthDateRange();
+    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
+    const [startDate, setStartDate] = useState(appliedStartDate);
+    const [endDate, setEndDate] = useState(appliedEndDate);
+
     const { data, isLoading, isFetching, isError, refetch } = useQuery({
-        queryKey: ['leaderboard'],
-        queryFn: () => LeaderboardService.getLeaderboard(),
+        queryKey: ['leaderboard', user?.id, appliedStartDate, appliedEndDate],
+        queryFn: () => LeaderboardService.getLeaderboard({
+            start_date: appliedStartDate || undefined,
+            end_date: appliedEndDate || undefined,
+        }),
+        enabled: !!user?.id,
         staleTime: 1000 * 60,
         refetchInterval: 1000 * 60 * 2,
     });
 
+    const hasActiveFilters = appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
+    const hasDraftChanges = startDate !== appliedStartDate || endDate !== appliedEndDate;
+
+    const handleApplyFilters = () => {
+        setSearchParams((params) => {
+            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
+            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
+            return params;
+        }, { replace: true });
+    };
+
+    const handleClearFilters = () => {
+        setStartDate(defaultRange.startDate);
+        setEndDate(defaultRange.endDate);
+        setSearchParams((params) => {
+            params.delete('start_date');
+            params.delete('end_date');
+            return params;
+        }, { replace: true });
+    };
+
     const sellers = [...(data?.leaderboard ?? [])]
-        .filter((item: LeaderboardEntry) => item.type === 3)
+        .filter((item: LeaderboardEntry) => item.type === 3 && item.status == 1)
         .sort((a, b) => {
             const revenueDiff = Number(b.revenue ?? 0) - Number(a.revenue ?? 0);
             if (revenueDiff !== 0) return revenueDiff;
             return b.sales - a.sales;
         });
 
-
     const totalRevenue = data?.summary?.total_revenue ?? 0;
-
 
     if (isLoading) {
         return (
@@ -65,9 +100,9 @@ export default function Ranking() {
                     <div className="flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-rose-400 mt-0.5" />
                         <div>
-                            <h2 className="text-base font-bold">Não foi possível carregar o ranking</h2>
+                            <h2 className="text-base font-bold">Nao foi possivel carregar o ranking</h2>
                             <p className="text-sm text-muted-foreground mt-1">
-                                Verifique sua conexão e tente novamente.
+                                Verifique sua conexao e tente novamente.
                             </p>
                             <Button type="button" onClick={() => refetch()} className="mt-4">
                                 Tentar novamente
@@ -80,7 +115,13 @@ export default function Ranking() {
     }
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto">
+        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+                <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-amber-500/4 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/4 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-80 h-80 bg-secondary/4 rounded-full blur-3xl" />
+            </div>
+
             <RankingHeader
                 participants={sellers.length}
                 totalRevenue={totalRevenue}
@@ -88,18 +129,31 @@ export default function Ranking() {
                 onRefresh={() => refetch()}
             />
 
+            <DateRangeFilterCard
+                title="Periodo"
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+                onApply={handleApplyFilters}
+                onClear={handleClearFilters}
+                isFetching={isFetching}
+                hasActiveFilters={hasActiveFilters}
+                hasDraftChanges={hasDraftChanges}
+                applyLabel="Filtrar"
+                startId="ranking-start-date"
+                endId="ranking-end-date"
+            />
+
             {sellers.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] xl:grid-cols-[3fr_2fr] gap-5">
-                    {/* Left column */}
-                    <div className=" space-y-5">
+                    <div className="space-y-5">
                         <PodiumSection sellers={sellers} />
                         <LeaderboardList sellers={sellers} />
                     </div>
 
-                    {/* Right column */}
                     <div className="space-y-4">
-                        <RankingStats summary={data?.summary } />
-                        <FieldActivity sellers={sellers} />
+                        <RankingStats summary={data?.summary} />
                         <GlobalGoal totalRevenue={totalRevenue} />
                     </div>
                 </div>
@@ -107,7 +161,7 @@ export default function Ranking() {
                 <div className="solid-card rounded-2xl border border-border/60 p-6 text-center">
                     <h2 className="text-base font-bold">Nenhum atendente no ranking</h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Assim que houver movimentação de atendentes, o ranking aparece aqui.
+                        Assim que houver movimentacao de atendentes, o ranking aparece aqui.
                     </p>
                 </div>
             )}

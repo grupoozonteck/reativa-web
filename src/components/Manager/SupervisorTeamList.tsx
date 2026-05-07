@@ -75,7 +75,7 @@ function AttendantMiniCard({ attendant }: { attendant: ManagerAttendant }) {
                 </div>
                 <Badge
                     variant="outline"
-                    className="text-[10px] px-1.5 h-5 shrink-0 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                    className="text-xs px-1.5 h-5 shrink-0 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
                 >
                     {attendant.level}
                 </Badge>
@@ -85,21 +85,21 @@ function AttendantMiniCard({ attendant }: { attendant: ManagerAttendant }) {
             <div className="grid grid-cols-4 gap-2 text-center pt-3 border-t border-border/40">
                 <div>
                     <p className="text-base font-bold tabular-nums">{attendant.sales}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">Reat.</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Reat.</p>
                 </div>
                 <div>
                     <p className="text-base font-bold tabular-nums">{attendant.total_reengagements}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">Atend.</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Atend.</p>
                 </div>
                 <div>
                     <p className="text-base font-bold tabular-nums">{attendant.conversion}%</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">Conv.</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Conv.</p>
                 </div>
                 <div>
                     <p className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
                         {formatCurrency(revenue)}
                     </p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">Receita</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Receita</p>
                 </div>
             </div>
         </div>
@@ -177,7 +177,7 @@ export function SupervisorTeamCard({ supervisor }: { supervisor: ManagerSupervis
                     </span>
                     <Badge
                         variant="outline"
-                        className="text-[10px] px-1.5 h-5 ml-1 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                        className="text-xs px-1.5 h-5 ml-1 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
                     >
                         {supervisor.attendants.length}
                     </Badge>
@@ -217,7 +217,7 @@ export function SupervisorTeamList({ supervisors, isLoading, isFetching }: Super
                     {!isLoading && (
                         <Badge
                             variant="outline"
-                            className="text-[10px] bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20"
+                            className="text-xs bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20"
                         >
                             {supervisors.length}
                         </Badge>

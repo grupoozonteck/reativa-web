@@ -4,10 +4,23 @@ export interface Reengagements {
     created_at: string;
     deleted_at: string | null;
     id: number;
+    user_id: number;
+    leader_id: number | null;
     personal_order_id: number | null;
     recruiter_id: number;
     status: number;
     updated_at: string;
+    user?: {
+        id: number;
+        login: string;
+        name: string;
+        email: string;
+    };
+    recruiter?: {
+        id: number;
+        name: string;
+        login: string;
+    };
 }
 
 export interface TeamMemberPerformance {
@@ -34,6 +47,28 @@ export interface TeamMemberPerformance {
     };
 }
 
+export interface SupervisorRankingEntry {
+    id: number;
+    user_id: number;
+    revenue: number | null;
+    sales: number;
+    total_reengagements: number;
+    conversion: number;
+    xp: number;
+    level: string;
+    type_label: string | null;
+    graduation_label: string | null;
+    user: {
+        id: number;
+        name: string;
+        login: string;
+    };
+}
+
+export interface SupervisorRankingResponse {
+    supervisors: SupervisorRankingEntry[];
+}
+
 export interface SupervisorPerformanceSummary {
     total_revenue: number;
     total_sales: number;
@@ -46,6 +81,11 @@ export interface SupervisorPerformanceSummary {
 export interface SupervisorPerformanceResponse {
     summary: SupervisorPerformanceSummary | null;
     members: TeamMemberPerformance[];
+}
+
+export interface PerformanceFilters {
+    start_date?: string;
+    end_date?: string;
 }
 
 function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPerformanceResponse {
@@ -118,6 +158,97 @@ function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPer
     };
 }
 
+function normalizeSupervisorRankingEntry(payload: unknown): SupervisorRankingEntry | null {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const candidate = payload as {
+        id?: number | string;
+        user_id?: number | string;
+        revenue?: number | string | null;
+        sales?: number | string;
+        total_reengagements?: number | string;
+        conversion?: number | string;
+        xp?: number | string;
+        level?: string;
+        type_label?: string | null;
+        graduation_label?: string | null;
+        user?: {
+            id?: number | string;
+            name?: string;
+            login?: string;
+        };
+    };
+
+    const id = Number(candidate.id);
+    const userId = Number(candidate.user_id ?? candidate.user?.id);
+    const userName = candidate.user?.name ?? '';
+    const userLogin = candidate.user?.login ?? '';
+
+    if (Number.isNaN(id) || Number.isNaN(userId) || !userName || !userLogin) {
+        return null;
+    }
+
+    const revenueValue = candidate.revenue === null || candidate.revenue === undefined
+        ? null
+        : Number(candidate.revenue);
+
+    return {
+        id,
+        user_id: userId,
+        revenue: revenueValue === null || Number.isNaN(revenueValue) ? null : revenueValue,
+        sales: Number(candidate.sales ?? 0),
+        total_reengagements: Number(candidate.total_reengagements ?? 0),
+        conversion: Number(candidate.conversion ?? 0),
+        xp: Number(candidate.xp ?? 0),
+        level: candidate.level ?? 'Nv.0',
+        type_label: candidate.type_label ?? null,
+        graduation_label: candidate.graduation_label ?? null,
+        user: {
+            id: Number(candidate.user?.id ?? userId),
+            name: userName,
+            login: userLogin,
+        },
+    };
+}
+
+function normalizeSupervisorRankingResponse(payload: unknown): SupervisorRankingResponse {
+    if (Array.isArray(payload)) {
+        return {
+            supervisors: payload
+                .map(normalizeSupervisorRankingEntry)
+                .filter((entry): entry is SupervisorRankingEntry => entry !== null),
+        };
+    }
+
+    if (payload && typeof payload === 'object') {
+        const candidate = payload as {
+            data?: unknown;
+            supervisors?: unknown;
+            ranking?: unknown;
+        };
+
+        const list = Array.isArray(candidate.supervisors)
+            ? candidate.supervisors
+            : Array.isArray(candidate.data)
+                ? candidate.data
+                : Array.isArray(candidate.ranking)
+                    ? candidate.ranking
+                    : [];
+
+        return {
+            supervisors: list
+                .map(normalizeSupervisorRankingEntry)
+                .filter((entry): entry is SupervisorRankingEntry => entry !== null),
+        };
+    }
+
+    return {
+        supervisors: [],
+    };
+}
+
 export interface SupervisorAttendant {
     id: number;
     user_id: number;
@@ -153,16 +284,29 @@ export interface AttendantLeaderOption {
 
 export interface ICommissions {
     id: number;
+    user_id?: number;
     attendant_id?: number;
+    order_id?: number | null;
     order_value: number | string;
     value: number | string;
     status: string;
     created_at: string;
     updated_at?: string;
     deleted_at?: string | null;
+    description_extra?: string;
     commission_percent?: number | string;
     min_sales?: number | string;
     max_sales?: number | string;
+}
+
+export interface AttendantDetailFilters {
+    start_date?: string;
+    end_date?: string;
+}
+
+export interface SupervisorRankingFilters {
+    start_date?: string;
+    end_date?: string;
 }
 
 export interface ManagerAttendant {
@@ -217,7 +361,8 @@ export interface AttendantShowResponse {
         conversion_rate: number;
         total_attendances: number;
         total_reactivated: number;
-        total_sales: number;
+        total_orders: number;
+        total_order_value: number;
     };
     attendant: ManagerAttendant;
     types: Record<string, string>;
@@ -404,14 +549,34 @@ function normalizeLeaderOptions(payload: unknown): AttendantLeaderOption[] {
 }
 
 export const teamService = {
-    getSupervisorPerformance: async (): Promise<SupervisorPerformanceResponse> => {
-        const response = await api.get('/api/supervisor/performance');
+    getSupervisorPerformance: async (filters: PerformanceFilters = {}): Promise<SupervisorPerformanceResponse> => {
+        const response = await api.get('/api/supervisor/performance', {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         return normalizeSupervisorPerformanceResponse(response.data);
     },
 
-    getManagerPerformance: async (): Promise<ManagerPerformanceResponse> => {
-        const response = await api.get<ManagerPerformanceResponse>('/api/manager/performance');
+    getManagerPerformance: async (filters: PerformanceFilters = {}): Promise<ManagerPerformanceResponse> => {
+        const response = await api.get<ManagerPerformanceResponse>('/api/manager/performance', {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         return response.data;
+    },
+
+    getSupervisorRanking: async (filters: SupervisorRankingFilters = {}): Promise<SupervisorRankingResponse> => {
+        const response = await api.get('/api/supervisor/ranking', {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
+        return normalizeSupervisorRankingResponse(response.data);
     },
 
     getAttendants: async (filters?: AttendantsFilters): Promise<AttendantsResponse> => {
@@ -452,8 +617,13 @@ export const teamService = {
         return response.data;
     },
 
-    getAttendantById: async (id: number): Promise<{ success: boolean; data: AttendantShowResponse }> => {
-        const response = await api.get<{ success: boolean; data: AttendantShowResponse }>(`/api/attendants/${id}/show`);
+    getAttendantById: async (id: number, filters: AttendantDetailFilters = {}): Promise<{ success: boolean; data: AttendantShowResponse }> => {
+        const response = await api.get<{ success: boolean; data: AttendantShowResponse }>(`/api/attendants/${id}/show`, {
+            params: {
+                ...(filters.start_date && { start_date: filters.start_date }),
+                ...(filters.end_date && { end_date: filters.end_date }),
+            },
+        });
         return response.data;
     },
 
