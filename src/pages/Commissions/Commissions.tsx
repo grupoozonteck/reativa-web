@@ -83,7 +83,7 @@ export default function Comissoes() {
     };
 
     return (
-        <div className="p-3 py-6 sm:p-6 sm:py-8 space-y-4 sm:space-y-5 max-w-screen-2xl mx-auto">
+        <div className="p-2 py-6 sm:p-6 sm:py-8 space-y-4 sm:space-y-5 max-w-screen-2xl mx-auto">
             {/* Header */}
             <div className="animate-fade-in">
                 <div className="flex items-center gap-2.5 mb-1">
@@ -92,9 +92,7 @@ export default function Comissoes() {
                     </div>
                     <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">Comissões</h1>
                 </div>
-                <p className="text-on-surface-variant text-xs sm:text-sm mt-1 ml-0.5">
-                    Visualize comissões por período e acompanhe os totais da equipe
-                </p>
+
             </div>
 
             {/* Filters */}

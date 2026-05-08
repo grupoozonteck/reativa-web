@@ -40,6 +40,7 @@ import {
     formatDate,
     formatDateTime,
     formatCurrency,
+    getDateTimestamp,
 } from '@/utils/client-utils';
 import { customerService } from '@/services/customer.service';
 import { EditClienteModal } from '@/components/Customers/EditClienteModal';
@@ -136,7 +137,7 @@ export default function ClienteDetalhes() {
     const initials = getInitials(user.name);
     const avatarColor = getAvatarColor(user.name);
     const orders = (user.personal_orders ?? user.personalOrders ?? []).slice().sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        (a, b) => getDateTimestamp(b.created_at) - getDateTimestamp(a.created_at)
     );
     const address = personalAddress;
     const reengStatus = reengagement ? reengagementStatusMap[reengagement.status] : null;

@@ -14,7 +14,9 @@ export interface CommissionItem {
             name?: string;
         };
         value?: number | string;
+        payment_date?: string;
         customer_reengagement?: {
+            created_at?: string;
             attendant?: {
                 user?: {
                     login?: string;

@@ -6,13 +6,12 @@ import {
     TrendingUp,
     ShoppingCart,
     Users,
-    RefreshCcw,
     Star,
     Calendar,
     Edit,
     Coins,
     Search,
-    X,
+    Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +28,7 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { getInitials } from '@/utils/client-utils';
+import { formatDate, getInitials } from '@/utils/client-utils';
 import { teamService } from '@/services/team.service';
 import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 import { statusStyleMap, typeColors } from '@/utils/color-ultis';
@@ -39,14 +38,6 @@ function formatCurrency(value: string | number | null | undefined) {
     const num = typeof value === 'string' ? parseFloat(value) : value;
     if (Number.isNaN(num)) return '--';
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
-}
-
-function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
 }
 
 interface StatCardProps {
@@ -154,29 +145,16 @@ export default function AtendenteDetalhes() {
                     </Button>
                     <div className="space-y-1">
                         <h1 className="text-2xl font-black tracking-tight sm:text-3xl">Detalhes do Atendente</h1>
-                        <p className="text-sm text-muted-foreground">
-                            Visao individual de desempenho, estrutura e historico operacional.
-                        </p>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 w-full lg:w-auto">
+                <div className="">
                     <Button
                         onClick={() => navigate(`/attendants/${id}/edit`)}
                         size="lg"
-                        variant="outline"
-                        className="gap-2 w-full"
+                        className="gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         <Edit className="w-4 h-4" />
                         Editar
-                    </Button>
-                    <Button
-                        onClick={() => refetch()}
-                        disabled={isFetching}
-                        size="lg"
-                        className="gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                        <RefreshCcw className={cn('w-4 h-4', isFetching && 'animate-spin')} />
-                        {isFetching ? 'Atualizando...' : 'Atualizar'}
                     </Button>
                 </div>
             </div>
@@ -202,7 +180,7 @@ export default function AtendenteDetalhes() {
                                             Perfil ativo
                                         </Badge>
                                         <Badge variant="outline" className="h-6 px-2.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                                            Periodo {periodLabel}
+                                            Período {periodLabel}
                                         </Badge>
                                     </div>
                                     <div>
@@ -226,18 +204,14 @@ export default function AtendenteDetalhes() {
                                         Nivel {attendant.level}
                                     </Badge>
                                 </div>
-
-                                <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                                    Acompanhe os resultados do atendente, a relacao com a lideranca e o historico filtrado sem comprimir a leitura no mobile.
-                                </p>
                             </div>
                         </div>
                     </div>
 
                     <div className="border-t border-white/5 bg-surface-highest/40 p-5 sm:p-6 lg:border-l lg:border-t-0">
                         <div className="space-y-2">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                                Destaque do periodo
+                            <p className="font-semibold text-muted-foreground">
+                                Destaque do período
                             </p>
                             <div className="space-y-1">
                                 <div className="text-3xl font-black tracking-tight">
@@ -251,12 +225,12 @@ export default function AtendenteDetalhes() {
 
                         <div className="mt-6 grid grid-cols-2 gap-3">
                             <div className="rounded-2xl border border-white/5 bg-background/30 p-3">
-                                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Vendas</p>
-                                <p className="mt-1 text-lg font-bold">{data.metrics.total_orders || 0}</p>
+                                <p className="text-xs uppercase text-muted-foreground">Vendas</p>
+                                <p className="mt-1 font-bold">{data.metrics.total_orders || 0}</p>
                             </div>
                             <div className="rounded-2xl border border-white/5 bg-background/30 p-3">
-                                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Conversao</p>
-                                <p className="mt-1 text-lg font-bold">{data.metrics.conversion_rate || 0}%</p>
+                                <p className="text-xs uppercase text-muted-foreground">Conversão</p>
+                                <p className="mt-1 font-bold">{data.metrics.conversion_rate || 0}%</p>
                             </div>
                         </div>
                     </div>
@@ -267,10 +241,10 @@ export default function AtendenteDetalhes() {
                 className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 animate-fade-in"
                 style={{ animationDelay: '120ms', opacity: 0 }}
             >
-                <StatCard label="Comissoes" value={formatCurrency(data.metrics.commissions_received)} icon={Coins} iconBg="bg-emerald-500" />
+                <StatCard label="Comissões" value={formatCurrency(data.metrics.commissions_received)} icon={Coins} iconBg="bg-emerald-500" />
                 <StatCard label="Vendas" value={data.metrics.total_orders || 0} icon={ShoppingCart} iconBg="bg-blue-500" />
                 <StatCard label="Atendimentos" value={data.metrics.total_attendances || 0} icon={Users} iconBg="bg-violet-500" />
-                <StatCard label="Conversao" value={`${data.metrics.conversion_rate || 0}%`} icon={TrendingUp} iconBg="bg-amber-500" />
+                <StatCard label="Conversão" value={`${data.metrics.conversion_rate || 0}%`} icon={TrendingUp} iconBg="bg-amber-500" />
             </div>
 
             <div
@@ -312,7 +286,7 @@ export default function AtendenteDetalhes() {
                         </div>
                         <div>
                             <h3 className="text-base font-semibold">Registro</h3>
-                            <p className="text-sm text-muted-foreground">Dados fixos de cadastro e identificacao.</p>
+                            <p className="text-sm text-muted-foreground">Dados fixos de cadastro e identificação.</p>
                         </div>
                     </div>
                     <div className="divide-y divide-white/5">
@@ -325,7 +299,6 @@ export default function AtendenteDetalhes() {
             <div className="solid-card p-5 sm:p-6 animate-fade-in space-y-4" style={{ animationDelay: '240ms', opacity: 0 }}>
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
-                        <Search className="w-4 h-4 text-on-surface-variant" />
                         <span className="font-display text-sm font-semibold">Filtros do historico</span>
                     </div>
                     <span className="text-xs text-muted-foreground">
@@ -373,19 +346,16 @@ export default function AtendenteDetalhes() {
                                 </Button>
                                 <Button
                                     type="button"
-                                    variant="ghost"
+                                    variant="destructive"
                                     onClick={clearFilters}
                                     disabled={isFetching || (!hasDraftChanges && startDate === currentMonthStart && endDate === today)}
                                     className="gap-2 w-full lg:w-auto"
                                 >
-                                    <X className="w-4 h-4" />
+                                    <Trash2 className="w-4 h-4" />
                                     Limpar
                                 </Button>
                             </div>
                         </div>
-                    </div>
-                    <div className="rounded-2xl border border-white/5 bg-surface-highest/30 px-4 py-3 text-xs text-muted-foreground">
-                        Os campos de data sao enviados para o backend como <span className="font-mono">start_date</span> e <span className="font-mono">end_date</span>.
                     </div>
                 </form>
             </div>
@@ -393,19 +363,11 @@ export default function AtendenteDetalhes() {
             <Tabs defaultValue="attendances" className="animate-fade-in" style={{ animationDelay: '300ms', opacity: 0 }}>
                 <TabsList className="grid w-full grid-cols-2 h-11 p-1.5 rounded-2xl bg-surface-highest/70 md:w-[360px]">
                     <TabsTrigger value="attendances">Atendimentos</TabsTrigger>
-                    <TabsTrigger value="commissions">Comissoes</TabsTrigger>
+                    <TabsTrigger value="commissions">Comissões</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="attendances">
-                    <div className="solid-card overflow-hidden">
-                        <div className="px-5 py-4 bg-surface-highest/60 flex items-center justify-between gap-3">
-                            <div>
-                                <h3 className="font-semibold">Lista de atendimentos</h3>
-                                <p className="text-xs text-muted-foreground">Historico de interacoes no periodo filtrado.</p>
-                            </div>
-                            <Badge variant="outline">{attendanceRows.length}</Badge>
-                        </div>
-
+                    <div className="overflow-hidden">
                         <div className="hidden md:block">
                             <Table>
                                 <TableHeader>
@@ -447,7 +409,7 @@ export default function AtendenteDetalhes() {
                             </Table>
                         </div>
 
-                        <div className="space-y-3 p-4 md:hidden">
+                        <div className="space-y-3 p-1 md:p-4 md:hidden">
                             {attendanceRows.length === 0 ? (
                                 <div className="rounded-2xl border border-dashed border-white/10 px-4 py-10 text-center text-sm text-muted-foreground">
                                     Nenhum atendimento encontrado para o periodo.
@@ -456,23 +418,51 @@ export default function AtendenteDetalhes() {
                                 attendanceRows.map((reengagement) => {
                                     const statusStyle = statusStyleMap[reengagement.status] ?? statusStyleMap[1];
                                     return (
-                                        <div key={reengagement.id} className="rounded-2xl border border-white/5 bg-surface-highest/35 p-4 space-y-3">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                                                        Atendimento #{reengagement.id}
-                                                    </p>
-                                                    <p className="mt-1 font-semibold">{reengagement.user?.name ?? '--'}</p>
-                                                    <p className="text-sm text-muted-foreground">@{reengagement.user?.login ?? '--'}</p>
+                                        <div key={reengagement.id} className="overflow-hidden rounded-3xl border border-white/5 bg-surface-highest/35">
+                                            <div className="border-b border-white/5 bg-background/30 px-4 py-3">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-semibold text-muted-foreground">
+                                                            Atendimento
+                                                        </p>
+                                                        <p className="mt-1 font-mono text-sm text-on-surface-variant">
+                                                            #{reengagement.id}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <Badge className={cn('border gap-1 whitespace-nowrap', statusStyle.color)}>
-                                                    <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
+                                                <Badge
+                                                    className={cn(
+                                                        'mt-3 inline-flex h-auto max-w-full items-center gap-1.5 whitespace-normal rounded-full border px-2.5 py-1 text-[11px] leading-tight',
+                                                        statusStyle.color
+                                                    )}
+                                                >
+                                                    <div className={cn('h-1.5 w-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
                                                     {REENGAGEMENT_STATUS_LABELS[reengagement.status] ?? `Status ${reengagement.status}`}
                                                 </Badge>
                                             </div>
-                                            <div className="rounded-xl bg-background/30 px-3 py-2 text-sm">
-                                                <span className="text-muted-foreground">Data </span>
-                                                <span className="font-medium">{formatDate(reengagement.created_at)}</span>
+
+                                            <div className="space-y-3 px-4 py-4">
+                                                <div>
+                                                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                                                        Cliente
+                                                    </p>
+                                                    <p className="mt-1 text-base font-semibold leading-tight text-on-surface">
+                                                        {reengagement.user?.name ?? '--'}
+                                                    </p>
+                                                    <p className="mt-1 text-sm text-muted-foreground">
+                                                        @{reengagement.user?.login ?? '--'}
+                                                    </p>
+                                                </div>
+
+                                                <div className="flex items-center gap-2 rounded-2xl border border-white/5 bg-background/30 px-3 py-2.5 text-sm">
+                                                    <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                                    <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                                                        Data
+                                                    </span>
+                                                    <span className="font-medium text-on-surface">
+                                                        {formatDate(reengagement.created_at)}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -483,19 +473,11 @@ export default function AtendenteDetalhes() {
                 </TabsContent>
 
                 <TabsContent value="commissions">
-                    <div className="solid-card overflow-hidden">
-                        <div className="px-5 py-4 bg-surface-highest/60 flex items-center justify-between gap-3">
-                            <div>
-                                <h3 className="font-semibold">Lista de comissoes</h3>
-                                <p className="text-xs text-muted-foreground">Lancamentos financeiros vinculados ao atendente.</p>
-                            </div>
-                            <Badge variant="outline">{commissionRows.length}</Badge>
-                        </div>
-
+                    <div className=" overflow-hidden">
                         <div className="hidden md:block">
                             <Table>
-                                <TableHeader>
-                                    <TableRow className="border-none hover:bg-transparent bg-surface-highest/80">
+                                <TableHeader className="">
+                                    <TableRow className="">
                                         <TableHead>ID</TableHead>
                                         <TableHead>Pedido</TableHead>
                                         <TableHead>Valor</TableHead>
@@ -527,33 +509,61 @@ export default function AtendenteDetalhes() {
                             </Table>
                         </div>
 
-                        <div className="space-y-3 p-4 md:hidden">
+                        <div className="space-y-3 p-1 md:p-4 md:hidden">
                             {commissionRows.length === 0 ? (
                                 <div className="rounded-2xl border border-dashed border-white/10 px-4 py-10 text-center text-sm text-muted-foreground">
                                     Nenhuma comissao encontrada para o periodo.
                                 </div>
                             ) : (
                                 commissionRows.map((commission) => (
-                                    <div key={commission.id} className="rounded-2xl border border-white/5 bg-surface-highest/35 p-4 space-y-3">
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div>
-                                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                                                    Comissao #{commission.id}
-                                                </p>
-                                                <p className="mt-1 text-sm text-muted-foreground">
-                                                    Pedido {commission.order_id ? `#${commission.order_id}` : '--'}
+                                    <div key={commission.id} className="overflow-hidden rounded-3xl border border-white/5 bg-surface-highest/35">
+                                        <div className="border-b border-white/5 bg-background/30 px-4 py-3">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold  text-muted-foreground">
+                                                        Comissão
+                                                    </p>
+                                                    <p className="mt-1 font-mono text-sm text-on-surface-variant">
+                                                        #{commission.id}
+                                                    </p>
+                                                </div>
+                                           
+                                            </div>
+
+                                            <div className="mt-3 flex items-end justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-muted-foreground">
+                                                        Pedido
+                                                    </p>
+                                                    <p className="mt-1 text-sm font-medium text-on-surface">
+                                                        {commission.order_id ? `#${commission.order_id}` : '--'}
+                                                    </p>
+                                                </div>
+                                                <p className={cn(Number(commission.value) < 0 ? 'text-rose-400' : 'text-primary', 'text-lg font-semibold')}>
+                                                    {formatCurrency(commission.value)}
                                                 </p>
                                             </div>
-                                            <p className={cn(Number(commission.value) < 0 ? 'text-rose-400' : 'text-emerald-400', 'font-semibold')}>
-                                                {formatCurrency(commission.value)}
-                                            </p>
                                         </div>
-                                        <p className="text-sm leading-6 text-muted-foreground">
-                                            {commission.description_extra ?? '--'}
-                                        </p>
-                                        <div className="rounded-xl bg-background/30 px-3 py-2 text-sm">
-                                            <span className="text-muted-foreground">Data </span>
-                                            <span className="font-medium">{formatDate(commission.created_at)}</span>
+
+                                        <div className="space-y-3 px-4 py-4">
+                                            <div>
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                                                    Descrição
+                                                </p>
+                                                <p className="mt-1 text-sm leading-6 text-on-surface-variant">
+                                                    {commission.description_extra ?? '--'}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 rounded-2xl border border-white/5 bg-background/30 px-3 py-2.5 text-sm">
+                                                <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                                <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                                                    Data
+                                                </span>
+                                                <span className="font-medium text-on-surface">
+                                                    {formatDate(commission.created_at)}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))

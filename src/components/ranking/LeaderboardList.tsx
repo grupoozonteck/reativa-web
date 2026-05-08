@@ -65,7 +65,7 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
             </div>
 
             <div className="hidden grid-cols-[56px_minmax(220px,1fr)_86px_64px_92px_120px] items-center border-b border-border/60 bg-muted/25 px-4 py-2 lg:grid">
-                {['Rank', 'Membro', 'Nivel', 'Vendas', 'Conv. %', 'Receita'].map((col) => (
+                {['Rank', 'Membro', 'Nível', 'Vendas', 'Conv. %', 'Receita'].map((col) => (
                     <span key={col} className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         {col}
                     </span>
@@ -116,11 +116,6 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                             {index === 0 && <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400/50 shrink-0" />}
                                             {index === 1 && <Medal className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
                                             {index === 2 && <Medal className="w-3.5 h-3.5 text-amber-700 shrink-0" />}
-                                            {isFirst && (
-                                                <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-amber-400">
-                                                    Top performer
-                                                </span>
-                                            )}
                                         </div>
                                         <p className="text-xs text-muted-foreground">@{seller.user.login}</p>
                                     </div>
@@ -155,11 +150,6 @@ export function LeaderboardList({ sellers }: LeaderboardListProps) {
                                             {index === 0 && <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400/50 shrink-0" />}
                                             {index === 1 && <Medal className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
                                             {index === 2 && <Medal className="w-3.5 h-3.5 text-amber-700 shrink-0" />}
-                                            {isFirst && (
-                                                <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-amber-400 shrink-0">
-                                                    Top performer
-                                                </span>
-                                            )}
                                         </div>
                                         <p className="truncate text-xs text-muted-foreground">@{seller.user.login}</p>
                                     </div>

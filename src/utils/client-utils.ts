@@ -39,37 +39,65 @@ export function getWhatsAppLink(phone: string | null | undefined): string {
     return digits.startsWith('55') ? `https://wa.me/${digits}` : `https://wa.me/55${digits}`;
 }
 
-export function formatDate(dateStr: string | null | undefined): string {
-    if (!dateStr) return '--';
-    return new Date(dateStr).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        
-    });
-}
+function parseDateValue(dateStr: string): Date | null {
+    const dateOnlyMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (dateOnlyMatch) {
+        return new Date(
+            Number(dateOnlyMatch[1]),
+            Number(dateOnlyMatch[2]) - 1,
+            Number(dateOnlyMatch[3])
+        );
+    }
 
-export function formatDateTime(dateStr: string | null | undefined): string {
-    if (!dateStr) return '--';
+    const localDateTimeMatch = dateStr.match(
+        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?$/
+    );
+    if (localDateTimeMatch) {
+        return new Date(
+            Number(localDateTimeMatch[1]),
+            Number(localDateTimeMatch[2]) - 1,
+            Number(localDateTimeMatch[3]),
+            Number(localDateTimeMatch[4]),
+            Number(localDateTimeMatch[5]),
+            Number(localDateTimeMatch[6] ?? '0')
+        );
+    }
 
-    // A API pode enviar sufixo `Z`, mas o horario ja vem no relogio de Brasilia.
-    // Nesse caso, removemos a interpretacao de UTC para preservar a hora original.
     const apiUtcLikeMatch = dateStr.match(
         /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?Z$/
     );
-
-    const date = apiUtcLikeMatch
-        ? new Date(
+    if (apiUtcLikeMatch) {
+        return new Date(
             Number(apiUtcLikeMatch[1]),
             Number(apiUtcLikeMatch[2]) - 1,
             Number(apiUtcLikeMatch[3]),
             Number(apiUtcLikeMatch[4]),
             Number(apiUtcLikeMatch[5]),
             Number(apiUtcLikeMatch[6] ?? '0')
-        )
-        : new Date(dateStr);
+        );
+    }
 
-    if (isNaN(date.getTime())) return '--';
+    const fallback = new Date(dateStr);
+    return Number.isNaN(fallback.getTime()) ? null : fallback;
+}
+
+export function formatDate(dateStr: string | null | undefined): string {
+    if (!dateStr) return '--';
+    const date = parseDateValue(dateStr);
+    if (!date) return '--';
+
+    return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
+}
+
+export function formatDateTime(dateStr: string | null | undefined): string {
+    if (!dateStr) return '--';
+
+    const date = parseDateValue(dateStr);
+    if (!date) return '--';
 
     return date.toLocaleString('pt-BR', {
         day: '2-digit',
@@ -96,6 +124,12 @@ export function formatPercent(value: number | string | null | undefined): string
     const numericValue = typeof value === 'string' ? Number(value) : value;
     if (Number.isNaN(numericValue)) return '--';
     return `${numericValue.toFixed(2)}%`;
+}
+
+export function getDateTimestamp(dateStr: string | null | undefined): number {
+    if (!dateStr) return Number.NaN;
+    const date = parseDateValue(dateStr);
+    return date ? date.getTime() : Number.NaN;
 }
 
 export function formatCurrencyInput(value: string): string {

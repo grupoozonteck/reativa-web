@@ -44,15 +44,7 @@ export function CommissionsTable({
         <div className="space-y-4 animate-fade-in">
             <div className="px-3 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                 <div className="flex items-center gap-2">
-                    <h2 className="font-display text-base font-semibold text-on-surface">Detalhes das Comissoes</h2>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    {showingFrom > 0 && !isLoading && (
-                        <span className="bg-surface-container rounded-full px-2.5 py-0.5 text-xs text-on-surface-variant">
-                            Exibindo {showingFrom}-{showingTo}
-                        </span>
-                    )}
+                    <h2 className="font-display text-base font-semibold text-on-surface">Transações</h2>
                 </div>
             </div>
 
@@ -72,7 +64,7 @@ export function CommissionsTable({
                         Nenhuma comissao encontrada.
                     </div>
                 ) : (
-                    <div className="space-y-3 px-3">
+                    <div className="space-y-3 px-1">
                         {items.map((item: CommissionItem, index: number) => (
                             <CommissionCard key={item.id ?? item.order_id ?? index} item={item} />
                         ))}
@@ -85,32 +77,32 @@ export function CommissionsTable({
                     <Table>
                         <TableHeader>
                             <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
                                     #ID
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Cliente
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
-                                    Descricao
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
+                                    Descrição
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Atendente
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
-                                    Numero do Pedido
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
+                                    Pedido
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
+                                <TableHead className=" uppercase tracking-wider font-semibold text-on-surface-variant text-right">
                                     Valor do Pedido
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
-                                    Comissao
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant text-right">
+                                    Comissão
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
                                     Data
                                 </TableHead>
-                                <TableHead className="text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right">
-                                    Acao
+                                <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant text-right">
+                                    Ações
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -145,15 +137,16 @@ export function CommissionsTable({
                                         <TableCell className="font-mono text-xs sm:text-sm text-on-surface-variant">
                                             {item.id ?? 'NA'}
                                         </TableCell>
-                                        <TableCell className="text-xs sm:text-sm">
-                                            <p className="text-on-surface font-medium">
-                                                {item.personal_order?.user?.name ?? 'NA'}
+                                        <TableCell className="text-sm">
+                                            <p className="">
+                                                {item.personal_order?.user?.name?.trim().split(/\s+/)[0] || 'NA'}
                                             </p>
+
                                             <p className="text-on-surface-variant text-xs">
                                                 ({item.personal_order?.user?.login ?? 'NA'})
                                             </p>
                                         </TableCell>
-                                        <TableCell className="max-w-[320px] text-xs sm:text-sm">
+                                        <TableCell className="max-w-[320px] text-xs">
                                             <p className="text-on-surface font-medium line-clamp-2">
                                                 {item.description_extra?.trim() || 'Sem descricao informada.'}
                                             </p>
