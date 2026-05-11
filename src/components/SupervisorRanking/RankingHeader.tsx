@@ -15,9 +15,6 @@ export function RankingHeader({ isFetching, onRefresh }: RankingHeaderProps) {
                     <Crown className="h-6 w-6 text-amber-500" />
                     <h1 className="text-2xl font-extrabold tracking-tight">Ranking de Supervisores</h1>
                 </div>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                    Compare receita, vendas, reengajamentos e conversao entre os supervisores.
-                </p>
             </div>
 
             <Button

@@ -54,7 +54,7 @@ export function RankingStats({
             cardBg: 'from-amber-500/10 via-background to-background',
         },
         {
-            label: 'Reengajamentos',
+            label: 'Atendimentos',
             value: isLoading ? '...' : totalReengagements,
             icon: Headphones,
             iconBg: 'bg-violet-600',
@@ -62,7 +62,7 @@ export function RankingStats({
             cardBg: 'from-violet-500/10 via-background to-background',
         },
         {
-            label: 'Melhor Conversao',
+            label: 'Melhor Conversão',
             value: isLoading ? '...' : `${bestConversion}%`,
             icon: BarChart3,
             iconBg: 'bg-rose-600',

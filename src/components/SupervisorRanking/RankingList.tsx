@@ -78,7 +78,7 @@ function MetricCard({
 export function RankingList({ supervisors, isLoading, isFetching }: RankingListProps) {
     return (
         <div className="solid-card overflow-hidden animate-fade-in">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-3">
                 <div className="flex items-center gap-2">
                     <Award className="h-4 w-4 text-muted-foreground" />
                     <h2 className="text-sm font-semibold">Classificacao</h2>
@@ -99,7 +99,7 @@ export function RankingList({ supervisors, isLoading, isFetching }: RankingListP
                 )}
             </div>
 
-            <div className="p-4">
+            <div className="p-2">
                 {isLoading ? (
                     <div className="space-y-3">
                         {Array.from({ length: 5 }).map((_, index) => (

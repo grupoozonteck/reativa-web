@@ -115,7 +115,7 @@ export default function Ranking() {
     }
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
+        <div className="p-3 py-6 sm:p-6 sm:py-8 space-y-4 sm:space-y-5 max-w-screen-2xl mx-auto relative">
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-amber-500/4 rounded-full blur-3xl" />
                 <div className="absolute top-1/2 left-0 w-96 h-96 bg-primary/4 rounded-full blur-3xl" />

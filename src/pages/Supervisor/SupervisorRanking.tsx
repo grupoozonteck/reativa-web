@@ -89,7 +89,7 @@ export default function SupervisorRanking() {
     }
 
     return (
-        <div className="relative mx-auto max-w-screen-2xl space-y-6 p-4 py-8 sm:p-6">
+        <div className="relative mx-auto max-w-screen-2xl space-y-6 p-3 sm:p-6">
             <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
                 <div className="absolute left-0 top-16 h-80 w-80 rounded-full bg-amber-500/5 blur-3xl" />
                 <div className="absolute right-0 top-1/3 h-[26rem] w-[26rem] rounded-full bg-sky-500/5 blur-3xl" />
@@ -125,14 +125,14 @@ export default function SupervisorRanking() {
 
             {!isLoading && supervisors[0] && (
                 <div className="solid-card overflow-hidden border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-background to-background">
-                    <div className="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-4 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500 text-slate-950">
                                 <Crown className="h-6 w-6" />
                             </div>
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
-                                    Lider do Ranking
+                                    Líder do Ranking
                                 </p>
                                 <h2 className="text-xl font-black tracking-tight">{supervisors[0].user.name}</h2>
                                 <p className="text-sm text-muted-foreground">@{supervisors[0].user.login}</p>
@@ -150,7 +150,7 @@ export default function SupervisorRanking() {
                                 <p className="text-lg font-bold">{supervisors[0].sales}</p>
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Conversao</p>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Conversão</p>
                                 <p className="text-lg font-bold">{supervisors[0].conversion}%</p>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Eye, MessageCircle, UserRound } from 'lucide-react';
+import { CalendarDays, Eye, MessageCircle, UserRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate } from '@/utils/client-utils';
@@ -23,55 +23,89 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
     const statusLabel = statusRecollection[String(reengagement.status)] || 'Desconhecido';
 
     return (
-        <div className="solid-card p-4 space-y-3">
-            {/* Cabeçalho: avatar + nome + id */}
-            <div className="flex items-start gap-3">
-                <div className={cn(
-                    'w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
-                    colorClass
-                )}>
-                    {initials}
+        <div className="solid-card overflow-hidden">
+            <div className="border-b border-white/5 bg-surface-highest/50 px-4 py-3">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-on-surface-variant/85">
+                            Atendimento #{reengagement.id}
+                        </p>
+                        <p className="mt-1 text-xs text-on-surface-variant">
+                            Cliente em acompanhamento
+                        </p>
+                    </div>
+                    <div className="rounded-full border border-white/5 bg-background/40 px-2.5 py-1 text-[11px] font-medium text-on-surface-variant tabular-nums">
+                        {formatDate(reengagement.created_at)}
+                    </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-on-surface truncate">{user.name}</p>
-                    <p className="text-xs text-on-surface-variant truncate">{user.login}</p>
-                    <p className="text-xs text-on-surface-variant font-mono mt-0.5">#{user.id}</p>
-                </div>
+
+                <Badge
+                    className={cn(
+                        'mt-3 inline-flex h-auto max-w-full items-center gap-1.5 whitespace-normal rounded-full border px-2.5 py-1 text-[11px] leading-tight',
+                        statusStyle.color
+                    )}
+                >
+                    <div className={cn('h-1.5 w-1.5 shrink-0 rounded-full', statusStyle.dotColor)} />
+                    <span>{statusLabel}</span>
+                </Badge>
             </div>
 
-            {/* Detalhes */}
-            <div className="bg-surface-highest rounded-lg p-2.5 flex flex-col gap-2">
-                {/* WhatsApp */}
+            <div className="space-y-4 px-4 py-4">
+                <div className="flex items-start gap-3">
+                    <div
+                        className={cn(
+                            'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold text-white shadow-lg',
+                            colorClass
+                        )}
+                    >
+                        {initials}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <p className="line-clamp-2 text-base font-semibold leading-tight text-on-surface">{user.name}</p>
+                        <p className="mt-1 truncate text-sm text-on-surface-variant">@{user.login}</p>
+                        <p className="mt-1 text-[11px] font-mono text-on-surface-variant/80">ID #{user.id}</p>
+                    </div>
+                </div>
+
                 {whatsapp && (
                     <a
                         href={getWhatsAppLink(whatsapp)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors text-xs"
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-white/5 bg-surface-highest/70 px-3 py-3 text-sm text-on-surface transition-colors hover:border-primary/25 hover:text-primary"
                     >
-                        <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>{formatWhatsApp(whatsapp)}</span>
+                        <div className="flex min-w-0 items-center gap-2.5">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                                <MessageCircle className="h-4 w-4 text-primary" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">WhatsApp</p>
+                                <p className="truncate">{formatWhatsApp(whatsapp)}</p>
+                            </div>
+                        </div>
+                        <span className="text-[11px] font-semibold text-primary">Abrir</span>
                     </a>
                 )}
 
-                {/* Líder */}
                 {leader && (
-                    <div className="flex items-center gap-1.5 min-w-0">
-                        <UserRound className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
-                        <div className="min-w-0">
-                            <p className="text-xs font-medium text-on-surface truncate">{leader.name || leader.login}</p>
-                            <p className="text-[11px] text-on-surface-variant truncate">@{leader.login}</p>
+                    <div className="rounded-2xl border border-white/5 bg-surface-highest/45 px-3 py-3">
+                        <div className="flex min-w-0 items-start gap-2.5">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-background/50">
+                                <UserRound className="h-4 w-4 text-on-surface-variant" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Lider responsavel</p>
+                                <p className="mt-1 truncate text-sm font-medium text-on-surface">{leader.name || leader.login}</p>
+                                <p className="truncate text-xs text-on-surface-variant">@{leader.login}</p>
+                            </div>
                         </div>
                     </div>
                 )}
 
-                {/* Status + Data */}
-                <div className="flex items-center justify-between gap-2 pt-0.5">
-                    <Badge className={cn('text-xs gap-1.5 whitespace-nowrap border py-0.5', statusStyle.color)}>
-                        <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
-                        {statusLabel}
-                    </Badge>
-                    <span className="text-xs text-on-surface-variant tabular-nums shrink-0">
+                <div className="flex items-center gap-2 rounded-2xl border border-white/5 bg-background/30 px-3 py-2.5 text-sm text-on-surface-variant">
+                    <CalendarDays className="h-4 w-4 shrink-0" />
+                    <span className="text-xs uppercase tracking-[0.18em]">Data</span>
+                    <span className="font-medium text-on-surface tabular-nums">
                         {formatDate(reengagement.created_at)}
                     </span>
                 </div>
@@ -79,9 +113,9 @@ export function PersonalCard({ reengagement, statusRecollection }: PersonalCardP
 
             <Button
                 onClick={() => navigate(`/customers/${user.id}`)}
-                className="w-full h-9 text-xs gap-1.5 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold"
+                className="mx-4 mb-4 h-10 w-[calc(100%-2rem)] gap-1.5 bg-gradient-to-br from-primary to-primary-container text-xs font-semibold text-primary-foreground transition-shadow hover:shadow-glow-primary-sm"
             >
-                <Eye className="w-3.5 h-3.5" />
+                <Eye className="h-3.5 w-3.5" />
                 Ver detalhes
             </Button>
         </div>

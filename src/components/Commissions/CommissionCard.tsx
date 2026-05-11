@@ -63,7 +63,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
 
             <div>
                 <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
-                    Descricao
+                    Descrição
                 </p>
                 <p className="text-sm text-on-surface line-clamp-2">
                     {item.description_extra?.trim() || 'Sem descricao informada.'}
@@ -81,7 +81,7 @@ export function CommissionCard({ item }: CommissionCardProps) {
                 </div>
                 <div>
                     <p className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">
-                        Comissao
+                        Comissão
                     </p>
                     <p className="text-sm font-semibold text-primary tabular-nums [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.4)]">
                         {formatCurrency(item.value ?? 0)}
