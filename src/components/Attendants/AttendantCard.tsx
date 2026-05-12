@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getInitials } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 import { UserRound } from 'lucide-react';
+import { typeColors } from '@/utils/color-ultis';
 
 export function AttendantCardSkeleton() {
     return (
@@ -27,20 +28,14 @@ export function AttendantCardSkeleton() {
     );
 }
 
-const typeColors: Record<number, string> = {
-    1: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20',
-    2: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
-    3: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
-};
-
 export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
     const badgeColor = typeColors[attendant.type] ?? '';
 
     return (
-        <div className="solid-card p-4 space-y-3 hover:scale-[1.01] transition-transform">
+        <div className="solid-card p-4 transition-transform hover:scale-[1.01]">
             {/* Topo: avatar + nome + cargo */}
             <div className="flex items-center gap-3">
-                <Avatar className="w-11 h-11 shrink-0">
+                <Avatar className="size-11 shrink-0">
                     <AvatarImage src={attendant.user?.personal_data?.avatar ?? undefined} />
                     <AvatarFallback className="text-sm font-bold">
                         {getInitials(attendant.user?.name)}
@@ -56,7 +51,7 @@ export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
             </div>
 
             {/* Detalhes: status, graduação, líder */}
-            <div className="bg-surface-highest rounded-lg p-2.5 flex flex-col gap-2">
+            <div className="flex flex-col gap-2 rounded-lg bg-surface-highest p-2.5">
                 <div className="flex items-center justify-between gap-2">
                     <StatusBadge status={attendant.status ?? null} />
                     {attendant.graduation_label && (
@@ -65,7 +60,7 @@ export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
                 </div>
                 {attendant.parent?.user?.name && (
                     <div className="flex items-center gap-1.5 min-w-0">
-                        <UserRound className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
+                        <UserRound className="size-3.5 shrink-0 text-on-surface-variant" />
                         <div className="min-w-0">
                             <span className="text-[11px] uppercase tracking-wide font-semibold text-on-surface-variant mr-1">Líder:</span>
                             <span className="text-xs text-on-surface truncate">{attendant.parent.user.name}</span>

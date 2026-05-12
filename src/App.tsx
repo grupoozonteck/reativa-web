@@ -9,6 +9,7 @@ import Ranking from '@/pages/Ranking/Ranking';
 import Customers from '@/pages/Customers/Customers';
 import CustomerDetails from '@/pages/Customers/CustomerDetails';
 import GenerateRecruitment from '@/pages/Customers/GenerateRecruitment';
+import CustomerSituation from '@/pages/Customers/CustomerSituation';
 import MyAttendances from '@/pages/Customers/MyAttendances';
 import TeamAttendances from '@/pages/Customers/TeamAttendances';
 import { Loader2 } from 'lucide-react';
@@ -83,6 +84,7 @@ export default function App() {
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/customers/:id" element={<CustomerDetails />} />
+            <Route path="/reengagements/situation" element={<CustomerSituation />} />
             <Route
               path="/reengagements/generate"
               element={

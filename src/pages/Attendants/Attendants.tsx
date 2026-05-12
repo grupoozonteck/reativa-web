@@ -96,14 +96,14 @@ export default function Atendentes() {
 
     return (
         <div className="min-h-screen  p-4 py-12 sm:p-12 max-w-screen-2xl mx-auto">
-            <div className="space-y-5">
+            <div className="flex flex-col gap-5">
                 {/* Header */}
                 <div className="animate-fade-in">
                     <div className="flex items-start justify-between gap-6 flex-col sm:flex-row">
-                        <div className="space-y-2">
+                        <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-lg bg-blue-100 dark:bg-blue-500/20">
-                                    <UserCog className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                <div className="rounded-lg border border-secondary/20 bg-secondary/10 p-2.5 text-secondary">
+                                    <UserCog className="size-5" />
                                 </div>
                                 <h1 className="text-3xl font-extrabold tracking-tight">Atendentes</h1>
                             </div>
@@ -112,11 +112,8 @@ export default function Atendentes() {
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                onClick={() => setCreateModalOpen(true)}
-                                className="gap-2"
-                            >
-                                <Plus className="w-4 h-4" />
+                            <Button onClick={() => setCreateModalOpen(true)}>
+                                <Plus data-icon="inline-start" />
                                 Novo Atendente
                             </Button>
                         </div>
