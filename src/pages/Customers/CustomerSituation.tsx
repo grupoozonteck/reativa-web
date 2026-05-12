@@ -457,7 +457,7 @@ export default function CustomerSituation() {
                                     {re && (
                                         <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
                                             <p className="text-xs font-semibold uppercase tracking-widest text-amber-400 mb-4 flex items-center gap-2">
-                                                <Link2 className="h-3.5 w-3.5" /> Vínculo de reengajamento
+                                                <Link2 className="h-3.5 w-3.5" /> Vínculo de Atendimento
                                             </p>
                                             <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
                                                 {re.id != null && (
@@ -515,7 +515,7 @@ export default function CustomerSituation() {
                                         />
                                         <StatusTile
                                             icon={Link2}
-                                            label="Reeng. ativo"
+                                            label="Atendimento ativo"
                                             active={result.status.has_open_reengagement}
                                             activeCls="bg-amber-500/15 text-amber-400"
                                         />
