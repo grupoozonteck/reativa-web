@@ -313,6 +313,56 @@ export interface GenerateReengagementPayload {
     order_id: number;
 }
 
+// === Tipos para consulta de situação do cliente ===
+
+export type SituationCode =
+    | 'eligible'
+    | 'blocked_registration'
+    | 'already_linked'
+    | 'out_of_rule'
+    | 'not_customer'
+    | 'different_country'
+    | string;
+
+export type SituationIdentifierType = 'cpf' | 'email' | 'login' | 'search';
+
+export interface SituationIdentifier {
+    cpf?: string;
+    email?: string;
+    login?: string;
+    search?: string;
+    search_type?: 'document' | 'email' | 'login';
+    inactive_days?: number;
+}
+
+export interface SituationResult {
+    eligible: boolean;
+    situation: {
+        code: SituationCode;
+        message: string;
+    };
+    status: {
+        is_blocked: boolean;
+        has_open_reengagement: boolean;
+        has_recent_paid_order: boolean;
+        is_new_account: boolean;
+    };
+    reengagement: Record<string, unknown> | null;
+    user: {
+        id?: number;
+        name?: string;
+        login?: string;
+        email?: string;
+        country_code?: string;
+        [key: string]: unknown;
+    } | null;
+}
+
+export interface SituationResponse {
+    success: boolean;
+    data: SituationResult;
+}
+
 // === Service ===
 
 export const customerService = {
@@ -445,5 +495,11 @@ export const customerService = {
             },
         });
         return response.data;
+    },
+
+    /** Consulta a situação do cliente antes de iniciar um atendimento */
+    checkSituation: async (payload: SituationIdentifier): Promise<SituationResult> => {
+        const response = await api.post<SituationResponse>('/api/reengagements/situation', payload);
+        return response.data.data;
     },
 };

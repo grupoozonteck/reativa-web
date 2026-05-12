@@ -1,10 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
+import { z } from 'zod';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { teamService, type AttendantLeaderOption } from '@/services/team.service';
 import { Input } from '@/components/ui/input';
+import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+
+const createAttendantSchema = z.object({
+    userLogin: z
+        .string()
+        .trim()
+        .min(1, 'Informe o login do atendente.')
+        .min(3, 'O login precisa ter pelo menos 3 caracteres.'),
+    type: z.string().min(1, 'Selecione o cargo.'),
+    status: z.string().min(1, 'Selecione o status.'),
+    supervisorId: z.string().min(1, 'Selecione a lideranca responsavel.'),
+    graduation: z.string().min(1, 'Selecione a graduacao.'),
+});
+
+type CreateAttendantFormValues = z.infer<typeof createAttendantSchema>;
+type FormField = keyof CreateAttendantFormValues;
+type FormErrors = Partial<Record<FormField, string>>;
 
 function extractApiErrorMessage(err: unknown, fallback: string) {
     if (!(err instanceof Object) || !('response' in err)) {
@@ -25,8 +42,8 @@ function extractApiErrorMessage(err: unknown, fallback: string) {
 
     const detailedErrors = errors
         ? Object.values(errors)
-            .flat()
-            .filter(Boolean)
+              .flat()
+              .filter(Boolean)
         : [];
 
     if (detailedErrors.length > 0) {
@@ -34,6 +51,16 @@ function extractApiErrorMessage(err: unknown, fallback: string) {
     }
 
     return message ?? fallback;
+}
+
+function getFieldError(field: FormField, values: CreateAttendantFormValues) {
+    const result = createAttendantSchema.safeParse(values);
+    if (result.success) {
+        return undefined;
+    }
+
+    const issue = result.error.issues.find((currentIssue) => currentIssue.path[0] === field);
+    return issue?.message;
 }
 
 interface CreateAttendantModalProps {
@@ -63,19 +90,26 @@ export function CreateAttendantModal({
     const [type, setType] = useState('');
     const [graduation, setGraduation] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
+
+    const values = useMemo(
+        () => ({
+            userLogin,
+            supervisorId,
+            status,
+            type,
+            graduation,
+        }),
+        [graduation, status, supervisorId, type, userLogin],
+    );
 
     const isCreatingSupervisor = type === '2';
-    const availableTypes = useMemo(
-        () => Object.entries(types).filter(([key]) => key !== '1'),
-        [types],
-    );
+    const availableTypes = useMemo(() => Object.entries(types).filter(([key]) => key !== '1'), [types]);
 
     const leaderOptions = useMemo(() => {
         if (isCreatingSupervisor) {
-            return gestor
-                ? [{ id: gestor.id, name: gestor.name, login: gestor.login }]
-                : [];
+            return gestor ? [{ id: gestor.id, name: gestor.name, login: gestor.login }] : [];
         }
 
         return supervisors.map((supervisor) => ({
@@ -86,7 +120,9 @@ export function CreateAttendantModal({
     }, [gestor, isCreatingSupervisor, supervisors]);
 
     useEffect(() => {
-        if (!supervisorId) return;
+        if (!supervisorId) {
+            return;
+        }
 
         const selectedLeaderIsAvailable = leaderOptions.some((leader) => String(leader.id) === supervisorId);
         if (!selectedLeaderIsAvailable) {
@@ -94,13 +130,25 @@ export function CreateAttendantModal({
         }
     }, [leaderOptions, supervisorId]);
 
+    useEffect(() => {
+        if (!fieldErrors.supervisorId) {
+            return;
+        }
+
+        setFieldErrors((current) => ({
+            ...current,
+            supervisorId: getFieldError('supervisorId', values),
+        }));
+    }, [fieldErrors.supervisorId, values]);
+
     function resetForm() {
         setUserLogin('');
         setSupervisorId('');
         setStatus('');
         setType('');
         setGraduation('');
-        setError(null);
+        setSubmitError(null);
+        setFieldErrors({});
     }
 
     function handleClose() {
@@ -110,27 +158,63 @@ export function CreateAttendantModal({
         }
     }
 
+    function handleFieldValidation(field: FormField) {
+        setFieldErrors((current) => ({
+            ...current,
+            [field]: getFieldError(field, values),
+        }));
+    }
+
+    function handleFieldChange<T>(field: FormField, nextValue: T, setter: (value: T) => void) {
+        setter(nextValue);
+        setSubmitError(null);
+
+        if (fieldErrors[field]) {
+            const nextValues = {
+                ...values,
+                [field]: nextValue,
+            } as CreateAttendantFormValues;
+
+            setFieldErrors((current) => ({
+                ...current,
+                [field]: getFieldError(field, nextValues),
+            }));
+        }
+    }
+
     async function handleSubmit() {
-        if (!userLogin || !supervisorId || status === '' || !type || !graduation) {
-            setError('Preencha todos os campos.');
+        const result = createAttendantSchema.safeParse(values);
+
+        if (!result.success) {
+            const nextErrors: FormErrors = {};
+
+            for (const issue of result.error.issues) {
+                const field = issue.path[0] as FormField;
+                if (!nextErrors[field]) {
+                    nextErrors[field] = issue.message;
+                }
+            }
+
+            setFieldErrors(nextErrors);
+            setSubmitError('Revise os campos destacados.');
             return;
         }
 
         setLoading(true);
-        setError(null);
+        setSubmitError(null);
         try {
             await teamService.createAttendant({
-                user_login: userLogin,
-                supervisor_id: Number(supervisorId),
-                status: Number(status),
-                type: Number(type),
-                graduation: Number(graduation),
+                user_login: result.data.userLogin,
+                supervisor_id: Number(result.data.supervisorId),
+                status: Number(result.data.status),
+                type: Number(result.data.type),
+                graduation: Number(result.data.graduation),
             });
             onCreated?.();
             resetForm();
             onClose();
         } catch (err: unknown) {
-            setError(extractApiErrorMessage(err, 'Erro ao criar atendente. Tente novamente.'));
+            setSubmitError(extractApiErrorMessage(err, 'Erro ao criar atendente. Tente novamente.'));
         } finally {
             setLoading(false);
         }
@@ -143,88 +227,137 @@ export function CreateAttendantModal({
                     <DialogTitle>Novo Atendente</DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label>Login do Atendente</Label>
-                        <Input
-                            value={userLogin}
-                            onChange={(e) => setUserLogin(e.target.value)}
-                            disabled={loading}
-                            placeholder="Digite o login"
-                        />
-                    </div>
+                <FieldGroup className="gap-4">
+                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.userLogin)}>
+                        <FieldLabel>Login do Atendente</FieldLabel>
+                        <FieldContent>
+                            <Input
+                                value={userLogin}
+                                onChange={(e) => handleFieldChange('userLogin', e.target.value, setUserLogin)}
+                                onBlur={() => handleFieldValidation('userLogin')}
+                                disabled={loading}
+                                placeholder="Ex.: joao.silva"
+                                aria-invalid={Boolean(fieldErrors.userLogin)}
+                            />
+                        </FieldContent>
+                        <FieldDescription>Use o login exato ja cadastrado na plataforma.</FieldDescription>
+                        <FieldError>{fieldErrors.userLogin}</FieldError>
+                    </Field>
 
-                    <div className="space-y-1.5">
-                        <Label>Cargo</Label>
-                        <Select value={type} onValueChange={setType} disabled={loading}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o cargo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableTypes.map(([key, label]) => (
-                                    <SelectItem key={key} value={key}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.type)}>
+                        <FieldLabel>Cargo</FieldLabel>
+                        <FieldContent>
+                            <Select value={type} onValueChange={(value) => handleFieldChange('type', value, setType)} disabled={loading}>
+                                <SelectTrigger
+                                    aria-invalid={Boolean(fieldErrors.type)}
+                                    onBlur={() => handleFieldValidation('type')}
+                                >
+                                    <SelectValue placeholder="Selecione o cargo" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableTypes.map(([key, label]) => (
+                                        <SelectItem key={key} value={key}>
+                                            {label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </FieldContent>
+                        <FieldError>{fieldErrors.type}</FieldError>
+                    </Field>
 
-                    <div className="space-y-1.5">
-                        <Label>Status</Label>
-                        <Select value={status} onValueChange={setStatus} disabled={loading}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Object.entries(statusOptions).map(([key, label]) => (
-                                    <SelectItem key={key} value={key}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.status)}>
+                        <FieldLabel>Status</FieldLabel>
+                        <FieldContent>
+                            <Select
+                                value={status}
+                                onValueChange={(value) => handleFieldChange('status', value, setStatus)}
+                                disabled={loading}
+                            >
+                                <SelectTrigger
+                                    aria-invalid={Boolean(fieldErrors.status)}
+                                    onBlur={() => handleFieldValidation('status')}
+                                >
+                                    <SelectValue placeholder="Selecione o status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(statusOptions).map(([key, label]) => (
+                                        <SelectItem key={key} value={key}>
+                                            {label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </FieldContent>
+                        <FieldError>{fieldErrors.status}</FieldError>
+                    </Field>
 
-                    <div className="space-y-1.5">
-                        <Label>{isCreatingSupervisor ? 'Gestor' : 'Lider'}</Label>
-                        <Select value={supervisorId} onValueChange={setSupervisorId} disabled={loading || !type}>
-                            <SelectTrigger>
-                                <SelectValue
-                                    placeholder={isCreatingSupervisor ? 'Selecione o gestor' : 'Selecione o lider'}
-                                />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {leaderOptions.map((leader) => (
-                                    <SelectItem key={leader.id} value={String(leader.id)}>
-                                        {leader.name} <span className="text-muted-foreground">@{leader.login}</span>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.supervisorId)}>
+                        <FieldLabel>{isCreatingSupervisor ? 'Gestor' : 'Lider'}</FieldLabel>
+                        <FieldContent>
+                            <Select
+                                value={supervisorId}
+                                onValueChange={(value) => handleFieldChange('supervisorId', value, setSupervisorId)}
+                                disabled={loading || !type}
+                            >
+                                <SelectTrigger
+                                    aria-invalid={Boolean(fieldErrors.supervisorId)}
+                                    onBlur={() => handleFieldValidation('supervisorId')}
+                                >
+                                    <SelectValue
+                                        placeholder={isCreatingSupervisor ? 'Selecione o gestor' : 'Selecione o lider'}
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {leaderOptions.map((leader) => (
+                                        <SelectItem key={leader.id} value={String(leader.id)}>
+                                            {leader.name} (@{leader.login})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </FieldContent>
+                        <FieldDescription>
+                            {!type
+                                ? 'Escolha o cargo primeiro para liberar a lideranca.'
+                                : isCreatingSupervisor
+                                  ? 'Supervisores devem ficar vinculados a um gestor.'
+                                  : 'Atendentes devem ficar vinculados a um supervisor.'}
+                        </FieldDescription>
+                        <FieldError>{fieldErrors.supervisorId}</FieldError>
+                    </Field>
 
-                    <div className="space-y-1.5">
-                        <Label>Graduacao</Label>
-                        <Select value={graduation} onValueChange={setGraduation} disabled={loading}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione a graduacao" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Object.entries(graduates).map(([key, label]) => (
-                                    <SelectItem key={key} value={key}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.graduation)}>
+                        <FieldLabel>Graduacao</FieldLabel>
+                        <FieldContent>
+                            <Select
+                                value={graduation}
+                                onValueChange={(value) => handleFieldChange('graduation', value, setGraduation)}
+                                disabled={loading}
+                            >
+                                <SelectTrigger
+                                    aria-invalid={Boolean(fieldErrors.graduation)}
+                                    onBlur={() => handleFieldValidation('graduation')}
+                                >
+                                    <SelectValue placeholder="Selecione a graduacao" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(graduates).map(([key, label]) => (
+                                        <SelectItem key={key} value={key}>
+                                            {label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </FieldContent>
+                        <FieldError>{fieldErrors.graduation}</FieldError>
+                    </Field>
 
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
-                </div>
+                    <FieldError>{submitError}</FieldError>
+                </FieldGroup>
 
                 <DialogFooter>
-                    <Button variant="destructive" onClick={handleClose} disabled={loading}>
+                    <Button variant="outline" onClick={handleClose} disabled={loading}>
                         Cancelar
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>

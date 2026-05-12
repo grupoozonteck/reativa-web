@@ -10,12 +10,8 @@ import { Link } from 'react-router-dom';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { TableEmptyState } from '@/components/ui/table-empty-state';
 import { AttendantCard, AttendantCardSkeleton } from './AttendantCard';
-
-const typeColors: Record<number, string> = {
-    1: 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20',
-    2: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
-    3: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
-};
+import { Button } from '@/components/ui/button';
+import { typeColors } from '@/utils/color-ultis';
 
 interface AttendantsListProps {
     attendants: ManagerAttendant[];
@@ -30,8 +26,8 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
             {/* Header */}
             <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-muted/20">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/20">
-                        <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div className="rounded-lg border border-secondary/20 bg-secondary/10 p-2 text-secondary">
+                        <Users className="size-4" />
                     </div>
                     <div>
                         <h2 className="text-sm font-semibold">Atendentes</h2>
@@ -40,7 +36,7 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                     {!isLoading && (
                         <Badge
                             variant="outline"
-                            className="ml-2 text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                            className="ml-2 border-secondary/20 bg-secondary/10 text-[10px] text-secondary"
                         >
                             {total ?? attendants.length}
                         </Badge>
@@ -114,12 +110,9 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
                                             {attendant.parent?.user?.name ?? '-'}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Link
-                                                to={`/attendants/${attendant.id}`}
-                                                className="bg-primary text-slate-950 px-2 py-1 rounded text-sm font-medium"
-                                            >
-                                                Visualizar
-                                            </Link>
+                                            <Button asChild size="sm" variant="outline">
+                                                <Link to={`/attendants/${attendant.id}`}>Visualizar</Link>
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -130,7 +123,7 @@ export function AttendantsList({ attendants, total, isLoading, isFetching }: Att
             </div>
 
             {/* Vista Mobile — Cards */}
-            <div className={cn('md:hidden p-4 space-y-3 transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+            <div className={cn('md:hidden p-4 transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
                 {isLoading ? (
                     Array.from({ length: 6 }).map((_, i) => <AttendantCardSkeleton key={i} />)
                 ) : attendants.length === 0 ? (
