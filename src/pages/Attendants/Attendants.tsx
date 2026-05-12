@@ -1,27 +1,37 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { UserCog, RefreshCcw, Plus } from 'lucide-react';
+import { UserCog, Plus } from 'lucide-react';
 import { teamService, type AttendantsFilters } from '@/services/team.service';
 import { utilsService } from '@/services/utils.service';
 import { AttendantsList } from '@/components/Attendants/AttendantsList';
 import { AttendantsFiltersBar } from '@/components/Attendants/AttendantsFiltersBar';
 import { CreateAttendantModal } from '@/components/Attendants/CreateAttendantModal';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 
+const DEFAULT_FILTERS: AttendantsFilters = { status: 1 };
+
 export default function Atendentes() {
-    const [filters, setFilters] = useState<AttendantsFilters>({});
+    const [filters, setFilters] = useState<AttendantsFilters>({ ...DEFAULT_FILTERS });
+    const [appliedFilters, setAppliedFilters] = useState<AttendantsFilters>({ ...DEFAULT_FILTERS });
+    const [countriesOptions, setCountriesOptions] = useState<
+        {
+            acronym: string;
+            code: string;
+            name: string;
+        }[]
+    >([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const debouncedSearch = useDebounce(filters.search ?? '', 400);
+    const debouncedSearch = useDebounce(appliedFilters.search ?? '', 400);
 
     const attendantsQuery = useQuery({
-        queryKey: ['attendants', debouncedSearch, filters.type, filters.country_code],
+        queryKey: ['attendants', debouncedSearch, appliedFilters.type, appliedFilters.status, appliedFilters.country_code],
         queryFn: () =>
             teamService.getAttendants({
                 search: debouncedSearch || undefined,
-                type: filters.type,
-                country_code: filters.country_code,
+                type: appliedFilters.type,
+                status: appliedFilters.status,
+                country_code: appliedFilters.country_code,
             }),
         refetchInterval: 5 * 60 * 1000,
     });
@@ -52,10 +62,36 @@ export default function Atendentes() {
     const total = data?.attendants?.meta?.total;
     const resolvedTypes = utilsQuery.data?.types ?? data?.types ?? {};
     const resolvedGraduates = utilsQuery.data?.graduates ?? data?.graduates ?? {};
+    const resolvedStatus = utilsQuery.data?.status ?? { '0': 'Inativo', '1': 'Ativo' };
     const isLoading = attendantsQuery.isLoading;
     const isFetching = attendantsQuery.isFetching || supportQuery.isFetching || utilsQuery.isFetching;
+    const hasDraftChanges =
+        (filters.search ?? '') !== (appliedFilters.search ?? '') ||
+        filters.type !== appliedFilters.type ||
+        filters.status !== appliedFilters.status ||
+        filters.country_code !== appliedFilters.country_code;
     const refetch = async () => {
         await Promise.all([attendantsQuery.refetch(), supportQuery.refetch(), utilsQuery.refetch()]);
+    };
+
+    useEffect(() => {
+        if (data?.countries?.length) {
+            setCountriesOptions(data.countries);
+        }
+    }, [data?.countries]);
+
+    const handleApplyFilters = () => {
+        setAppliedFilters({
+            search: filters.search?.trim() || undefined,
+            type: filters.type,
+            status: filters.status ?? 1,
+            country_code: filters.country_code,
+        });
+    };
+
+    const handleClearFilters = () => {
+        setFilters({ ...DEFAULT_FILTERS });
+        setAppliedFilters({ ...DEFAULT_FILTERS });
     };
 
     return (
@@ -83,15 +119,6 @@ export default function Atendentes() {
                                 <Plus className="w-4 h-4" />
                                 Novo Atendente
                             </Button>
-                            <Button
-                                onClick={() => refetch()}
-                                variant="secondary"
-                                disabled={isFetching}
-                                className="gap-2"
-                            >
-                                <RefreshCcw className={cn('w-4 h-4', isFetching && 'animate-spin')} />
-                                {isFetching ? 'Atualizando...' : 'Atualizar'}
-                            </Button>
                         </div>
                     </div>
                 </div>
@@ -100,8 +127,13 @@ export default function Atendentes() {
                 <AttendantsFiltersBar
                     filters={filters}
                     types={resolvedTypes}
-                    countries={data?.countries ?? []}
+                    statusOptions={resolvedStatus}
+                    countries={countriesOptions}
+                    hasDraftChanges={hasDraftChanges}
+                    isApplying={isFetching}
                     onChange={setFilters}
+                    onApply={handleApplyFilters}
+                    onClear={handleClearFilters}
                 />
 
                 {/* Lista */}
@@ -120,6 +152,7 @@ export default function Atendentes() {
                     gestor={supportQuery.data?.gestor ?? null}
                     types={resolvedTypes}
                     graduates={resolvedGraduates}
+                    statusOptions={resolvedStatus}
                     onCreated={() => refetch()}
                 />
             </div>
