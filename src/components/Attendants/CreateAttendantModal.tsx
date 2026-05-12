@@ -43,6 +43,7 @@ interface CreateAttendantModalProps {
     gestor?: AttendantLeaderOption | null;
     types: Record<string, string>;
     graduates: Record<string, string>;
+    statusOptions: Record<string, string>;
     onCreated?: () => void;
 }
 
@@ -53,10 +54,12 @@ export function CreateAttendantModal({
     gestor,
     types,
     graduates,
+    statusOptions,
     onCreated,
 }: CreateAttendantModalProps) {
     const [userLogin, setUserLogin] = useState('');
     const [supervisorId, setSupervisorId] = useState('');
+    const [status, setStatus] = useState('');
     const [type, setType] = useState('');
     const [graduation, setGraduation] = useState('');
     const [loading, setLoading] = useState(false);
@@ -94,6 +97,7 @@ export function CreateAttendantModal({
     function resetForm() {
         setUserLogin('');
         setSupervisorId('');
+        setStatus('');
         setType('');
         setGraduation('');
         setError(null);
@@ -107,7 +111,7 @@ export function CreateAttendantModal({
     }
 
     async function handleSubmit() {
-        if (!userLogin || !supervisorId || !type || !graduation) {
+        if (!userLogin || !supervisorId || status === '' || !type || !graduation) {
             setError('Preencha todos os campos.');
             return;
         }
@@ -118,6 +122,7 @@ export function CreateAttendantModal({
             await teamService.createAttendant({
                 user_login: userLogin,
                 supervisor_id: Number(supervisorId),
+                status: Number(status),
                 type: Number(type),
                 graduation: Number(graduation),
             });
@@ -157,6 +162,22 @@ export function CreateAttendantModal({
                             </SelectTrigger>
                             <SelectContent>
                                 {availableTypes.map(([key, label]) => (
+                                    <SelectItem key={key} value={key}>
+                                        {label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Status</Label>
+                        <Select value={status} onValueChange={setStatus} disabled={loading}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione o status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(statusOptions).map(([key, label]) => (
                                     <SelectItem key={key} value={key}>
                                         {label}
                                     </SelectItem>

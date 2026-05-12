@@ -408,6 +408,7 @@ export interface ManagerPerformanceResponse {
 export interface AttendantsFilters {
     search?: string;
     type?: number;
+    status?: number;
     country_code?: string;
     page?: number;
 }
@@ -422,6 +423,7 @@ export interface AttendantsPaginationLinks {
 export interface CreateAttendantRe {
     user_login: string;
     supervisor_id: number;
+    status: number;
     type: number;
     graduation: number;
 }
