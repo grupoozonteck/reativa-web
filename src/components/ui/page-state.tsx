@@ -9,10 +9,18 @@ interface PageErrorStateProps {
     message?: string;
     actionLabel?: string;
     onAction?: () => void;
-    actionVariant?: 'default' | 'outline' | 'destructive' | 'secondary' | 'ghost' | 'link';
+    actionVariant?:
+        | 'default'
+        | 'outline'
+        | 'destructive'
+        | 'secondary'
+        | 'ghost'
+        | 'link';
 }
 
-export function PageLoadingState({ message = 'Carregando...' }: PageLoadingStateProps) {
+export function PageLoadingState({
+    message = 'Carregando...',
+}: PageLoadingStateProps) {
     return (
         <div className="p-6 flex items-center justify-center min-h-[60vh]">
             <div className="flex flex-col items-center gap-3">
@@ -43,4 +51,3 @@ export function PageErrorState({
         </div>
     );
 }
-

@@ -1,4 +1,11 @@
-import { BarChart3, CircleDollarSign, Headphones, Trophy, Users, type LucideIcon } from 'lucide-react';
+import {
+    BarChart3,
+    CircleDollarSign,
+    Headphones,
+    Trophy,
+    Users,
+    type LucideIcon,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/utils/client-utils';
 
@@ -81,14 +88,24 @@ export function RankingStats({
                         stat.cardBg,
                     )}
                 >
-                    <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl', stat.iconBg)}>
+                    <div
+                        className={cn(
+                            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
+                            stat.iconBg,
+                        )}
+                    >
                         <stat.icon className="h-5 w-5 text-white" />
                     </div>
                     <div>
                         <p className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                             {stat.label}
                         </p>
-                        <p className={cn('text-xl font-black tracking-tight tabular-nums', stat.valueColor)}>
+                        <p
+                            className={cn(
+                                'text-xl font-black tracking-tight tabular-nums',
+                                stat.valueColor,
+                            )}
+                        >
                             {stat.value}
                         </p>
                     </div>

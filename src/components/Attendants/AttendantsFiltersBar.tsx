@@ -1,8 +1,19 @@
 import { Filter, Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Field, FieldContent, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Field,
+    FieldContent,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { type AttendantsFilters } from '@/services/team.service';
 
 interface AttendantsFiltersProps {
@@ -49,7 +60,12 @@ export function AttendantsFiltersBar({
                                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     value={filters.search ?? ''}
-                                    onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
+                                    onChange={(e) =>
+                                        onChange({
+                                            ...filters,
+                                            search: e.target.value || undefined,
+                                        })
+                                    }
                                     placeholder="Buscar por login, nome ou email..."
                                     className="h-10 pl-9"
                                 />
@@ -63,21 +79,38 @@ export function AttendantsFiltersBar({
                                 <FieldLabel>Cargo</FieldLabel>
                                 <FieldContent>
                                     <Select
-                                        value={filters.type !== undefined ? String(filters.type) : 'all'}
+                                        value={
+                                            filters.type !== undefined
+                                                ? String(filters.type)
+                                                : 'all'
+                                        }
                                         onValueChange={(value) =>
-                                            onChange({ ...filters, type: value === 'all' ? undefined : Number(value) })
+                                            onChange({
+                                                ...filters,
+                                                type:
+                                                    value === 'all'
+                                                        ? undefined
+                                                        : Number(value),
+                                            })
                                         }
                                     >
                                         <SelectTrigger className="h-10 w-full text-sm">
                                             <SelectValue placeholder="Todos os cargos" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">Todos os cargos</SelectItem>
-                                            {Object.entries(types).map(([key, label]) => (
-                                                <SelectItem key={key} value={key}>
-                                                    {label}
-                                                </SelectItem>
-                                            ))}
+                                            <SelectItem value="all">
+                                                Todos os cargos
+                                            </SelectItem>
+                                            {Object.entries(types).map(
+                                                ([key, label]) => (
+                                                    <SelectItem
+                                                        key={key}
+                                                        value={key}
+                                                    >
+                                                        {label}
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </FieldContent>
@@ -89,18 +122,32 @@ export function AttendantsFiltersBar({
                                 <FieldLabel>Status</FieldLabel>
                                 <FieldContent>
                                     <Select
-                                        value={filters.status !== undefined ? String(filters.status) : '1'}
-                                        onValueChange={(value) => onChange({ ...filters, status: Number(value) })}
+                                        value={
+                                            filters.status !== undefined
+                                                ? String(filters.status)
+                                                : '1'
+                                        }
+                                        onValueChange={(value) =>
+                                            onChange({
+                                                ...filters,
+                                                status: Number(value),
+                                            })
+                                        }
                                     >
                                         <SelectTrigger className="h-10 w-full text-sm">
                                             <SelectValue placeholder="Selecione o status" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {Object.entries(statusOptions).map(([key, label]) => (
-                                                <SelectItem key={key} value={key}>
-                                                    {label}
-                                                </SelectItem>
-                                            ))}
+                                            {Object.entries(statusOptions).map(
+                                                ([key, label]) => (
+                                                    <SelectItem
+                                                        key={key}
+                                                        value={key}
+                                                    >
+                                                        {label}
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </FieldContent>
@@ -114,16 +161,27 @@ export function AttendantsFiltersBar({
                                     <Select
                                         value={filters.country_code ?? 'all'}
                                         onValueChange={(value) =>
-                                            onChange({ ...filters, country_code: value === 'all' ? undefined : value })
+                                            onChange({
+                                                ...filters,
+                                                country_code:
+                                                    value === 'all'
+                                                        ? undefined
+                                                        : value,
+                                            })
                                         }
                                     >
                                         <SelectTrigger className="h-10 w-full text-sm">
                                             <SelectValue placeholder="Todos os paises" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">Todos os paises</SelectItem>
+                                            <SelectItem value="all">
+                                                Todos os paises
+                                            </SelectItem>
                                             {countries.map((country) => (
-                                                <SelectItem key={country.acronym} value={country.acronym}>
+                                                <SelectItem
+                                                    key={country.acronym}
+                                                    value={country.acronym}
+                                                >
                                                     {country.name}
                                                 </SelectItem>
                                             ))}

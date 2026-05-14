@@ -38,41 +38,56 @@ export default function Ranking() {
     const { user } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
-    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedStartDate =
+        searchParams.get('start_date') ?? defaultRange.startDate;
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
 
     const { data, isLoading, isFetching, isError, refetch } = useQuery({
         queryKey: ['leaderboard', user?.id, appliedStartDate, appliedEndDate],
-        queryFn: () => LeaderboardService.getLeaderboard({
-            start_date: appliedStartDate || undefined,
-            end_date: appliedEndDate || undefined,
-        }),
+        queryFn: () =>
+            LeaderboardService.getLeaderboard({
+                start_date: appliedStartDate || undefined,
+                end_date: appliedEndDate || undefined,
+            }),
         enabled: !!user?.id,
         staleTime: 1000 * 60,
         refetchInterval: 1000 * 60 * 2,
     });
 
-    const hasActiveFilters = appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
-    const hasDraftChanges = startDate !== appliedStartDate || endDate !== appliedEndDate;
+    const hasActiveFilters =
+        appliedStartDate !== defaultRange.startDate ||
+        appliedEndDate !== defaultRange.endDate;
+    const hasDraftChanges =
+        startDate !== appliedStartDate || endDate !== appliedEndDate;
 
     const handleApplyFilters = () => {
-        setSearchParams((params) => {
-            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
-            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                if (startDate && startDate !== defaultRange.startDate)
+                    params.set('start_date', startDate);
+                else params.delete('start_date');
+                if (endDate && endDate !== defaultRange.endDate)
+                    params.set('end_date', endDate);
+                else params.delete('end_date');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     const handleClearFilters = () => {
         setStartDate(defaultRange.startDate);
         setEndDate(defaultRange.endDate);
-        setSearchParams((params) => {
-            params.delete('start_date');
-            params.delete('end_date');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                params.delete('start_date');
+                params.delete('end_date');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     const sellers = [...(data?.leaderboard ?? [])]
@@ -100,11 +115,17 @@ export default function Ranking() {
                     <div className="flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-rose-400 mt-0.5" />
                         <div>
-                            <h2 className="text-base font-bold">Nao foi possivel carregar o ranking</h2>
+                            <h2 className="text-base font-bold">
+                                Nao foi possivel carregar o ranking
+                            </h2>
                             <p className="text-sm text-muted-foreground mt-1">
                                 Verifique sua conexao e tente novamente.
                             </p>
-                            <Button type="button" onClick={() => refetch()} className="mt-4">
+                            <Button
+                                type="button"
+                                onClick={() => refetch()}
+                                className="mt-4"
+                            >
                                 Tentar novamente
                             </Button>
                         </div>
@@ -159,9 +180,12 @@ export default function Ranking() {
                 </div>
             ) : (
                 <div className="solid-card rounded-2xl border border-border/60 p-6 text-center">
-                    <h2 className="text-base font-bold">Nenhum atendente no ranking</h2>
+                    <h2 className="text-base font-bold">
+                        Nenhum atendente no ranking
+                    </h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Assim que houver movimentacao de atendentes, o ranking aparece aqui.
+                        Assim que houver movimentacao de atendentes, o ranking
+                        aparece aqui.
                     </p>
                 </div>
             )}

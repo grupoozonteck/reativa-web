@@ -20,32 +20,50 @@ export function ClientCard({ client }: { client: ReengagementUser }) {
                         className="w-12 h-12 rounded-xl object-cover shrink-0"
                     />
                 ) : (
-                    <div className={cn(
-                        'w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
-                        colorClass
-                    )}>
+                    <div
+                        className={cn(
+                            'w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
+                            colorClass,
+                        )}
+                    >
                         {initials}
                     </div>
                 )}
                 <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-on-surface truncate">{client.name}</p>
-                    <p className="text-xs text-on-surface-variant truncate">{client.login}</p>
-                    <p className="text-xs text-on-surface-variant font-mono mt-0.5">#{client.id}</p>
+                    <p className="text-sm font-semibold text-on-surface truncate">
+                        {client.name}
+                    </p>
+                    <p className="text-xs text-on-surface-variant truncate">
+                        {client.login}
+                    </p>
+                    <p className="text-xs text-on-surface-variant font-mono mt-0.5">
+                        #{client.id}
+                    </p>
                 </div>
             </div>
 
             {/* Background shift instead of border-t */}
             <div className="bg-surface-highest rounded-lg p-2.5 flex items-center justify-between gap-3">
                 <div className="flex flex-col">
-                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-0.5">Pedidos</span>
-                    <span className="font-display text-lg font-semibold text-on-surface">{client.total_orders}</span>
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-0.5">
+                        Pedidos
+                    </span>
+                    <span className="font-display text-lg font-semibold text-on-surface">
+                        {client.total_orders}
+                    </span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-0.5">Pagos</span>
-                    <span className={cn(
-                        'font-display text-lg font-semibold',
-                        client.paid_orders > 0 ? 'text-primary [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.35)]' : 'text-on-surface-variant'
-                    )}>
+                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-0.5">
+                        Pagos
+                    </span>
+                    <span
+                        className={cn(
+                            'font-display text-lg font-semibold',
+                            client.paid_orders > 0
+                                ? 'text-primary [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.35)]'
+                                : 'text-on-surface-variant',
+                        )}
+                    >
                         {client.paid_orders}
                     </span>
                 </div>

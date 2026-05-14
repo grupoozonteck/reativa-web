@@ -43,17 +43,20 @@ function SkeletonCell({ col }: { col: TableSkeletonColumn }) {
     }
 
     if (type === 'badge') {
-        const ml = align === 'right' ? 'ml-auto' : align === 'center' ? 'mx-auto' : '';
+        const ml =
+            align === 'right' ? 'ml-auto' : align === 'center' ? 'mx-auto' : '';
         return <Skeleton className={cn('h-5 rounded-full', width, ml)} />;
     }
 
     if (type === 'button') {
-        const ml = align === 'right' ? 'ml-auto' : align === 'center' ? 'mx-auto' : '';
+        const ml =
+            align === 'right' ? 'ml-auto' : align === 'center' ? 'mx-auto' : '';
         return <Skeleton className={cn('h-8 rounded-lg', width, ml)} />;
     }
 
     // default: text
-    const ml = align === 'right' ? 'ml-auto' : align === 'center' ? 'mx-auto' : '';
+    const ml =
+        align === 'right' ? 'ml-auto' : align === 'center' ? 'mx-auto' : '';
     return <Skeleton className={cn('h-3.5', width, ml)} />;
 }
 

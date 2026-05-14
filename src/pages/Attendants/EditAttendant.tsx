@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-    AlertCircle,
     ArrowLeft,
     Coins,
     Loader2,
@@ -19,13 +18,30 @@ import { toast } from 'react-toastify';
 import { teamService } from '@/services/team.service';
 import { utilsService } from '@/services/utils.service';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Field,
+    FieldDescription,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 import { getInitials } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
@@ -36,22 +52,22 @@ function extractApiErrorMessage(err: unknown, fallback: string) {
         return fallback;
     }
 
-    const response = (err as {
-        response?: {
-            data?: {
-                message?: string;
-                errors?: Record<string, string[]>;
+    const response = (
+        err as {
+            response?: {
+                data?: {
+                    message?: string;
+                    errors?: Record<string, string[]>;
+                };
             };
-        };
-    }).response;
+        }
+    ).response;
 
     const message = response?.data?.message;
     const errors = response?.data?.errors;
 
     const detailedErrors = errors
-        ? Object.values(errors)
-            .flat()
-            .filter(Boolean)
+        ? Object.values(errors).flat().filter(Boolean)
         : [];
 
     if (detailedErrors.length > 0) {
@@ -77,10 +93,16 @@ export default function AtendenteEditar() {
     const [maxSales, setMaxSales] = useState('');
     const [commissionError, setCommissionError] = useState<string | null>(null);
     const [isSavingCommission, setIsSavingCommission] = useState(false);
-    const [editingCommissionId, setEditingCommissionId] = useState<number | null>(null);
-    const [deletingCommissionId, setDeletingCommissionId] = useState<number | null>(null);
+    const [editingCommissionId, setEditingCommissionId] = useState<
+        number | null
+    >(null);
+    const [deletingCommissionId, setDeletingCommissionId] = useState<
+        number | null
+    >(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-    const [pendingDeleteCommissionId, setPendingDeleteCommissionId] = useState<number | null>(null);
+    const [pendingDeleteCommissionId, setPendingDeleteCommissionId] = useState<
+        number | null
+    >(null);
     const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
 
     const detailQuery = useQuery({
@@ -112,22 +134,36 @@ export default function AtendenteEditar() {
 
     const attendant = detailQuery.data?.attendant;
     const types = utilsQuery.data?.typesMap ?? detailQuery.data?.types ?? {};
-    const graduates = utilsQuery.data?.graduatesMap ?? detailQuery.data?.graduates ?? {};
-    const attendantStatus = utilsQuery.data?.statusMap ?? { '0': 'Inativo', '1': 'Ativo' };
+    const graduates =
+        utilsQuery.data?.graduatesMap ?? detailQuery.data?.graduates ?? {};
+    const attendantStatus = utilsQuery.data?.statusMap ?? {
+        '0': 'Inativo',
+        '1': 'Ativo',
+    };
     const supervisors = supportQuery.data?.supervisors ?? [];
     const gestor = supportQuery.data?.gestor ?? null;
     const isEditingGestor = attendant?.type === 1;
     const isSupervisorType = type === '2';
 
     const availableTypes = useMemo(
-        () => Object.entries(types).filter(([key]) => key !== '1' || isEditingGestor),
+        () =>
+            Object.entries(types).filter(
+                ([key]) => key !== '1' || isEditingGestor,
+            ),
         [isEditingGestor, types],
     );
 
     const leaderOptions = useMemo(() => {
         if (isSupervisorType) {
             return gestor
-                ? [{ id: gestor.id, name: gestor.name, login: gestor.login, status: gestor.status ?? null }]
+                ? [
+                      {
+                          id: gestor.id,
+                          name: gestor.name,
+                          login: gestor.login,
+                          status: gestor.status ?? null,
+                      },
+                  ]
                 : [];
         }
 
@@ -142,29 +178,36 @@ export default function AtendenteEditar() {
     const selectedLeader =
         selectedSupervisorId === 'none'
             ? null
-            : leaderOptions.find((leader) => String(leader.id) === selectedSupervisorId) ?? null;
+            : (leaderOptions.find(
+                  (leader) => String(leader.id) === selectedSupervisorId,
+              ) ?? null);
 
     useEffect(() => {
         if (!attendant) return;
         setType(String(attendant.type ?? ''));
         setStatus(attendant.status === 0 ? '0' : '1');
         setGraduation(String(attendant.graduation ?? ''));
-        setSelectedSupervisorId(attendant.parent?.id ? String(attendant.parent.id) : 'none');
+        setSelectedSupervisorId(
+            attendant.parent?.id ? String(attendant.parent.id) : 'none',
+        );
         setError(null);
     }, [attendant]);
 
     useEffect(() => {
         if (selectedSupervisorId === 'none') return;
 
-        const selectedLeaderIsAvailable = leaderOptions.some((leader) => String(leader.id) === selectedSupervisorId);
+        const selectedLeaderIsAvailable = leaderOptions.some(
+            (leader) => String(leader.id) === selectedSupervisorId,
+        );
         if (!selectedLeaderIsAvailable) {
             setSelectedSupervisorId('none');
         }
     }, [leaderOptions, selectedSupervisorId]);
 
-
-    const commissionRanges = attendant?.commissions_attendant ?? attendant?.commissions ?? [];
-    const isLoading = detailQuery.isLoading || supportQuery.isLoading || utilsQuery.isLoading;
+    const commissionRanges =
+        attendant?.commissions_attendant ?? attendant?.commissions ?? [];
+    const isLoading =
+        detailQuery.isLoading || supportQuery.isLoading || utilsQuery.isLoading;
     const isError = detailQuery.isError || supportQuery.isError || !attendant;
 
     function formatMoney(value: number | string | undefined) {
@@ -218,9 +261,17 @@ export default function AtendenteEditar() {
         setCommissionModalOpen(true);
     }
 
-    function openEditCommissionModal(commission: { id: number; commission_percent?: number | string; value?: number | string; min_sales?: number | string; max_sales?: number | string }) {
+    function openEditCommissionModal(commission: {
+        id: number;
+        commission_percent?: number | string;
+        value?: number | string;
+        min_sales?: number | string;
+        max_sales?: number | string;
+    }) {
         setEditingCommissionId(commission.id);
-        setCommissionPercent(String(commission.commission_percent ?? commission.value ?? ''));
+        setCommissionPercent(
+            String(commission.commission_percent ?? commission.value ?? ''),
+        );
         setMinSales(toCurrencyInputValue(commission.min_sales));
         setMaxSales(toCurrencyInputValue(commission.max_sales));
         setCommissionError(null);
@@ -247,7 +298,10 @@ export default function AtendenteEditar() {
             toast.success('Atendente atualizado com sucesso.');
             await detailQuery.refetch();
         } catch (err: unknown) {
-            const message = extractApiErrorMessage(err, 'Nao foi possivel salvar as alteracoes.');
+            const message = extractApiErrorMessage(
+                err,
+                'Nao foi possivel salvar as alteracoes.',
+            );
             setError(message);
             toast.error(message);
         } finally {
@@ -263,17 +317,27 @@ export default function AtendenteEditar() {
         const parsedMaxSales = parseCurrencyInput(maxSales);
 
         if (!commissionPercent || !minSales || !maxSales) {
-            setCommissionError('Preencha percentual, venda minima e venda maxima.');
+            setCommissionError(
+                'Preencha percentual, venda minima e venda maxima.',
+            );
             return;
         }
 
-        if ([parsedPercent, parsedMinSales, parsedMaxSales].some((value) => Number.isNaN(value))) {
-            setCommissionError('Informe apenas numeros validos para a faixa de comissao.');
+        if (
+            [parsedPercent, parsedMinSales, parsedMaxSales].some((value) =>
+                Number.isNaN(value),
+            )
+        ) {
+            setCommissionError(
+                'Informe apenas numeros validos para a faixa de comissao.',
+            );
             return;
         }
 
         if (parsedMinSales > parsedMaxSales) {
-            setCommissionError('A venda minima nao pode ser maior que a venda maxima.');
+            setCommissionError(
+                'A venda minima nao pode ser maior que a venda maxima.',
+            );
             return;
         }
 
@@ -282,11 +346,14 @@ export default function AtendenteEditar() {
 
         try {
             if (editingCommissionId) {
-                await teamService.updateAttendantCommission(editingCommissionId, {
-                    commission_percent: parsedPercent,
-                    min_sales: parsedMinSales,
-                    max_sales: parsedMaxSales,
-                });
+                await teamService.updateAttendantCommission(
+                    editingCommissionId,
+                    {
+                        commission_percent: parsedPercent,
+                        min_sales: parsedMinSales,
+                        max_sales: parsedMaxSales,
+                    },
+                );
                 toast.success('Faixa de comissao atualizada com sucesso.');
             } else {
                 await teamService.createAttendantCommission(Number(id), {
@@ -321,7 +388,10 @@ export default function AtendenteEditar() {
             toast.success('Faixa de comissao excluida com sucesso.');
             await detailQuery.refetch();
         } catch (err: unknown) {
-            const message = extractApiErrorMessage(err, 'Nao foi possivel excluir a faixa de comissao.');
+            const message = extractApiErrorMessage(
+                err,
+                'Nao foi possivel excluir a faixa de comissao.',
+            );
             toast.error(message);
         } finally {
             setDeletingCommissionId(null);
@@ -377,49 +447,71 @@ export default function AtendenteEditar() {
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingCommissionId ? 'Editar faixa de comissao' : 'Nova faixa de comissao'}</DialogTitle>
+                        <DialogTitle>
+                            {editingCommissionId
+                                ? 'Editar faixa de comissao'
+                                : 'Nova faixa de comissao'}
+                        </DialogTitle>
                     </DialogHeader>
 
                     <div className="space-y-4">
                         <Field>
-                            <FieldLabel htmlFor="commission-min-sales">Venda minima</FieldLabel>
+                            <FieldLabel htmlFor="commission-min-sales">
+                                Venda minima
+                            </FieldLabel>
                             <Input
                                 id="commission-min-sales"
                                 type="text"
                                 inputMode="decimal"
                                 value={minSales}
-                                onChange={(e) => setMinSales(formatCurrencyInput(e.target.value))}
+                                onChange={(e) =>
+                                    setMinSales(
+                                        formatCurrencyInput(e.target.value),
+                                    )
+                                }
                                 disabled={isSavingCommission}
                                 placeholder="R$ 0,00"
                             />
                         </Field>
 
                         <Field>
-                            <FieldLabel htmlFor="commission-max-sales">Venda maxima</FieldLabel>
+                            <FieldLabel htmlFor="commission-max-sales">
+                                Venda maxima
+                            </FieldLabel>
                             <Input
                                 id="commission-max-sales"
                                 type="text"
                                 inputMode="decimal"
                                 value={maxSales}
-                                onChange={(e) => setMaxSales(formatCurrencyInput(e.target.value))}
+                                onChange={(e) =>
+                                    setMaxSales(
+                                        formatCurrencyInput(e.target.value),
+                                    )
+                                }
                                 disabled={isSavingCommission}
                                 placeholder="R$ 0,00"
                             />
                         </Field>
 
                         <Field>
-                            <FieldLabel htmlFor="commission-percent">Percentual</FieldLabel>
+                            <FieldLabel htmlFor="commission-percent">
+                                Percentual
+                            </FieldLabel>
                             <Input
                                 id="commission-percent"
                                 type="number"
                                 min="0"
                                 step="0.01"
                                 value={commissionPercent}
-                                onChange={(e) => setCommissionPercent(e.target.value)}
+                                onChange={(e) =>
+                                    setCommissionPercent(e.target.value)
+                                }
                                 disabled={isSavingCommission}
                                 placeholder="5"
                             />
-                            <FieldDescription>Ex.: `5` para 5% nessa faixa.</FieldDescription>
+                            <FieldDescription>
+                                Ex.: `5` para 5% nessa faixa.
+                            </FieldDescription>
                         </Field>
 
                         {commissionError && (
@@ -430,7 +522,11 @@ export default function AtendenteEditar() {
                     </div>
 
                     <DialogFooter>
-                        <Button variant="destructive" onClick={() => setCommissionModalOpen(false)} disabled={isSavingCommission}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setCommissionModalOpen(false)}
+                            disabled={isSavingCommission}
+                        >
                             <X className="w-4 h-4" />
                             Cancelar
                         </Button>
@@ -438,10 +534,20 @@ export default function AtendenteEditar() {
                             onClick={handleSaveCommission}
                             disabled={isSavingCommission}
                         >
-                            {isSavingCommission ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingCommissionId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
+                            {isSavingCommission ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : editingCommissionId ? (
+                                <Save className="w-4 h-4" />
+                            ) : (
+                                <Plus className="w-4 h-4" />
+                            )}
                             {isSavingCommission
-                                ? (editingCommissionId ? 'Salvando faixa...' : 'Criando faixa...')
-                                : (editingCommissionId ? 'Salvar faixa' : 'Criar faixa')}
+                                ? editingCommissionId
+                                    ? 'Salvando faixa...'
+                                    : 'Criando faixa...'
+                                : editingCommissionId
+                                  ? 'Salvar faixa'
+                                  : 'Criar faixa'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -460,7 +566,8 @@ export default function AtendenteEditar() {
                         <DialogTitle>Excluir faixa de comissao</DialogTitle>
                     </DialogHeader>
                     <p className="text-sm text-muted-foreground">
-                        Deseja realmente excluir esta faixa de comissao? Esta acao nao pode ser desfeita.
+                        Deseja realmente excluir esta faixa de comissao? Esta
+                        acao nao pode ser desfeita.
                     </p>
                     <DialogFooter>
                         <Button
@@ -479,8 +586,14 @@ export default function AtendenteEditar() {
                             disabled={deletingCommissionId !== null}
                             className="gap-2"
                         >
-                            {deletingCommissionId !== null ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            {deletingCommissionId !== null ? 'Excluindo...' : 'Excluir faixa'}
+                            {deletingCommissionId !== null ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="w-4 h-4" />
+                            )}
+                            {deletingCommissionId !== null
+                                ? 'Excluindo...'
+                                : 'Excluir faixa'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -513,7 +626,11 @@ export default function AtendenteEditar() {
                             disabled={isSaving}
                             className="gap-2"
                         >
-                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            {isSaving ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Save className="w-4 h-4" />
+                            )}
                             {isSaving ? 'Salvando...' : 'Confirmar e salvar'}
                         </Button>
                     </DialogFooter>
@@ -535,37 +652,60 @@ export default function AtendenteEditar() {
                             <UserCog className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-extrabold tracking-tight">Editar Atendente</h1>
-                            <p className="text-sm text-muted-foreground">Atualize cargo, graduacao e lider do atendente.</p>
+                            <h1 className="text-2xl font-extrabold tracking-tight">
+                                Editar Atendente
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                Atualize cargo, graduacao e lider do atendente.
+                            </p>
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-5">
-                <div className="solid-card p-5 space-y-4 animate-fade-in" style={{ animationDelay: '60ms', opacity: 0 }}>
+                <div
+                    className="solid-card p-5 space-y-4 animate-fade-in"
+                    style={{ animationDelay: '60ms', opacity: 0 }}
+                >
                     <div className="flex items-start gap-4">
                         <Avatar className="w-16 h-16 rounded-2xl">
-                            <AvatarImage src={attendant.user?.personal_data?.avatar} className="object-cover" />
+                            <AvatarImage
+                                src={attendant.user?.personal_data?.avatar}
+                                className="object-cover"
+                            />
                             <AvatarFallback className="rounded-2xl text-lg font-bold">
-                                {getInitials(attendant.user?.name ?? 'Atendente')}
+                                {getInitials(
+                                    attendant.user?.name ?? 'Atendente',
+                                )}
                             </AvatarFallback>
                         </Avatar>
 
                         <div className="min-w-0 space-y-2">
                             <div>
-                                <h2 className="text-xl font-bold truncate">{attendant.user?.name}</h2>
-                                <p className="text-sm text-muted-foreground truncate">@{attendant.user?.login}</p>
+                                <h2 className="text-xl font-bold truncate">
+                                    {attendant.user?.name}
+                                </h2>
+                                <p className="text-sm text-muted-foreground truncate">
+                                    @{attendant.user?.login}
+                                </p>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                <Badge variant="outline" className={cn('px-2 h-5', typeColors[attendant.type])}>
+                                <Badge
+                                    variant="outline"
+                                    className={cn(
+                                        'px-2 h-5',
+                                        typeColors[attendant.type],
+                                    )}
+                                >
                                     {attendant.type_label}
                                 </Badge>
                                 <Badge variant="default" className="px-2 h-5">
                                     {attendant.graduation_label}
                                 </Badge>
-                                <StatusBadge status={attendant.status ?? null} />
+                                <StatusBadge
+                                    status={attendant.status ?? null}
+                                />
                             </div>
                         </div>
                     </div>
@@ -576,26 +716,47 @@ export default function AtendenteEditar() {
                                 <ShieldCheck className="w-4 h-4 text-white" />
                             </div>
                             <div>
-                                <p className="text-sm font-semibold">Resumo atual</p>
-                                <p className="text-xs text-muted-foreground">Confira os dados antes de salvar.</p>
+                                <p className="text-sm font-semibold">
+                                    Resumo atual
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    Confira os dados antes de salvar.
+                                </p>
                             </div>
                         </div>
 
                         <div className="space-y-2 text-sm">
                             <div className="flex items-center justify-between gap-4">
-                                <span className="text-muted-foreground">Cargo atual</span>
-                                <span className="font-medium text-right">{attendant.type_label}</span>
+                                <span className="text-muted-foreground">
+                                    Cargo atual
+                                </span>
+                                <span className="font-medium text-right">
+                                    {attendant.type_label}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between gap-4">
-                                <span className="text-muted-foreground">Graduacao atual</span>
-                                <span className="font-medium text-right">{attendant.graduation_label}</span>
+                                <span className="text-muted-foreground">
+                                    Graduacao atual
+                                </span>
+                                <span className="font-medium text-right">
+                                    {attendant.graduation_label}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between gap-4">
-                                <span className="text-muted-foreground">Lider atual</span>
+                                <span className="text-muted-foreground">
+                                    Lider atual
+                                </span>
                                 <div className="flex flex-col items-end gap-1 text-right">
-                                    <span className="font-medium">{attendant.parent?.user?.name ?? 'Sem lider vinculado'}</span>
+                                    <span className="font-medium">
+                                        {attendant.parent?.user?.name ??
+                                            'Sem lider vinculado'}
+                                    </span>
                                     {attendant.parent?.user?.name ? (
-                                        <StatusBadge status={attendant.parent.status ?? null} />
+                                        <StatusBadge
+                                            status={
+                                                attendant.parent.status ?? null
+                                            }
+                                        />
                                     ) : null}
                                 </div>
                             </div>
@@ -604,71 +765,124 @@ export default function AtendenteEditar() {
                 </div>
 
                 <div className="space-y-5">
-                    <div className="solid-card p-5 md:p-6 animate-fade-in space-y-6" style={{ animationDelay: '120ms', opacity: 0 }}>
+                    <div
+                        className="solid-card p-5 md:p-6 animate-fade-in space-y-6"
+                        style={{ animationDelay: '120ms', opacity: 0 }}
+                    >
                         <div className="space-y-1">
-                            <h2 className="text-lg font-bold">Dados do atendente</h2>
-                            <p className="text-sm text-muted-foreground">A tela ja vem preenchida com os dados atuais para voce editar com seguranca.</p>
+                            <h2 className="text-lg font-bold">
+                                Dados do atendente
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                                A tela ja vem preenchida com os dados atuais
+                                para voce editar com seguranca.
+                            </p>
                         </div>
 
                         <FieldGroup className="gap-5 md:grid md:grid-cols-2">
                             <Field>
-                                <FieldLabel htmlFor="attendant-type">Cargo</FieldLabel>
-                                <Select value={type} onValueChange={setType} disabled={isSaving || isEditingGestor}>
+                                <FieldLabel htmlFor="attendant-type">
+                                    Cargo
+                                </FieldLabel>
+                                <Select
+                                    value={type}
+                                    onValueChange={setType}
+                                    disabled={isSaving || isEditingGestor}
+                                >
                                     <SelectTrigger id="attendant-type">
                                         <SelectValue placeholder="Selecione o cargo" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {availableTypes.map(([key, label]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {label}
-                                        </SelectItem>
+                                            <SelectItem key={key} value={key}>
+                                                {label}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="attendant-graduation">Graduacao</FieldLabel>
-                                <Select value={graduation} onValueChange={setGraduation} disabled={isSaving}>
+                                <FieldLabel htmlFor="attendant-graduation">
+                                    Graduacao
+                                </FieldLabel>
+                                <Select
+                                    value={graduation}
+                                    onValueChange={setGraduation}
+                                    disabled={isSaving}
+                                >
                                     <SelectTrigger id="attendant-graduation">
                                         <SelectValue placeholder="Selecione a graduacao" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.entries(graduates).map(([key, label]) => (
-                                            <SelectItem key={key} value={key}>
-                                                {label}
-                                            </SelectItem>
-                                        ))}
+                                        {Object.entries(graduates).map(
+                                            ([key, label]) => (
+                                                <SelectItem
+                                                    key={key}
+                                                    value={key}
+                                                >
+                                                    {label}
+                                                </SelectItem>
+                                            ),
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="attendant-status">Status</FieldLabel>
-                                <Select value={status} onValueChange={setStatus} disabled={isSaving}>
+                                <FieldLabel htmlFor="attendant-status">
+                                    Status
+                                </FieldLabel>
+                                <Select
+                                    value={status}
+                                    onValueChange={setStatus}
+                                    disabled={isSaving}
+                                >
                                     <SelectTrigger id="attendant-status">
                                         <SelectValue placeholder="Selecione o status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.entries(attendantStatus).map(([key, label]) => (
-                                            <SelectItem key={key} value={key}>
-                                                {label}
-                                            </SelectItem>
-                                        ))}
+                                        {Object.entries(attendantStatus).map(
+                                            ([key, label]) => (
+                                                <SelectItem
+                                                    key={key}
+                                                    value={key}
+                                                >
+                                                    {label}
+                                                </SelectItem>
+                                            ),
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="attendant-parent">{isSupervisorType ? 'Gestor' : 'Lider'}</FieldLabel>
-                                <Select value={selectedSupervisorId} onValueChange={setSelectedSupervisorId} disabled={isSaving}>
+                                <FieldLabel htmlFor="attendant-parent">
+                                    {isSupervisorType ? 'Gestor' : 'Lider'}
+                                </FieldLabel>
+                                <Select
+                                    value={selectedSupervisorId}
+                                    onValueChange={setSelectedSupervisorId}
+                                    disabled={isSaving}
+                                >
                                     <SelectTrigger id="attendant-parent">
-                                        <SelectValue placeholder={isSupervisorType ? 'Selecione o gestor' : 'Selecione o lider'} />
+                                        <SelectValue
+                                            placeholder={
+                                                isSupervisorType
+                                                    ? 'Selecione o gestor'
+                                                    : 'Selecione o lider'
+                                            }
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">Sem lider</SelectItem>
+                                        <SelectItem value="none">
+                                            Sem lider
+                                        </SelectItem>
                                         {leaderOptions.map((leader) => (
-                                            <SelectItem key={leader.id} value={String(leader.id)}>
+                                            <SelectItem
+                                                key={leader.id}
+                                                value={String(leader.id)}
+                                            >
                                                 {leader.name} @{leader.login}
                                             </SelectItem>
                                         ))}
@@ -689,23 +903,41 @@ export default function AtendenteEditar() {
                                 ID interno #{attendant.user_id}
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button onClick={requestSaveChanges} disabled={isSaving} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
-                                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                    {isSaving ? 'Salvando...' : 'Salvar alteracoes'}
+                                <Button
+                                    onClick={requestSaveChanges}
+                                    disabled={isSaving}
+                                    className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                >
+                                    {isSaving ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Save className="w-4 h-4" />
+                                    )}
+                                    {isSaving
+                                        ? 'Salvando...'
+                                        : 'Salvar alteracoes'}
                                 </Button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="solid-card p-5 md:p-6 animate-fade-in space-y-6" style={{ animationDelay: '180ms', opacity: 0 }}>
+                    <div
+                        className="solid-card p-5 md:p-6 animate-fade-in space-y-6"
+                        style={{ animationDelay: '180ms', opacity: 0 }}
+                    >
                         <div className="flex items-center justify-between gap-3 flex-wrap">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
                                     <Coins className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold">Faixas de comissao</h2>
-                                    <p className="text-sm text-muted-foreground">Visualize as regras ja cadastradas e adicione novas faixas quando precisar.</p>
+                                    <h2 className="text-lg font-bold">
+                                        Faixas de comissao
+                                    </h2>
+                                    <p className="text-sm text-muted-foreground">
+                                        Visualize as regras ja cadastradas e
+                                        adicione novas faixas quando precisar.
+                                    </p>
                                 </div>
                             </div>
                             <Button
@@ -719,36 +951,64 @@ export default function AtendenteEditar() {
 
                         <div className="space-y-3">
                             <div className="flex items-center justify-between gap-3">
-                                <h3 className="text-sm font-semibold">Regras ja cadastradas</h3>
-                                <Badge variant="outline">{commissionRanges.length}</Badge>
+                                <h3 className="text-sm font-semibold">
+                                    Regras ja cadastradas
+                                </h3>
+                                <Badge variant="outline">
+                                    {commissionRanges.length}
+                                </Badge>
                             </div>
 
                             {!commissionRanges.length ? (
                                 <div className="rounded-xl border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
-                                    Nenhuma faixa de comissao cadastrada para este atendente.
+                                    Nenhuma faixa de comissao cadastrada para
+                                    este atendente.
                                 </div>
                             ) : (
                                 <div className="space-y-3">
                                     {commissionRanges.map((commission) => (
-                                        <div key={commission.id} className="rounded-xl border border-border/60 px-4 py-4">
+                                        <div
+                                            key={commission.id}
+                                            className="rounded-xl border border-border/60 px-4 py-4"
+                                        >
                                             <div className="flex flex-wrap items-center justify-between gap-3">
                                                 <div>
                                                     <p className="font-semibold">
-                                                        {formatMoney(commission.min_sales)} ate {formatMoney(commission.max_sales)}
+                                                        {formatMoney(
+                                                            commission.min_sales,
+                                                        )}{' '}
+                                                        ate{' '}
+                                                        {formatMoney(
+                                                            commission.max_sales,
+                                                        )}
                                                     </p>
                                                     <p className="text-sm text-muted-foreground">
-                                                        {formatPercent(commission.commission_percent ?? commission.value)} de comissao
+                                                        {formatPercent(
+                                                            commission.commission_percent ??
+                                                                commission.value,
+                                                        )}{' '}
+                                                        de comissao
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Badge variant="outline">#{commission.id}</Badge>
+                                                    <Badge variant="outline">
+                                                        #{commission.id}
+                                                    </Badge>
                                                     <Button
                                                         type="button"
                                                         size="sm"
                                                         variant="outline"
                                                         className="gap-1.5"
-                                                        onClick={() => openEditCommissionModal(commission)}
-                                                        disabled={isSavingCommission || deletingCommissionId === commission.id}
+                                                        onClick={() =>
+                                                            openEditCommissionModal(
+                                                                commission,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isSavingCommission ||
+                                                            deletingCommissionId ===
+                                                                commission.id
+                                                        }
                                                     >
                                                         <Pencil className="w-3.5 h-3.5" />
                                                         Editar
@@ -758,10 +1018,19 @@ export default function AtendenteEditar() {
                                                         size="sm"
                                                         variant="destructive"
                                                         className="gap-1.5"
-                                                        onClick={() => requestDeleteCommission(commission.id)}
-                                                        disabled={isSavingCommission || deletingCommissionId === commission.id}
+                                                        onClick={() =>
+                                                            requestDeleteCommission(
+                                                                commission.id,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isSavingCommission ||
+                                                            deletingCommissionId ===
+                                                                commission.id
+                                                        }
                                                     >
-                                                        {deletingCommissionId === commission.id ? (
+                                                        {deletingCommissionId ===
+                                                        commission.id ? (
                                                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                                         ) : (
                                                             <Trash2 className="w-3.5 h-3.5" />

@@ -29,9 +29,13 @@ export function TableEmptyState({
                     <div className="p-3 rounded-full bg-muted/50">
                         <Icon className="w-6 h-6 text-muted-foreground/50" />
                     </div>
-                    <p className="text-muted-foreground text-sm font-medium">{message}</p>
+                    <p className="text-muted-foreground text-sm font-medium">
+                        {message}
+                    </p>
                     {description && (
-                        <p className="text-muted-foreground/60 text-xs">{description}</p>
+                        <p className="text-muted-foreground/60 text-xs">
+                            {description}
+                        </p>
                     )}
                 </div>
             </TableCell>

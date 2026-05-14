@@ -7,7 +7,11 @@ import {
     useInView,
 } from 'framer-motion';
 
-const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
+const BRL = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+});
 const NUM = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
 
 export function AnimatedNumber({
@@ -36,7 +40,10 @@ export function AnimatedNumber({
 
     useEffect(() => {
         if (!inView) return;
-        const ctrl = frameAnimate(motionVal, value, { duration, ease: [0.22, 1, 0.36, 1] });
+        const ctrl = frameAnimate(motionVal, value, {
+            duration,
+            ease: [0.22, 1, 0.36, 1],
+        });
         return () => ctrl.stop();
     }, [inView, value, duration, motionVal]);
 

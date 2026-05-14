@@ -20,7 +20,12 @@ export function RankingStats({ summary }: RankingStatsProps) {
             className="solid-card overflow-hidden rounded-2xl border-l-2 border-l-primary"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', damping: 22, stiffness: 260, delay: 0.1 }}
+            transition={{
+                type: 'spring',
+                damping: 22,
+                stiffness: 260,
+                delay: 0.1,
+            }}
         >
             <div className="border-b border-border/60 px-5 pb-3 pt-4">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -30,7 +35,9 @@ export function RankingStats({ summary }: RankingStatsProps) {
 
             <div className="space-y-4 p-5">
                 <div>
-                    <p className="mb-1 text-xs text-muted-foreground">Receita Total</p>
+                    <p className="mb-1 text-xs text-muted-foreground">
+                        Receita Total
+                    </p>
                     <div className="flex items-start gap-3">
                         <div>
                             <p className="text-4xl font-black leading-none text-foreground">
@@ -44,7 +51,9 @@ export function RankingStats({ summary }: RankingStatsProps) {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="mb-1 text-xs text-muted-foreground">Vendas Totais</p>
+                        <p className="mb-1 text-xs text-muted-foreground">
+                            Vendas Totais
+                        </p>
                         <AnimatedNumber
                             value={summary.total_sales}
                             duration={1.4}
@@ -52,7 +61,9 @@ export function RankingStats({ summary }: RankingStatsProps) {
                         />
                     </div>
                     <div>
-                        <p className="mb-1 text-xs text-muted-foreground">Conv. Media</p>
+                        <p className="mb-1 text-xs text-muted-foreground">
+                            Conv. Media
+                        </p>
                         <AnimatedNumber
                             value={summary.conversion_percentage}
                             suffix="%"
@@ -66,7 +77,9 @@ export function RankingStats({ summary }: RankingStatsProps) {
 
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="mb-1 text-xs text-muted-foreground">Atendimentos</p>
+                        <p className="mb-1 text-xs text-muted-foreground">
+                            Atendimentos
+                        </p>
                         <AnimatedNumber
                             value={summary.total_reengagements}
                             duration={1.4}

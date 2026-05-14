@@ -21,7 +21,9 @@ export function Pagination({
     className = '',
 }: PaginationProps) {
     return (
-        <div className={`flex items-center justify-between px-5 py-3 border-t border-border ${className}`}>
+        <div
+            className={`flex items-center justify-between px-5 py-3 border-t border-border ${className}`}
+        >
             <span className="text-xs text-muted-foreground">Página {page}</span>
             <div className="flex items-center gap-2">
                 <Button

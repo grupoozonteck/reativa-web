@@ -13,7 +13,7 @@ export function CongratulationsModal({ onClose }: CongratulationsModalProps) {
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <div
                 className="relative z-10 solid-card p-8 max-w-sm w-full text-center animate-fade-in shadow-2xl"
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
                 style={{ animationDuration: '0.3s' }}
             >
                 {/* Confetes animados */}
@@ -25,7 +25,14 @@ export function CongratulationsModal({ onClose }: CongratulationsModalProps) {
                             style={{
                                 left: `${8 + i * 7}%`,
                                 top: '-8px',
-                                backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#ec4899'][i % 6],
+                                backgroundColor: [
+                                    '#f59e0b',
+                                    '#10b981',
+                                    '#3b82f6',
+                                    '#8b5cf6',
+                                    '#ef4444',
+                                    '#ec4899',
+                                ][i % 6],
                                 animation: `confetti-fall ${1 + (i % 3) * 0.4}s ease-in ${(i % 5) * 0.15}s forwards`,
                             }}
                         />
@@ -38,7 +45,9 @@ export function CongratulationsModal({ onClose }: CongratulationsModalProps) {
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-2">
                     <PartyPopper className="w-5 h-5 text-amber-500" />
-                    <h2 className="text-2xl font-extrabold tracking-tight">Parabéns!</h2>
+                    <h2 className="text-2xl font-extrabold tracking-tight">
+                        Parabéns!
+                    </h2>
                     <PartyPopper className="w-5 h-5 text-amber-500" />
                 </div>
                 <p className="text-muted-foreground text-sm mb-6">

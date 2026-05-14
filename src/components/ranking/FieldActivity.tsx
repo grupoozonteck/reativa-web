@@ -2,7 +2,11 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { LeaderboardEntry } from './types';
 
-const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
+const BRL = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+});
 
 function timeAgo(minutes: number) {
     if (minutes < 60) return `Ha ${minutes} min`;
@@ -40,7 +44,10 @@ function buildActivities(sellers: LeaderboardEntry[]): Activity[] {
                 time: timeAgo(minuteOffset),
                 parts: [
                     { text: `${firstName} reengajou ` },
-                    { text: `${seller.total_reengagements} clientes antigos`, highlight: true },
+                    {
+                        text: `${seller.total_reengagements} clientes antigos`,
+                        highlight: true,
+                    },
                 ],
             });
             minuteOffset += 15;
@@ -71,7 +78,12 @@ export function FieldActivity({ sellers }: FieldActivityProps) {
             className="solid-card rounded-2xl p-5"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', damping: 22, stiffness: 260, delay: 0.2 }}
+            transition={{
+                type: 'spring',
+                damping: 22,
+                stiffness: 260,
+                delay: 0.2,
+            }}
         >
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 Atividade de Campo
@@ -81,18 +93,29 @@ export function FieldActivity({ sellers }: FieldActivityProps) {
                 {activities.map((activity, index) => (
                     <div key={index} className="flex gap-3">
                         <div className="flex shrink-0 flex-col items-center pt-1.5">
-                            <div className={cn('h-2 w-2 rounded-full', activity.dotColor)} />
+                            <div
+                                className={cn(
+                                    'h-2 w-2 rounded-full',
+                                    activity.dotColor,
+                                )}
+                            />
                             {index < activities.length - 1 && (
                                 <div className="mt-1 min-h-[20px] w-px flex-1 bg-border/60" />
                             )}
                         </div>
                         <div className="pb-4">
-                            <p className="text-xs text-muted-foreground">{activity.time}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {activity.time}
+                            </p>
                             <p className="text-xs leading-snug text-foreground/85">
                                 {activity.parts.map((part, partIndex) => (
                                     <span
                                         key={partIndex}
-                                        className={part.highlight ? 'font-bold text-primary' : 'text-foreground/85'}
+                                        className={
+                                            part.highlight
+                                                ? 'font-bold text-primary'
+                                                : 'text-foreground/85'
+                                        }
                                     >
                                         {part.text}
                                     </span>

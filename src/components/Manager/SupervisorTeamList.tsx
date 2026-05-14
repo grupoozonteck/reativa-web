@@ -4,7 +4,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency, getInitials } from '@/utils/client-utils';
-import { type ManagerSupervisor, type ManagerAttendant } from '@/services/team.service';
+import {
+    type ManagerSupervisor,
+    type ManagerAttendant,
+} from '@/services/team.service';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { AvatarImage } from '@radix-ui/react-avatar';
 
@@ -33,7 +36,10 @@ export function SupervisorTeamCardSkeleton() {
             {/* Atendentes skeleton */}
             <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Array.from({ length: 2 }).map((_, i) => (
-                    <div key={i} className="rounded-xl border border-border/50 p-3 space-y-2">
+                    <div
+                        key={i}
+                        className="rounded-xl border border-border/50 p-3 space-y-2"
+                    >
                         <div className="flex items-center gap-2">
                             <Skeleton className="w-8 h-8 rounded-full shrink-0" />
                             <div className="flex-1 space-y-1">
@@ -56,11 +62,10 @@ export function SupervisorTeamCardSkeleton() {
 // ─── Attendant mini card ──────────────────────────────────────────────────────
 
 function AttendantMiniCard({ attendant }: { attendant: ManagerAttendant }) {
-
-
-    const revenue = typeof attendant.revenue === 'string'
-        ? parseFloat(attendant.revenue)
-        : (attendant.revenue ?? 0);
+    const revenue =
+        typeof attendant.revenue === 'string'
+            ? parseFloat(attendant.revenue)
+            : (attendant.revenue ?? 0);
 
     return (
         <div className="rounded-xl border border-border/60 bg-muted/30 p-4 hover:bg-muted/50 transition-colors">
@@ -70,8 +75,12 @@ function AttendantMiniCard({ attendant }: { attendant: ManagerAttendant }) {
                     {getInitials(attendant.user.name)}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{attendant.user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">@{attendant.user.login || '—'}</p>
+                    <p className="font-semibold text-sm truncate">
+                        {attendant.user.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                        @{attendant.user.login || '—'}
+                    </p>
                 </div>
                 <Badge
                     variant="outline"
@@ -84,22 +93,36 @@ function AttendantMiniCard({ attendant }: { attendant: ManagerAttendant }) {
             {/* Métricas */}
             <div className="grid grid-cols-4 gap-2 text-center pt-3 border-t border-border/40">
                 <div>
-                    <p className="text-base font-bold tabular-nums">{attendant.sales}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Reat.</p>
+                    <p className="text-base font-bold tabular-nums">
+                        {attendant.sales}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        Reat.
+                    </p>
                 </div>
                 <div>
-                    <p className="text-base font-bold tabular-nums">{attendant.total_reengagements}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Atend.</p>
+                    <p className="text-base font-bold tabular-nums">
+                        {attendant.total_reengagements}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        Atend.
+                    </p>
                 </div>
                 <div>
-                    <p className="text-base font-bold tabular-nums">{attendant.conversion}%</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Conv.</p>
+                    <p className="text-base font-bold tabular-nums">
+                        {attendant.conversion}%
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        Conv.
+                    </p>
                 </div>
                 <div>
                     <p className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
                         {formatCurrency(revenue)}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Receita</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        Receita
+                    </p>
                 </div>
             </div>
         </div>
@@ -108,25 +131,33 @@ function AttendantMiniCard({ attendant }: { attendant: ManagerAttendant }) {
 
 // ─── Supervisor team card ─────────────────────────────────────────────────────
 
-export function SupervisorTeamCard({ supervisor }: { supervisor: ManagerSupervisor }) {
-
-
+export function SupervisorTeamCard({
+    supervisor,
+}: {
+    supervisor: ManagerSupervisor;
+}) {
     const conversionPct = Math.min(supervisor.conversion, 100);
-    
 
     return (
         <div className="solid-card overflow-hidden hover:scale-[1.005] transition-transform">
             {/* Cabeçalho do supervisor */}
             <div className="px-5 py-4 bg-indigo-50/50 dark:bg-indigo-500/5 border-b border-border flex items-center gap-4">
                 <Avatar>
-                    <AvatarImage src={'/images/logos/logo-white.webp'} alt={supervisor.user.name} />
+                    <AvatarImage
+                        src={'/images/logos/logo-white.webp'}
+                        alt={supervisor.user.name}
+                    />
                     <AvatarFallback>
                         {getInitials(supervisor.user.name)}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                    <p className="font-bold text-base truncate">{supervisor.user.name}</p>
-                    <p className="text-sm text-muted-foreground truncate">@{supervisor.user.login || '—'}</p>
+                    <p className="font-bold text-base truncate">
+                        {supervisor.user.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground truncate">
+                        @{supervisor.user.login || '—'}
+                    </p>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
                     <Badge
@@ -135,37 +166,55 @@ export function SupervisorTeamCard({ supervisor }: { supervisor: ManagerSupervis
                     >
                         {supervisor.type_label}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{supervisor.graduation_label}</span>
+                    <span className="text-xs text-muted-foreground">
+                        {supervisor.graduation_label}
+                    </span>
                 </div>
             </div>
 
             {/* Métricas do supervisor */}
             <div className="grid grid-cols-5 gap-3 px-5 py-4 border-b border-border/50">
                 <div className="text-center">
-                    <p className="text-xl font-bold tabular-nums">{supervisor.sales}</p>
-                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">Reativaçôes</p>
+                    <p className="text-xl font-bold tabular-nums">
+                        {supervisor.sales}
+                    </p>
+                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">
+                        Reativaçôes
+                    </p>
                 </div>
                 <div className="text-center">
-                    <p className="text-xl font-bold tabular-nums">{supervisor.total_reengagements}</p>
-                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">Atendimentos</p>
+                    <p className="text-xl font-bold tabular-nums">
+                        {supervisor.total_reengagements}
+                    </p>
+                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">
+                        Atendimentos
+                    </p>
                 </div>
                 <div className="text-center">
-                    <p className="text-xl font-bold tabular-nums">{supervisor.conversion}%</p>
-                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">Conv.</p>
+                    <p className="text-xl font-bold tabular-nums">
+                        {supervisor.conversion}%
+                    </p>
+                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">
+                        Conv.
+                    </p>
                 </div>
-              
+
                 <div className="text-center">
                     <p className="text-xl font-bold  text-emerald-600 dark:text-emerald-400">
                         {formatCurrency(supervisor.revenue)}
                     </p>
-                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">Receita</p>
+                    <p className="text-sm text-muted-foreground uppercase tracking-wide mt-0.5">
+                        Receita
+                    </p>
                 </div>
             </div>
 
             {/* Barra de progresso */}
             <div className="px-5 pt-3 pb-1 flex items-center gap-2">
                 <Progress value={conversionPct} className="h-2 flex-1" />
-                <span className="text-xs text-muted-foreground w-10 text-right font-medium">{supervisor.level}</span>
+                <span className="text-xs text-muted-foreground w-10 text-right font-medium">
+                    {supervisor.level}
+                </span>
             </div>
 
             {/* Atendentes */}
@@ -189,8 +238,11 @@ export function SupervisorTeamCard({ supervisor }: { supervisor: ManagerSupervis
                     </p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {supervisor.attendants.map(attendant => (
-                            <AttendantMiniCard key={attendant.id} attendant={attendant} />
+                        {supervisor.attendants.map((attendant) => (
+                            <AttendantMiniCard
+                                key={attendant.id}
+                                attendant={attendant}
+                            />
                         ))}
                     </div>
                 )}
@@ -207,13 +259,19 @@ interface SupervisorTeamListProps {
     isFetching: boolean;
 }
 
-export function SupervisorTeamList({ supervisors, isLoading, isFetching }: SupervisorTeamListProps) {
+export function SupervisorTeamList({
+    supervisors,
+    isLoading,
+    isFetching,
+}: SupervisorTeamListProps) {
     return (
         <div className="solid-card">
             <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-muted-foreground" />
-                    <h2 className="text-sm font-semibold">Supervisores e Equipes</h2>
+                    <h2 className="text-sm font-semibold">
+                        Supervisores e Equipes
+                    </h2>
                     {!isLoading && (
                         <Badge
                             variant="outline"
@@ -241,7 +299,9 @@ export function SupervisorTeamList({ supervisors, isLoading, isFetching }: Super
                 ) : supervisors.length === 0 ? (
                     <div className="text-center py-16 flex flex-col items-center gap-2">
                         <Users className="w-8 h-8 text-muted-foreground/30" />
-                        <p className="text-muted-foreground text-sm">Nenhum supervisor encontrado na operação</p>
+                        <p className="text-muted-foreground text-sm">
+                            Nenhum supervisor encontrado na operação
+                        </p>
                     </div>
                 ) : (
                     <div
@@ -250,8 +310,11 @@ export function SupervisorTeamList({ supervisors, isLoading, isFetching }: Super
                             isFetching && !isLoading && 'opacity-50',
                         )}
                     >
-                        {supervisors.map(supervisor => (
-                            <SupervisorTeamCard key={supervisor.id} supervisor={supervisor} />
+                        {supervisors.map((supervisor) => (
+                            <SupervisorTeamCard
+                                key={supervisor.id}
+                                supervisor={supervisor}
+                            />
                         ))}
                     </div>
                 )}

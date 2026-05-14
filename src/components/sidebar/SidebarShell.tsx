@@ -14,20 +14,34 @@ interface SidebarShellProps {
     onNav?: () => void;
 }
 
-export default function SidebarShell({ name, email, initials, userRole, onLogout, onNav }: SidebarShellProps) {
+export default function SidebarShell({
+    name,
+    email,
+    initials,
+    userRole,
+    onLogout,
+    onNav,
+}: SidebarShellProps) {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     return (
-        <div className="flex flex-col h-full">
-
+        <div className="flex h-full min-h-0 flex-col">
             {/* ── Brand ── */}
             <div className="px-5 py-5 border-b border-border">
                 <div className="flex items-center gap-3">
                     <div className="relative  p-2 rounded-xl">
                         {isDark ? (
-                            <img src="/images/logos/logo-closer.png" alt="Reativa Logo" className="object-cover rounded-xl" />
+                            <img
+                                src="/images/logos/logo-closer.png"
+                                alt="Reativa Logo"
+                                className="object-cover rounded-xl"
+                            />
                         ) : (
-                            <img src="/images/logos/logo-closer-white.webp" alt="Reativa Logo" className="object-cover rounded-xl" />
+                            <img
+                                src="/images/logos/logo-closer-white.webp"
+                                alt="Reativa Logo"
+                                className="object-cover rounded-xl"
+                            />
                         )}
                     </div>
                 </div>
@@ -35,14 +49,16 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
 
             {/* ── Section label ── */}
             <div className="px-5 pt-5 pb-2">
-                <p className="font-bold text-muted-foreground/80 uppercase text-sm">Acesso {userRole}</p>
+                <p className="font-bold text-muted-foreground/80 uppercase text-sm">
+                    Acesso {userRole}
+                </p>
             </div>
 
             {/* ── Nav ── */}
             <SidebarNav onNav={onNav} />
 
             {/* ── User footer ── */}
-            <div className="px-3 py-4 border-t border-border">
+            <div className="shrink-0 border-t border-border px-3 py-4">
                 <div className="flex items-center gap-2 px-2.5 py-2.5 rounded-xl bg-muted">
                     <Avatar className="w-8 h-8 shrink-0">
                         <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
@@ -50,8 +66,12 @@ export default function SidebarShell({ name, email, initials, userRole, onLogout
                         </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold truncate leading-tight">{name}</p>
-                        <p className="text-[10px] text-muted-foreground truncate leading-tight">{email}</p>
+                        <p className="text-xs font-semibold truncate leading-tight">
+                            {name}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate leading-tight">
+                            {email}
+                        </p>
                     </div>
                     <ThemeToggleButton />
                     <Button

@@ -15,9 +15,15 @@ export function AttendantShowCommissionsList(commissions: ICommissions[]) {
                 <tbody>
                     {commissions.map((commission) => (
                         <tr key={commission.id}>
-                            <td className="border px-4 py-2">{commission.id}</td>
-                            <td className="border px-4 py-2">{commission.value}</td>
-                            <td className="border px-4 py-2">{commission.created_at}</td>
+                            <td className="border px-4 py-2">
+                                {commission.id}
+                            </td>
+                            <td className="border px-4 py-2">
+                                {commission.value}
+                            </td>
+                            <td className="border px-4 py-2">
+                                {commission.created_at}
+                            </td>
                         </tr>
                     ))}
                 </tbody>

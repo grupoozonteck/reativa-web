@@ -1,6 +1,6 @@
-import type { ICommissions } from "@/services/team.service";
+import type { ICommissions } from '@/services/team.service';
 
-export function AttedentShowComissionsList (commisions:ICommissions[]) {
+export function AttedentShowComissionsList(commisions: ICommissions[]) {
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4">Comissões</h2>
@@ -15,9 +15,15 @@ export function AttedentShowComissionsList (commisions:ICommissions[]) {
                 <tbody>
                     {commisions.map((commission) => (
                         <tr key={commission.id}>
-                            <td className="border px-4 py-2">{commission.id}</td>
-                            <td className="border px-4 py-2">{commission.value}</td>
-                            <td className="border px-4 py-2">{commission.created_at}</td>
+                            <td className="border px-4 py-2">
+                                {commission.id}
+                            </td>
+                            <td className="border px-4 py-2">
+                                {commission.value}
+                            </td>
+                            <td className="border px-4 py-2">
+                                {commission.created_at}
+                            </td>
                         </tr>
                     ))}
                 </tbody>

@@ -18,21 +18,31 @@ interface AttendanceConfirmationModalProps {
     onClose: () => void;
 }
 
-export function AttendanceConfirmationModal({ client, onConfirm, onClose }: AttendanceConfirmationModalProps) {
+export function AttendanceConfirmationModal({
+    client,
+    onConfirm,
+    onClose,
+}: AttendanceConfirmationModalProps) {
     if (!client) return null;
 
     const initials = getInitials(client.name);
     const colorClass = getAvatarColor(client.name);
 
     return (
-        <Dialog open={!!client} onOpenChange={(open) => { if (!open) onClose(); }}>
+        <Dialog
+            open={!!client}
+            onOpenChange={(open) => {
+                if (!open) onClose();
+            }}
+        >
             <DialogContent className="max-w-sm">
                 <DialogHeader>
                     <DialogTitle className="text-base font-display font-bold">
                         Iniciar atendimento?
                     </DialogTitle>
                     <DialogDescription className="text-sm text-on-surface-variant">
-                        Confirme antes de iniciar o atendimento com este cliente.
+                        Confirme antes de iniciar o atendimento com este
+                        cliente.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -44,22 +54,34 @@ export function AttendanceConfirmationModal({ client, onConfirm, onClose }: Atte
                             className="w-11 h-11 rounded-xl object-cover shrink-0"
                         />
                     ) : (
-                        <div className={cn(
-                            'w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
-                            colorClass
-                        )}>
+                        <div
+                            className={cn(
+                                'w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0',
+                                colorClass,
+                            )}
+                        >
                             {initials}
                         </div>
                     )}
                     <div className="min-w-0">
-                        <p className="text-sm font-semibold text-on-surface truncate">{client.name}</p>
-                        <p className="text-xs text-on-surface-variant truncate">{client.login}</p>
-                        <p className="text-xs text-on-surface-variant font-mono mt-0.5">#{client.id}</p>
+                        <p className="text-sm font-semibold text-on-surface truncate">
+                            {client.name}
+                        </p>
+                        <p className="text-xs text-on-surface-variant truncate">
+                            {client.login}
+                        </p>
+                        <p className="text-xs text-on-surface-variant font-mono mt-0.5">
+                            #{client.id}
+                        </p>
                     </div>
                 </div>
 
                 <DialogFooter className="gap-2 flex-col sm:flex-row">
-                    <Button variant="outline" onClick={onClose} className="flex-1">
+                    <Button
+                        variant="outline"
+                        onClick={onClose}
+                        className="flex-1"
+                    >
                         Cancelar
                     </Button>
                     <Button

@@ -1,4 +1,8 @@
-import type { LoginCredentials, User, Attendant } from '../services/auth.service';
+import type {
+    LoginCredentials,
+    User,
+    Attendant,
+} from '../services/auth.service';
 
 export interface AuthContextType {
     user: User | null;

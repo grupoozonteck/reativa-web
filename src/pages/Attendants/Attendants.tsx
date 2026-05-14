@@ -12,8 +12,12 @@ import { useDebounce } from '@/hooks/useDebounce';
 const DEFAULT_FILTERS: AttendantsFilters = { status: 1 };
 
 export default function Atendentes() {
-    const [filters, setFilters] = useState<AttendantsFilters>({ ...DEFAULT_FILTERS });
-    const [appliedFilters, setAppliedFilters] = useState<AttendantsFilters>({ ...DEFAULT_FILTERS });
+    const [filters, setFilters] = useState<AttendantsFilters>({
+        ...DEFAULT_FILTERS,
+    });
+    const [appliedFilters, setAppliedFilters] = useState<AttendantsFilters>({
+        ...DEFAULT_FILTERS,
+    });
     const [countriesOptions, setCountriesOptions] = useState<
         {
             acronym: string;
@@ -25,7 +29,13 @@ export default function Atendentes() {
     const debouncedSearch = useDebounce(appliedFilters.search ?? '', 400);
 
     const attendantsQuery = useQuery({
-        queryKey: ['attendants', debouncedSearch, appliedFilters.type, appliedFilters.status, appliedFilters.country_code],
+        queryKey: [
+            'attendants',
+            debouncedSearch,
+            appliedFilters.type,
+            appliedFilters.status,
+            appliedFilters.country_code,
+        ],
         queryFn: () =>
             teamService.getAttendants({
                 search: debouncedSearch || undefined,
@@ -61,17 +71,28 @@ export default function Atendentes() {
     const attendants = data?.attendants?.data ?? [];
     const total = data?.attendants?.meta?.total;
     const resolvedTypes = utilsQuery.data?.types ?? data?.types ?? {};
-    const resolvedGraduates = utilsQuery.data?.graduates ?? data?.graduates ?? {};
-    const resolvedStatus = utilsQuery.data?.status ?? { '0': 'Inativo', '1': 'Ativo' };
+    const resolvedGraduates =
+        utilsQuery.data?.graduates ?? data?.graduates ?? {};
+    const resolvedStatus = utilsQuery.data?.status ?? {
+        '0': 'Inativo',
+        '1': 'Ativo',
+    };
     const isLoading = attendantsQuery.isLoading;
-    const isFetching = attendantsQuery.isFetching || supportQuery.isFetching || utilsQuery.isFetching;
+    const isFetching =
+        attendantsQuery.isFetching ||
+        supportQuery.isFetching ||
+        utilsQuery.isFetching;
     const hasDraftChanges =
         (filters.search ?? '') !== (appliedFilters.search ?? '') ||
         filters.type !== appliedFilters.type ||
         filters.status !== appliedFilters.status ||
         filters.country_code !== appliedFilters.country_code;
     const refetch = async () => {
-        await Promise.all([attendantsQuery.refetch(), supportQuery.refetch(), utilsQuery.refetch()]);
+        await Promise.all([
+            attendantsQuery.refetch(),
+            supportQuery.refetch(),
+            utilsQuery.refetch(),
+        ]);
     };
 
     useEffect(() => {
@@ -105,10 +126,13 @@ export default function Atendentes() {
                                 <div className="rounded-lg border border-secondary/20 bg-secondary/10 p-2.5 text-secondary">
                                     <UserCog className="size-5" />
                                 </div>
-                                <h1 className="text-3xl font-extrabold tracking-tight">Atendentes</h1>
+                                <h1 className="text-3xl font-extrabold tracking-tight">
+                                    Atendentes
+                                </h1>
                             </div>
                             <p className="text-muted-foreground text-base">
-                                Gerencie e visualize todos os atendentes da plataforma
+                                Gerencie e visualize todos os atendentes da
+                                plataforma
                             </p>
                         </div>
                         <div className="flex items-center gap-2">

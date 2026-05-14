@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
 interface CommissionStatCardProps {
     label: string;
@@ -22,7 +22,9 @@ export function CommissionStatCard({
                     <p className="text-[10px] sm:text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-2 truncate">
                         {label}
                     </p>
-                    <p className={`font-display text-2xl sm:text-3xl font-black tracking-tight ${valueColor} break-words`}>
+                    <p
+                        className={`font-display text-2xl sm:text-3xl font-black tracking-tight ${valueColor} break-words`}
+                    >
                         {value}
                     </p>
                 </div>
