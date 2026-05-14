@@ -9,7 +9,11 @@ interface RankingHeaderProps {
     onRefresh: () => void;
 }
 
-export function RankingHeader({ participants, isFetching, onRefresh }: RankingHeaderProps) {
+export function RankingHeader({
+    participants,
+    isFetching,
+    onRefresh,
+}: RankingHeaderProps) {
     return (
         <motion.div
             className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center"
@@ -31,9 +35,15 @@ export function RankingHeader({ participants, isFetching, onRefresh }: RankingHe
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
                             Ao vivo
                         </span>
-                        <span className="text-xs text-muted-foreground/50">·</span>
-                        <span className="text-xs text-muted-foreground">{participants} competidores</span>
-                        <span className="text-xs text-muted-foreground/50">·</span>
+                        <span className="text-xs text-muted-foreground/50">
+                            ·
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                            {participants} competidores
+                        </span>
+                        <span className="text-xs text-muted-foreground/50">
+                            ·
+                        </span>
                         <span className="flex items-center gap-1 text-xs text-amber-400 font-semibold">
                             <Zap className="w-3 h-3" />
                             Mês atual
@@ -49,7 +59,9 @@ export function RankingHeader({ participants, isFetching, onRefresh }: RankingHe
                 disabled={isFetching}
                 onClick={onRefresh}
             >
-                <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isFetching ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                    className={`h-3.5 w-3.5 mr-1.5 ${isFetching ? 'animate-spin' : ''}`}
+                />
                 {isFetching ? 'Atualizando...' : 'Atualizar'}
             </Button>
         </motion.div>

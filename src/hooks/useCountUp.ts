@@ -15,7 +15,10 @@ export function useCountUp(end: number, duration = 1200) {
 
         const step = (timestamp: number) => {
             if (!startTime.current) startTime.current = timestamp;
-            const progress = Math.min((timestamp - startTime.current) / duration, 1);
+            const progress = Math.min(
+                (timestamp - startTime.current) / duration,
+                1,
+            );
             // Ease out cubic
             const eased = 1 - Math.pow(1 - progress, 3);
             setCount(eased * end);
@@ -27,7 +30,9 @@ export function useCountUp(end: number, duration = 1200) {
         };
 
         ref.current = requestAnimationFrame(step);
-        return () => { if (ref.current) cancelAnimationFrame(ref.current); };
+        return () => {
+            if (ref.current) cancelAnimationFrame(ref.current);
+        };
     }, [end, duration]);
 
     return count;

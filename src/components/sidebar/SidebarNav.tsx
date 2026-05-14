@@ -12,9 +12,10 @@ export default function SidebarNav({ onNav }: SidebarNavProps) {
     const items = filterNavItems(navItems, userType);
 
     return (
-        <nav className="flex-1 px-3 pb-4">
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
             <div className="space-y-1">
-                {items.map((item) => {''
+                {items.map((item) => {
+                    '';
                     const Icon = item.icon;
 
                     return (

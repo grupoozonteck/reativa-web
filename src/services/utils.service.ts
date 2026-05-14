@@ -12,9 +12,15 @@ interface UtilityListResponse {
 
 const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
-const memoryCache = new Map<string, { expiresAt: number; value: UtilityItem[] }>();
+const memoryCache = new Map<
+    string,
+    { expiresAt: number; value: UtilityItem[] }
+>();
 
-async function fetchCachedList(cacheKey: string, path: string): Promise<UtilityItem[]> {
+async function fetchCachedList(
+    cacheKey: string,
+    path: string,
+): Promise<UtilityItem[]> {
     const cached = memoryCache.get(cacheKey);
     const now = Date.now();
 
@@ -41,15 +47,31 @@ function toRecord(items: UtilityItem[]): Record<string, string> {
 }
 
 export const utilsService = {
-    getAttendantTypes: () => fetchCachedList('attendant-types', '/api/utils/attendants/types'),
-    getAttendantGraduates: () => fetchCachedList('attendant-graduates', '/api/utils/attendants/graduates'),
-    getAttendantStatus: () => fetchCachedList('attendant-status', '/api/utils/attendants/status'),
-    getReengagementStatus: () => fetchCachedList('reengagement-status', '/api/utils/reengagements/status'),
-    getOrderStatus: () => fetchCachedList('order-status', '/api/utils/orders/status'),
+    getAttendantTypes: () =>
+        fetchCachedList('attendant-types', '/api/utils/attendants/types'),
+    getAttendantGraduates: () =>
+        fetchCachedList(
+            'attendant-graduates',
+            '/api/utils/attendants/graduates',
+        ),
+    getAttendantStatus: () =>
+        fetchCachedList('attendant-status', '/api/utils/attendants/status'),
+    getReengagementStatus: () =>
+        fetchCachedList(
+            'reengagement-status',
+            '/api/utils/reengagements/status',
+        ),
+    getOrderStatus: () =>
+        fetchCachedList('order-status', '/api/utils/orders/status'),
 
-    getAttendantTypesMap: async () => toRecord(await utilsService.getAttendantTypes()),
-    getAttendantGraduatesMap: async () => toRecord(await utilsService.getAttendantGraduates()),
-    getAttendantStatusMap: async () => toRecord(await utilsService.getAttendantStatus()),
-    getReengagementStatusMap: async () => toRecord(await utilsService.getReengagementStatus()),
-    getOrderStatusMap: async () => toRecord(await utilsService.getOrderStatus()),
+    getAttendantTypesMap: async () =>
+        toRecord(await utilsService.getAttendantTypes()),
+    getAttendantGraduatesMap: async () =>
+        toRecord(await utilsService.getAttendantGraduates()),
+    getAttendantStatusMap: async () =>
+        toRecord(await utilsService.getAttendantStatus()),
+    getReengagementStatusMap: async () =>
+        toRecord(await utilsService.getReengagementStatus()),
+    getOrderStatusMap: async () =>
+        toRecord(await utilsService.getOrderStatus()),
 };

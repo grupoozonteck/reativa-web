@@ -36,16 +36,25 @@ export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
             {/* Topo: avatar + nome + cargo */}
             <div className="flex items-center gap-3">
                 <Avatar className="size-11 shrink-0">
-                    <AvatarImage src={attendant.user?.personal_data?.avatar ?? undefined} />
+                    <AvatarImage
+                        src={attendant.user?.personal_data?.avatar ?? undefined}
+                    />
                     <AvatarFallback className="text-sm font-bold">
                         {getInitials(attendant.user?.name)}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-on-surface truncate">{attendant.user?.name}</p>
-                    <p className="text-[11px] text-on-surface-variant truncate">@{attendant.user?.login}</p>
+                    <p className="font-semibold text-sm text-on-surface truncate">
+                        {attendant.user?.name}
+                    </p>
+                    <p className="text-[11px] text-on-surface-variant truncate">
+                        @{attendant.user?.login}
+                    </p>
                 </div>
-                <Badge variant="outline" className={cn('text-[10px] px-2 h-5 shrink-0', badgeColor)}>
+                <Badge
+                    variant="outline"
+                    className={cn('text-[10px] px-2 h-5 shrink-0', badgeColor)}
+                >
                     {attendant.type_label}
                 </Badge>
             </div>
@@ -55,15 +64,21 @@ export function AttendantCard({ attendant }: { attendant: ManagerAttendant }) {
                 <div className="flex items-center justify-between gap-2">
                     <StatusBadge status={attendant.status ?? null} />
                     {attendant.graduation_label && (
-                        <span className="text-xs text-on-surface-variant">{attendant.graduation_label}</span>
+                        <span className="text-xs text-on-surface-variant">
+                            {attendant.graduation_label}
+                        </span>
                     )}
                 </div>
                 {attendant.parent?.user?.name && (
                     <div className="flex items-center gap-1.5 min-w-0">
                         <UserRound className="size-3.5 shrink-0 text-on-surface-variant" />
                         <div className="min-w-0">
-                            <span className="text-[11px] uppercase tracking-wide font-semibold text-on-surface-variant mr-1">Líder:</span>
-                            <span className="text-xs text-on-surface truncate">{attendant.parent.user.name}</span>
+                            <span className="text-[11px] uppercase tracking-wide font-semibold text-on-surface-variant mr-1">
+                                Líder:
+                            </span>
+                            <span className="text-xs text-on-surface truncate">
+                                {attendant.parent.user.name}
+                            </span>
                         </div>
                     </div>
                 )}

@@ -1,5 +1,15 @@
-import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
-import { authService, type LoginCredentials, type User } from '../services/auth.service';
+import {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    type ReactNode,
+} from 'react';
+import {
+    authService,
+    type LoginCredentials,
+    type User,
+} from '../services/auth.service';
 import { AuthContext } from './context';
 import { queryClient } from '../lib/queryClient';
 
@@ -18,7 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const stored = localStorage.getItem('user');
         return stored ? JSON.parse(stored) : null;
     });
-    const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+    const [token, setToken] = useState<string | null>(() =>
+        localStorage.getItem('token'),
+    );
     const [isLoading, setIsLoading] = useState(() => {
         const t = localStorage.getItem('token');
         const u = localStorage.getItem('user');

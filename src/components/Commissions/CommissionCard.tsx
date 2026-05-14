@@ -26,7 +26,10 @@ export function CommissionCard({ item }: CommissionCardProps) {
                 </p>
                 <p className="text-sm font-medium text-on-surface truncate">
                     {item.personal_order?.user?.name ?? 'NA'}
-                    <small className="text-on-surface-variant font-normal"> ({item.personal_order?.user?.login ?? 'NA'})</small>
+                    <small className="text-on-surface-variant font-normal">
+                        {' '}
+                        ({item.personal_order?.user?.login ?? 'NA'})
+                    </small>
                 </p>
             </div>
 
@@ -35,9 +38,14 @@ export function CommissionCard({ item }: CommissionCardProps) {
                     Atendente
                 </p>
                 <p className="text-sm font-medium text-on-surface truncate">
-                    {item.personal_order?.customer_reengagement?.attendant?.user?.name ?? 'NA'}
+                    {item.personal_order?.customer_reengagement?.attendant?.user
+                        ?.name ?? 'NA'}
                     <small className="text-on-surface-variant font-normal">
-                        {' '}({item.personal_order?.customer_reengagement?.attendant?.user?.login ?? 'NA'})
+                        {' '}
+                        (
+                        {item.personal_order?.customer_reengagement?.attendant
+                            ?.user?.login ?? 'NA'}
+                        )
                     </small>
                 </p>
             </div>
@@ -56,7 +64,9 @@ export function CommissionCard({ item }: CommissionCardProps) {
                         Data
                     </p>
                     <p className="text-sm text-on-surface-variant">
-                        {item.created_at ? formatDateTime(item.created_at) : 'NA'}
+                        {item.created_at
+                            ? formatDateTime(item.created_at)
+                            : 'NA'}
                     </p>
                 </div>
             </div>
@@ -66,7 +76,8 @@ export function CommissionCard({ item }: CommissionCardProps) {
                     Descrição
                 </p>
                 <p className="text-sm text-on-surface line-clamp-2">
-                    {item.description_extra?.trim() || 'Sem descricao informada.'}
+                    {item.description_extra?.trim() ||
+                        'Sem descricao informada.'}
                 </p>
             </div>
 

@@ -1,11 +1,33 @@
 import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { teamService, type AttendantLeaderOption } from '@/services/team.service';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    teamService,
+    type AttendantLeaderOption,
+} from '@/services/team.service';
 import { Input } from '@/components/ui/input';
-import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 
 const createAttendantSchema = z.object({
     userLogin: z
@@ -28,22 +50,22 @@ function extractApiErrorMessage(err: unknown, fallback: string) {
         return fallback;
     }
 
-    const response = (err as {
-        response?: {
-            data?: {
-                message?: string;
-                errors?: Record<string, string[]>;
+    const response = (
+        err as {
+            response?: {
+                data?: {
+                    message?: string;
+                    errors?: Record<string, string[]>;
+                };
             };
-        };
-    }).response;
+        }
+    ).response;
 
     const message = response?.data?.message;
     const errors = response?.data?.errors;
 
     const detailedErrors = errors
-        ? Object.values(errors)
-              .flat()
-              .filter(Boolean)
+        ? Object.values(errors).flat().filter(Boolean)
         : [];
 
     if (detailedErrors.length > 0) {
@@ -59,7 +81,9 @@ function getFieldError(field: FormField, values: CreateAttendantFormValues) {
         return undefined;
     }
 
-    const issue = result.error.issues.find((currentIssue) => currentIssue.path[0] === field);
+    const issue = result.error.issues.find(
+        (currentIssue) => currentIssue.path[0] === field,
+    );
     return issue?.message;
 }
 
@@ -105,11 +129,16 @@ export function CreateAttendantModal({
     );
 
     const isCreatingSupervisor = type === '2';
-    const availableTypes = useMemo(() => Object.entries(types).filter(([key]) => key !== '1'), [types]);
+    const availableTypes = useMemo(
+        () => Object.entries(types).filter(([key]) => key !== '1'),
+        [types],
+    );
 
     const leaderOptions = useMemo(() => {
         if (isCreatingSupervisor) {
-            return gestor ? [{ id: gestor.id, name: gestor.name, login: gestor.login }] : [];
+            return gestor
+                ? [{ id: gestor.id, name: gestor.name, login: gestor.login }]
+                : [];
         }
 
         return supervisors.map((supervisor) => ({
@@ -124,7 +153,9 @@ export function CreateAttendantModal({
             return;
         }
 
-        const selectedLeaderIsAvailable = leaderOptions.some((leader) => String(leader.id) === supervisorId);
+        const selectedLeaderIsAvailable = leaderOptions.some(
+            (leader) => String(leader.id) === supervisorId,
+        );
         if (!selectedLeaderIsAvailable) {
             setSupervisorId('');
         }
@@ -165,7 +196,11 @@ export function CreateAttendantModal({
         }));
     }
 
-    function handleFieldChange<T>(field: FormField, nextValue: T, setter: (value: T) => void) {
+    function handleFieldChange<T>(
+        field: FormField,
+        nextValue: T,
+        setter: (value: T) => void,
+    ) {
         setter(nextValue);
         setSubmitError(null);
 
@@ -214,7 +249,12 @@ export function CreateAttendantModal({
             resetForm();
             onClose();
         } catch (err: unknown) {
-            setSubmitError(extractApiErrorMessage(err, 'Erro ao criar atendente. Tente novamente.'));
+            setSubmitError(
+                extractApiErrorMessage(
+                    err,
+                    'Erro ao criar atendente. Tente novamente.',
+                ),
+            );
         } finally {
             setLoading(false);
         }
@@ -228,26 +268,48 @@ export function CreateAttendantModal({
                 </DialogHeader>
 
                 <FieldGroup className="gap-4">
-                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.userLogin)}>
+                    <Field
+                        className="gap-1.5"
+                        data-invalid={Boolean(fieldErrors.userLogin)}
+                    >
                         <FieldLabel>Login do Atendente</FieldLabel>
                         <FieldContent>
                             <Input
                                 value={userLogin}
-                                onChange={(e) => handleFieldChange('userLogin', e.target.value, setUserLogin)}
-                                onBlur={() => handleFieldValidation('userLogin')}
+                                onChange={(e) =>
+                                    handleFieldChange(
+                                        'userLogin',
+                                        e.target.value,
+                                        setUserLogin,
+                                    )
+                                }
+                                onBlur={() =>
+                                    handleFieldValidation('userLogin')
+                                }
                                 disabled={loading}
                                 placeholder="Ex.: joao.silva"
                                 aria-invalid={Boolean(fieldErrors.userLogin)}
                             />
                         </FieldContent>
-                        <FieldDescription>Use o login exato ja cadastrado na plataforma.</FieldDescription>
+                        <FieldDescription>
+                            Use o login exato ja cadastrado na plataforma.
+                        </FieldDescription>
                         <FieldError>{fieldErrors.userLogin}</FieldError>
                     </Field>
 
-                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.type)}>
+                    <Field
+                        className="gap-1.5"
+                        data-invalid={Boolean(fieldErrors.type)}
+                    >
                         <FieldLabel>Cargo</FieldLabel>
                         <FieldContent>
-                            <Select value={type} onValueChange={(value) => handleFieldChange('type', value, setType)} disabled={loading}>
+                            <Select
+                                value={type}
+                                onValueChange={(value) =>
+                                    handleFieldChange('type', value, setType)
+                                }
+                                disabled={loading}
+                            >
                                 <SelectTrigger
                                     aria-invalid={Boolean(fieldErrors.type)}
                                     onBlur={() => handleFieldValidation('type')}
@@ -266,51 +328,86 @@ export function CreateAttendantModal({
                         <FieldError>{fieldErrors.type}</FieldError>
                     </Field>
 
-                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.status)}>
+                    <Field
+                        className="gap-1.5"
+                        data-invalid={Boolean(fieldErrors.status)}
+                    >
                         <FieldLabel>Status</FieldLabel>
                         <FieldContent>
                             <Select
                                 value={status}
-                                onValueChange={(value) => handleFieldChange('status', value, setStatus)}
+                                onValueChange={(value) =>
+                                    handleFieldChange(
+                                        'status',
+                                        value,
+                                        setStatus,
+                                    )
+                                }
                                 disabled={loading}
                             >
                                 <SelectTrigger
                                     aria-invalid={Boolean(fieldErrors.status)}
-                                    onBlur={() => handleFieldValidation('status')}
+                                    onBlur={() =>
+                                        handleFieldValidation('status')
+                                    }
                                 >
                                     <SelectValue placeholder="Selecione o status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {Object.entries(statusOptions).map(([key, label]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {label}
-                                        </SelectItem>
-                                    ))}
+                                    {Object.entries(statusOptions).map(
+                                        ([key, label]) => (
+                                            <SelectItem key={key} value={key}>
+                                                {label}
+                                            </SelectItem>
+                                        ),
+                                    )}
                                 </SelectContent>
                             </Select>
                         </FieldContent>
                         <FieldError>{fieldErrors.status}</FieldError>
                     </Field>
 
-                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.supervisorId)}>
-                        <FieldLabel>{isCreatingSupervisor ? 'Gestor' : 'Lider'}</FieldLabel>
+                    <Field
+                        className="gap-1.5"
+                        data-invalid={Boolean(fieldErrors.supervisorId)}
+                    >
+                        <FieldLabel>
+                            {isCreatingSupervisor ? 'Gestor' : 'Lider'}
+                        </FieldLabel>
                         <FieldContent>
                             <Select
                                 value={supervisorId}
-                                onValueChange={(value) => handleFieldChange('supervisorId', value, setSupervisorId)}
+                                onValueChange={(value) =>
+                                    handleFieldChange(
+                                        'supervisorId',
+                                        value,
+                                        setSupervisorId,
+                                    )
+                                }
                                 disabled={loading || !type}
                             >
                                 <SelectTrigger
-                                    aria-invalid={Boolean(fieldErrors.supervisorId)}
-                                    onBlur={() => handleFieldValidation('supervisorId')}
+                                    aria-invalid={Boolean(
+                                        fieldErrors.supervisorId,
+                                    )}
+                                    onBlur={() =>
+                                        handleFieldValidation('supervisorId')
+                                    }
                                 >
                                     <SelectValue
-                                        placeholder={isCreatingSupervisor ? 'Selecione o gestor' : 'Selecione o lider'}
+                                        placeholder={
+                                            isCreatingSupervisor
+                                                ? 'Selecione o gestor'
+                                                : 'Selecione o lider'
+                                        }
                                     />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {leaderOptions.map((leader) => (
-                                        <SelectItem key={leader.id} value={String(leader.id)}>
+                                        <SelectItem
+                                            key={leader.id}
+                                            value={String(leader.id)}
+                                        >
                                             {leader.name} (@{leader.login})
                                         </SelectItem>
                                     ))}
@@ -327,26 +424,41 @@ export function CreateAttendantModal({
                         <FieldError>{fieldErrors.supervisorId}</FieldError>
                     </Field>
 
-                    <Field className="gap-1.5" data-invalid={Boolean(fieldErrors.graduation)}>
+                    <Field
+                        className="gap-1.5"
+                        data-invalid={Boolean(fieldErrors.graduation)}
+                    >
                         <FieldLabel>Graduacao</FieldLabel>
                         <FieldContent>
                             <Select
                                 value={graduation}
-                                onValueChange={(value) => handleFieldChange('graduation', value, setGraduation)}
+                                onValueChange={(value) =>
+                                    handleFieldChange(
+                                        'graduation',
+                                        value,
+                                        setGraduation,
+                                    )
+                                }
                                 disabled={loading}
                             >
                                 <SelectTrigger
-                                    aria-invalid={Boolean(fieldErrors.graduation)}
-                                    onBlur={() => handleFieldValidation('graduation')}
+                                    aria-invalid={Boolean(
+                                        fieldErrors.graduation,
+                                    )}
+                                    onBlur={() =>
+                                        handleFieldValidation('graduation')
+                                    }
                                 >
                                     <SelectValue placeholder="Selecione a graduacao" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {Object.entries(graduates).map(([key, label]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {label}
-                                        </SelectItem>
-                                    ))}
+                                    {Object.entries(graduates).map(
+                                        ([key, label]) => (
+                                            <SelectItem key={key} value={key}>
+                                                {label}
+                                            </SelectItem>
+                                        ),
+                                    )}
                                 </SelectContent>
                             </Select>
                         </FieldContent>
@@ -357,7 +469,11 @@ export function CreateAttendantModal({
                 </FieldGroup>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={handleClose} disabled={loading}>
+                    <Button
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={loading}
+                    >
                         Cancelar
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>

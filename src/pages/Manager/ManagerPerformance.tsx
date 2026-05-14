@@ -13,40 +13,60 @@ export default function ManagerPerformance() {
     const { user } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
-    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedStartDate =
+        searchParams.get('start_date') ?? defaultRange.startDate;
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
 
     const { data, isLoading, isFetching, refetch } = useQuery({
-        queryKey: ['manager-performance', user?.id, appliedStartDate, appliedEndDate],
-        queryFn: () => teamService.getManagerPerformance({
-            start_date: appliedStartDate || undefined,
-            end_date: appliedEndDate || undefined,
-        }),
+        queryKey: [
+            'manager-performance',
+            user?.id,
+            appliedStartDate,
+            appliedEndDate,
+        ],
+        queryFn: () =>
+            teamService.getManagerPerformance({
+                start_date: appliedStartDate || undefined,
+                end_date: appliedEndDate || undefined,
+            }),
         enabled: !!user?.id,
         refetchInterval: 5 * 60 * 1000,
     });
 
-    const hasActiveFilters = appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
-    const hasDraftChanges = startDate !== appliedStartDate || endDate !== appliedEndDate;
+    const hasActiveFilters =
+        appliedStartDate !== defaultRange.startDate ||
+        appliedEndDate !== defaultRange.endDate;
+    const hasDraftChanges =
+        startDate !== appliedStartDate || endDate !== appliedEndDate;
 
     const handleApplyFilters = () => {
-        setSearchParams((params) => {
-            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
-            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                if (startDate && startDate !== defaultRange.startDate)
+                    params.set('start_date', startDate);
+                else params.delete('start_date');
+                if (endDate && endDate !== defaultRange.endDate)
+                    params.set('end_date', endDate);
+                else params.delete('end_date');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     const handleClearFilters = () => {
         setStartDate(defaultRange.startDate);
         setEndDate(defaultRange.endDate);
-        setSearchParams((params) => {
-            params.delete('start_date');
-            params.delete('end_date');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                params.delete('start_date');
+                params.delete('end_date');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     const summary = data?.summary;

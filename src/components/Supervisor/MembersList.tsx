@@ -10,7 +10,11 @@ interface MembersListProps {
     isFetching: boolean;
 }
 
-export function MembersList({ members, isLoading, isFetching }: MembersListProps) {
+export function MembersList({
+    members,
+    isLoading,
+    isFetching,
+}: MembersListProps) {
     return (
         <div className="solid-card overflow-hidden animate-fade-in">
             <div className="px-5 py-4 border-b border-border flex items-center justify-between">
@@ -44,7 +48,9 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
                 ) : members.length === 0 ? (
                     <div className="text-center py-16 flex flex-col items-center gap-2">
                         <Users className="w-8 h-8 text-muted-foreground/30" />
-                        <p className="text-muted-foreground text-sm">Nenhum membro encontrado na sua equipe</p>
+                        <p className="text-muted-foreground text-sm">
+                            Nenhum membro encontrado na sua equipe
+                        </p>
                     </div>
                 ) : (
                     <div
@@ -54,7 +60,16 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
                         )}
                     >
                         <div className="hidden rounded-2xl border border-border/60 bg-muted/30 px-4 py-3 lg:grid lg:grid-cols-[72px_minmax(260px,1fr)_88px_70px_70px_82px_120px_96px] lg:items-center lg:gap-3">
-                            {['Rank', 'Membro', 'Cargo', 'Vendas', 'Reat.', 'Conv.', 'Receita', 'Nivel'].map((column) => (
+                            {[
+                                'Rank',
+                                'Membro',
+                                'Cargo',
+                                'Vendas',
+                                'Reat.',
+                                'Conv.',
+                                'Receita',
+                                'Nivel',
+                            ].map((column) => (
                                 <span
                                     key={column}
                                     className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -65,7 +80,11 @@ export function MembersList({ members, isLoading, isFetching }: MembersListProps
                         </div>
 
                         {members.map((member, index) => (
-                            <MemberCard key={member.id} member={member} index={index} />
+                            <MemberCard
+                                key={member.id}
+                                member={member}
+                                index={index}
+                            />
                         ))}
                     </div>
                 )}

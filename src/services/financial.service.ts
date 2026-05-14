@@ -17,7 +17,6 @@ export const financialService = {
                 ...(params.page && { page: params.page }),
             },
         });
-        return response.data; 
-
+        return response.data;
     },
 };

@@ -196,7 +196,7 @@ export interface SponsorLeader {
     email?: string | null;
     personal_data?: {
         avatar: string;
-    }
+    };
 }
 
 export interface UserSponsor {
@@ -368,27 +368,41 @@ export interface SituationResponse {
 export const customerService = {
     /** Lista geral de clientes para reativação */
     getReengagements: async (params: Record<string, unknown> = {}) => {
-        const response = await api.get<ReengagementResponse>('/api/reengagements', {
-            params,
-        });
+        const response = await api.get<ReengagementResponse>(
+            '/api/reengagements',
+            {
+                params,
+            },
+        );
         return response.data;
     },
 
     /** Ver detalhes / iniciar atendimento de um usuario */
     getUserDetail: async (userId: number) => {
-        const response = await api.get<UserDetailResponse>(`/api/reengagements/user/${userId}`);
+        const response = await api.get<UserDetailResponse>(
+            `/api/reengagements/user/${userId}`,
+        );
         return response.data;
     },
 
     /** Atualiza dados do usuário (email, data de nascimento) */
-    updateUserData: async (userId: number, data: { email: string; birth_date: string, password?: string }) => {
-        const response = await api.post(`/api/reengagements/user/${userId}/update-data`, data);
+    updateUserData: async (
+        userId: number,
+        data: { email: string; birth_date: string; password?: string },
+    ) => {
+        const response = await api.post(
+            `/api/reengagements/user/${userId}/update-data`,
+            data,
+        );
         return response.data;
     },
 
     /** Atualiza status do atendimento do usuário */
     updateUserStatus: async (userId: number, status: number) => {
-        const response = await api.post(`/api/reengagements/user/${userId}/update-status`, { status });
+        const response = await api.post(
+            `/api/reengagements/user/${userId}/update-status`,
+            { status },
+        );
         return response.data;
     },
 
@@ -406,9 +420,9 @@ export const customerService = {
         const base = payload?.data ?? payload;
         const candidate = Array.isArray(base)
             ? base[0]
-            : (base as { leader?: unknown; user?: unknown })?.leader
-            ?? (base as { leader?: unknown; user?: unknown })?.user
-            ?? base;
+            : ((base as { leader?: unknown; user?: unknown })?.leader ??
+              (base as { leader?: unknown; user?: unknown })?.user ??
+              base);
 
         const entity = (candidate ?? {}) as {
             id?: number | string;
@@ -437,21 +451,33 @@ export const customerService = {
 
     /** Vincula lider/patrocinador ao cliente */
     updateSponsorLogin: async (userId: number, leaderId: number) => {
-        const response = await api.post(`/api/reengagements/user/${userId}/link-leader`, {
-            leader_id: leaderId,
-        });
+        const response = await api.post(
+            `/api/reengagements/user/${userId}/link-leader`,
+            {
+                leader_id: leaderId,
+            },
+        );
         return response.data;
     },
 
     /** Obtém link de acesso à loja já logado pelo cliente */
     getAccessStoreLink: async (userId: number) => {
-        const response = await api.get<{ success: boolean; data: { url: string; token: string } }>(`/api/reengagements/user/${userId}/access-store`);
+        const response = await api.get<{
+            success: boolean;
+            data: { url: string; token: string };
+        }>(`/api/reengagements/user/${userId}/access-store`);
         return response.data;
     },
 
     /** Registra observação e agenda próximo contato */
-    addObservation: async (reengagementId: number, data: { observation: string; next_contact_date: string }) => {
-        const response = await api.post(`/api/reengagements/${reengagementId}/observations`, data);
+    addObservation: async (
+        reengagementId: number,
+        data: { observation: string; next_contact_date: string },
+    ) => {
+        const response = await api.post(
+            `/api/reengagements/${reengagementId}/observations`,
+            data,
+        );
         return response.data;
     },
 
@@ -461,45 +487,64 @@ export const customerService = {
     },
 
     /** Lista de clientes que EU estou atendendo */
-    getPersonalReengagements: async (params: {
-        page?: number;
-        start_date?: string;
-        end_date?: string;
-        search?: string;
-        order_id?: number;
-        status?: number;
-    } = {}) => {
-        const response = await api.get<PersonalReengagementResponse>('/api/reengagements/personal', {
-            params: {
-                page: params.page ?? 1,
-                ...(params.start_date && { start_date: params.start_date }),
-                ...(params.end_date && { end_date: params.end_date }),
-                ...(params.search && { search: params.search }),
-                ...(params.order_id && { order_id: params.order_id }),
-                ...(params.status !== undefined && { status: params.status }),
+    getPersonalReengagements: async (
+        params: {
+            page?: number;
+            start_date?: string;
+            end_date?: string;
+            search?: string;
+            order_id?: number;
+            status?: number;
+        } = {},
+    ) => {
+        const response = await api.get<PersonalReengagementResponse>(
+            '/api/reengagements/personal',
+            {
+                params: {
+                    page: params.page ?? 1,
+                    ...(params.start_date && { start_date: params.start_date }),
+                    ...(params.end_date && { end_date: params.end_date }),
+                    ...(params.search && { search: params.search }),
+                    ...(params.order_id && { order_id: params.order_id }),
+                    ...(params.status !== undefined && {
+                        status: params.status,
+                    }),
+                },
             },
-        });
+        );
         return response.data;
     },
 
     /** Lista de clientes atendidos pela equipe */
     getTeamReengagements: async (params: TeamReengagementQueryParams = {}) => {
-        const response = await api.get<PersonalReengagementResponse>('/api/reengagements/team', {
-            params: {
-                page: params.page ?? 1,
-                ...(params.start_date && { start_date: params.start_date }),
-                ...(params.end_date && { end_date: params.end_date }),
-                ...(params.search && { search: params.search }),
-                ...(params.status !== undefined && { status: params.status }),
-                ...(params.recruiter_id !== undefined && { recruiter_id: params.recruiter_id }),
+        const response = await api.get<PersonalReengagementResponse>(
+            '/api/reengagements/team',
+            {
+                params: {
+                    page: params.page ?? 1,
+                    ...(params.start_date && { start_date: params.start_date }),
+                    ...(params.end_date && { end_date: params.end_date }),
+                    ...(params.search && { search: params.search }),
+                    ...(params.status !== undefined && {
+                        status: params.status,
+                    }),
+                    ...(params.recruiter_id !== undefined && {
+                        recruiter_id: params.recruiter_id,
+                    }),
+                },
             },
-        });
+        );
         return response.data;
     },
 
     /** Consulta a situação do cliente antes de iniciar um atendimento */
-    checkSituation: async (payload: SituationIdentifier): Promise<SituationResult> => {
-        const response = await api.post<SituationResponse>('/api/reengagements/situation', payload);
+    checkSituation: async (
+        payload: SituationIdentifier,
+    ): Promise<SituationResult> => {
+        const response = await api.post<SituationResponse>(
+            '/api/reengagements/situation',
+            payload,
+        );
         return response.data.data;
     },
 };
