@@ -1,11 +1,11 @@
 export const statusStyleMap: Record<number, { color: string; dotColor: string }> = {
     1: {
-        color: 'border-primary/20 bg-primary/10 text-primary',
-        dotColor: 'bg-primary',
-    },
-    2: {
         color: 'border-secondary/20 bg-secondary/10 text-secondary',
         dotColor: 'bg-secondary',
+    },
+    2: {
+        color: 'border-primary/20 bg-primary/10 text-primary',
+        dotColor: 'bg-primary',
     },
     3: {
         color: 'border-accent/20 bg-accent/10 text-accent',
@@ -22,8 +22,8 @@ export function getAttendantStatusMeta(status?: number | null) {
     const style =
         status === 1
             ? {
-                color: 'border-primary/20 bg-primary/10 text-primary',
-                dotColor: 'bg-primary',
+                color: 'border-secondary/20 bg-secondary/10 text-secondary',
+                dotColor: 'bg-secondary',
             }
             : status === 0
                 ? {
@@ -40,7 +40,7 @@ export function getAttendantStatusMeta(status?: number | null) {
 }
 
 
- export const typeColors: Record<number, string> = {
+export const typeColors: Record<number, string> = {
     1: 'border-secondary/20 bg-secondary/10 text-secondary',
     2: 'border-primary/20 bg-primary/10 text-primary',
     3: 'border-accent/20 bg-accent/10 text-accent',

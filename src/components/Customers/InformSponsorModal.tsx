@@ -35,6 +35,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
     useEffect(() => {
         if (open && existingLeader) {
             setLeader(existingLeader);
+            setSponsorLogin(existingLeader.login);
         }
     }, [open, existingLeader]);
 
@@ -59,7 +60,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
 
     async function handleSave() {
         if (!leader) {
-            setError('Busque um leader valido antes de vincular.');
+            setError('Busque um leader valido antes de salvar.');
             return;
         }
 
@@ -70,7 +71,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
             if (onUpdated) onUpdated();
             onClose();
         } catch {
-            setError('Erro ao vincular leader.');
+            setError(existingLeader ? 'Erro ao atualizar leader.' : 'Erro ao vincular leader.');
         } finally {
             setSaving(false);
         }
@@ -80,7 +81,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle>Informar lider</DialogTitle>
+                    <DialogTitle>{existingLeader ? 'Editar leader' : 'Informar lider'}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                     <Field className="flex w-full !justify-between">
@@ -91,7 +92,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                                 value={sponsorLogin}
                                 onChange={e => {
                                     setSponsorLogin(e.target.value);
-                                    if (!existingLeader) setLeader(null);
+                                    setLeader(null);
                                 }}
                                 placeholder="Ex: joao123"
                                 autoFocus
@@ -101,14 +102,16 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                                 type="button"
                                 variant="secondary"
                                 onClick={handleSearch}
-                                disabled={searching || saving || !!existingLeader}
+                                disabled={searching || saving}
                             >
                                 {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                                 {searching ? 'Buscando...' : 'Buscar'}
                             </Button>
                         </div>
                         <FieldDescription className="text-slate-300">
-                            Digite o login e clique em Buscar para validar antes de vincular o lider.
+                            {existingLeader
+                                ? 'Edite o login e clique em Buscar para trocar o leader vinculado.'
+                                : 'Digite o login e clique em Buscar para validar antes de vincular o lider.'}
                         </FieldDescription>
                     </Field>
 
@@ -117,7 +120,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                             <>
                                 <div className="mb-2 flex items-center gap-2 text-xs font-medium text-primary">
                                     <BadgeCheck className="h-3.5 w-3.5" />
-                                    Leader encontrado
+                                    {existingLeader ? 'Leader selecionado para atualizacao' : 'Leader encontrado'}
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <Avatar className="h-16 w-16 border-2 border-primary/30 shadow-[0_0_0_2px_rgba(0,0,0,0.15)]">
@@ -166,7 +169,7 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
 
                     {existingLeader && (
                         <div className="text-xs text-slate-300">
-                            Este cliente ja possui leader vinculado. A vinculacao foi bloqueada.
+                            Leader atual carregado. Voce pode buscar outro login para atualizar o vinculo.
                         </div>
                     )}
                 </div>
@@ -176,9 +179,9 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                         <X className="w-4 h-4" />
                         Cancelar
                     </Button>
-                    <Button onClick={handleSave} disabled={searching || saving || !leader || !!existingLeader}>
+                    <Button onClick={handleSave} disabled={searching || saving || !leader}>
                         <UserPlus className="w-4 h-4" />
-                        {saving ? 'Vinculando...' : 'Vincular leader'}
+                        {saving ? (existingLeader ? 'Salvando...' : 'Vinculando...') : existingLeader ? 'Salvar leader' : 'Vincular leader'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

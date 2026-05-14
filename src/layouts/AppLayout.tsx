@@ -3,7 +3,6 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/useAuth';
-import AuroraBackground from '@/components/AuroraBackground';
 import SidebarShell from '@/components/sidebar/SidebarShell';
 import ThemeToggleButton from '@/components/ThemeToggleButton';
 
@@ -12,7 +11,7 @@ export default function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
-    const name = user?.name ?? 'UsuÃ¡rio';
+    const name = user?.name ?? 'Usuário';
     const email = user?.email ?? '';
     const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     const userRole = user?.attendant?.type_label ?? 'user';
@@ -23,8 +22,6 @@ export default function AppLayout() {
     return (
         <div className="flex h-screen overflow-hidden bg-background">
 
-            {/* Themed background (aurora or clean white) */}
-            <AuroraBackground />
 
             {/* â”€â”€ Desktop sidebar â”€â”€ */}
             <aside

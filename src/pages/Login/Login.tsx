@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 export default function Login() {
+    const resetPasswordUrl = 'https://office.grupoozonteck.com/password/reset';
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -108,12 +109,14 @@ export default function Login() {
                                     <Label htmlFor="password-input" className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300/80">
                                         Senha
                                     </Label>
-                                    <button
-                                        type="button"
+                                    <a
+                                        href={resetPasswordUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="text-xs font-semibold text-sky-300 transition-colors hover:text-sky-200"
                                     >
                                         Esqueci minha senha
-                                    </button>
+                                    </a>
                                 </div>
                                 <div className="relative">
                                     <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />

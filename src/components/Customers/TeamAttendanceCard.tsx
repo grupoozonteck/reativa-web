@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Eye, MessageCircle, UserRound } from 'lucide-react';
+import { CalendarDays, Clock, Eye, MessageCircle, UserRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { getInitials, getAvatarColor, formatDate, formatWhatsApp, getWhatsAppLink } from '@/utils/client-utils';
@@ -128,11 +128,11 @@ export function TeamAttendanceCard({ reengagement, statusRecollection }: TeamAtt
             </div>
 
             <Button
-                onClick={() => navigate(`/customers/${user.id}`)}
+                disabled
                 className="mx-4 mb-4 h-10 w-[calc(100%-2rem)] gap-1.5 bg-gradient-to-br from-primary to-primary-container text-xs font-semibold text-primary-foreground transition-shadow hover:shadow-glow-primary-sm"
             >
-                <Eye className="h-3.5 w-3.5" />
-                Ver detalhes
+                <Clock className="h-4 w-4" />
+                Em breve...
             </Button>
         </div>
     );

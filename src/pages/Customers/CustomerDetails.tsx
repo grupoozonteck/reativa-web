@@ -272,10 +272,9 @@ export default function ClienteDetalhes() {
                                     variant="outline"
                                     className="gap-2"
                                     onClick={() => setSponsorModalOpen(true)}
-                                    disabled={!!linkedLeader}
                                 >
                                     <UserPlus className="w-4 h-4" />
-                                    {linkedLeader ? 'Leader vinculado' : 'Leader'}
+                                    {linkedLeader ? 'Editar leader' : 'Leader'}
                                 </Button>
                                 <Button size="sm" variant="outline" className="gap-2" onClick={() => setEditModalOpen(true)}>
                                     <Edit className="w-4 h-4" />
