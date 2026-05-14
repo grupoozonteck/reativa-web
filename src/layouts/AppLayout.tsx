@@ -13,19 +13,25 @@ export default function AppLayout() {
 
     const name = user?.name ?? 'Usuário';
     const email = user?.email ?? '';
-    const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const initials = name
+        .split(' ')
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
     const userRole = user?.attendant?.type_label ?? 'user';
 
-    const handleLogout = async () => { await logoutFunction(); navigate('/login'); };
+    const handleLogout = async () => {
+        await logoutFunction();
+        navigate('/login');
+    };
     const closeSidebar = () => setSidebarOpen(false);
 
     return (
         <div className="flex h-screen overflow-hidden bg-background">
-
-
             {/* â”€â”€ Desktop sidebar â”€â”€ */}
             <aside
-                className="hidden lg:flex w-[220px] shrink-0 border-r border-border flex-col bg-card"
+                className="hidden lg:flex w-[220px] shrink-0 min-h-0 border-r border-border flex-col bg-card"
                 style={{ position: 'relative', zIndex: 10 }}
             >
                 <SidebarShell
@@ -40,9 +46,12 @@ export default function AppLayout() {
             {/* â”€â”€ Mobile overlay â”€â”€ */}
             {sidebarOpen && (
                 <div className="lg:hidden fixed inset-0" style={{ zIndex: 50 }}>
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeSidebar} />
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={closeSidebar}
+                    />
                     <aside
-                        className="absolute left-0 inset-y-0 w-64 bg-card border-r border-border flex flex-col shadow-2xl animate-fade-in-left"
+                        className="absolute left-0 inset-y-0 w-64 min-h-0 bg-card border-r border-border flex flex-col shadow-2xl animate-fade-in-left"
                         style={{ zIndex: 51 }}
                     >
                         <button

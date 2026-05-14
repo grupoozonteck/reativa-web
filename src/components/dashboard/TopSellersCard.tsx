@@ -4,7 +4,10 @@ import { cn } from '@/lib/utils';
 import type { DashboardTopAttendant } from '@/services/dashboard.service';
 
 const rankColors = [
-    'text-amber-500', 'text-slate-400', 'text-amber-700', 'text-muted-foreground',
+    'text-amber-500',
+    'text-slate-400',
+    'text-amber-700',
+    'text-muted-foreground',
 ];
 
 const rankBadge = [
@@ -20,11 +23,21 @@ interface TopSellersCardProps {
 }
 
 function getInitials(name: string) {
-    return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+    return name
+        .split(' ')
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
 }
 
-export default function TopSellersCard({ sellers, isLoading = false }: TopSellersCardProps) {
-    const topSellers = [...sellers].sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 6);
+export default function TopSellersCard({
+    sellers,
+    isLoading = false,
+}: TopSellersCardProps) {
+    const topSellers = [...sellers]
+        .sort((a, b) => Number(b.revenue) - Number(a.revenue))
+        .slice(0, 6);
     const max = Number(topSellers[0]?.revenue ?? 1);
 
     return (
@@ -39,7 +52,10 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                     <span className="w-2 h-2 rounded-full bg-primary" />
                     Top Atendentes — Mês
                 </h2>
-                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
+                <Badge
+                    variant="secondary"
+                    className="text-xs bg-primary/10 text-primary border-primary/20"
+                >
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse inline-block" />
                     Ao vivo
                 </Badge>
@@ -47,7 +63,9 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
 
             <div className="space-y-4">
                 {!isLoading && topSellers.length === 0 && (
-                    <p className="text-xs text-muted-foreground">Sem dados de atendentes no momento.</p>
+                    <p className="text-xs text-muted-foreground">
+                        Sem dados de atendentes no momento.
+                    </p>
                 )}
 
                 {topSellers.map((s, i) => {
@@ -57,15 +75,22 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                             key={`${s.user.name}-${i}`}
                             className={cn(
                                 'flex items-center gap-3 animate-fade-in rounded-xl px-2 py-1.5 -mx-2 transition-colors',
-                                i === 0 ? 'bg-amber-500/5 ring-1 ring-amber-500/10' : 'hover:bg-white/3'
+                                i === 0
+                                    ? 'bg-amber-500/5 ring-1 ring-amber-500/10'
+                                    : 'hover:bg-white/3',
                             )}
-                            style={{ animationDelay: `${500 + i * 80}ms`, opacity: 0 }}
+                            style={{
+                                animationDelay: `${500 + i * 80}ms`,
+                                opacity: 0,
+                            }}
                         >
                             {/* Rank badge */}
-                            <span className={cn(
-                                'w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black border shrink-0',
-                                rankBadge[i]
-                            )}>
+                            <span
+                                className={cn(
+                                    'w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black border shrink-0',
+                                    rankBadge[i],
+                                )}
+                            >
                                 {i + 1}º
                             </span>
 
@@ -78,21 +103,29 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                         'rounded-full object-cover shrink-0 shadow-md',
                                         i === 0
                                             ? 'w-10 h-10 ring-2 ring-amber-400/50 shadow-amber-500/20 shadow-lg'
-                                            : 'w-9 h-9 ring-1 ring-primary/20'
+                                            : 'w-9 h-9 ring-1 ring-primary/20',
                                     )}
                                     onError={(e) => {
                                         const target = e.currentTarget;
                                         target.style.display = 'none';
-                                        (target.nextElementSibling as HTMLElement | null)?.style.setProperty('display', 'flex');
+                                        (
+                                            target.nextElementSibling as HTMLElement | null
+                                        )?.style.setProperty('display', 'flex');
                                     }}
                                 />
                             ) : null}
                             <div
                                 className={cn(
                                     'rounded-full btn-primary-arena items-center justify-center font-bold shrink-0 shadow-md',
-                                    i === 0 ? 'w-10 h-10 text-sm' : 'w-9 h-9 text-xs'
+                                    i === 0
+                                        ? 'w-10 h-10 text-sm'
+                                        : 'w-9 h-9 text-xs',
                                 )}
-                                style={{ display: s.user.personal_data?.avatar ? 'none' : 'flex' }}
+                                style={{
+                                    display: s.user.personal_data?.avatar
+                                        ? 'none'
+                                        : 'flex',
+                                }}
                             >
                                 {getInitials(s.user.name)}
                             </div>
@@ -100,9 +133,20 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1.5">
-                                    <span className={cn('text-sm font-semibold truncate', rankColors[i])}>{s.user.name}</span>
+                                    <span
+                                        className={cn(
+                                            'text-sm font-semibold truncate',
+                                            rankColors[i],
+                                        )}
+                                    >
+                                        {s.user.name}
+                                    </span>
                                     <span className="text-sm font-bold gradient-text-blue ml-2 shrink-0">
-                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(Number(s.revenue))}
+                                        {new Intl.NumberFormat('pt-BR', {
+                                            style: 'currency',
+                                            currency: 'BRL',
+                                            minimumFractionDigits: 2,
+                                        }).format(Number(s.revenue))}
                                     </span>
                                 </div>
                                 <div className="relative h-2 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
@@ -110,16 +154,21 @@ export default function TopSellersCard({ sellers, isLoading = false }: TopSeller
                                         className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-container"
                                         style={{
                                             width: `${pct}%`,
-                                            transition: 'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)',
-                                            boxShadow: '0 0 8px hsl(83 98% 64% / 0.6)',
+                                            transition:
+                                                'width 1.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                                            boxShadow:
+                                                '0 0 8px hsl(83 98% 64% / 0.6)',
                                         }}
                                     />
                                 </div>
                                 <div className="flex gap-3 mt-1.5">
                                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                        <ShoppingCart className="w-2.5 h-2.5" />{s.sales} vendas
+                                        <ShoppingCart className="w-2.5 h-2.5" />
+                                        {s.sales} vendas
                                     </span>
-                                    <span className="text-xs text-muted-foreground">{s.conversion}% conv.</span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {s.conversion}% conv.
+                                    </span>
                                 </div>
                             </div>
                         </div>

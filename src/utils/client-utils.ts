@@ -10,7 +10,7 @@ const AVATAR_COLORS = [
 export function getInitials(name: string): string {
     return name
         .split(' ')
-        .map(p => p[0])
+        .map((p) => p[0])
         .filter(Boolean)
         .slice(0, 2)
         .join('')
@@ -25,7 +25,10 @@ export function getAvatarColor(name: string): string {
 export function formatWhatsApp(phone: string | null | undefined): string {
     if (!phone) return '--';
     const digits = phone.replace(/\D/g, '');
-    const national = digits.startsWith('55') && digits.length > 11 ? digits.slice(2) : digits;
+    const national =
+        digits.startsWith('55') && digits.length > 11
+            ? digits.slice(2)
+            : digits;
     if (national.length === 11)
         return `(${national.slice(0, 2)}) ${national.slice(2, 7)}-${national.slice(7)}`;
     if (national.length === 10)
@@ -36,7 +39,9 @@ export function formatWhatsApp(phone: string | null | undefined): string {
 export function getWhatsAppLink(phone: string | null | undefined): string {
     if (!phone) return '#';
     const digits = phone.replace(/\D/g, '');
-    return digits.startsWith('55') ? `https://wa.me/${digits}` : `https://wa.me/55${digits}`;
+    return digits.startsWith('55')
+        ? `https://wa.me/${digits}`
+        : `https://wa.me/55${digits}`;
 }
 
 function parseDateValue(dateStr: string): Date | null {
@@ -45,12 +50,12 @@ function parseDateValue(dateStr: string): Date | null {
         return new Date(
             Number(dateOnlyMatch[1]),
             Number(dateOnlyMatch[2]) - 1,
-            Number(dateOnlyMatch[3])
+            Number(dateOnlyMatch[3]),
         );
     }
 
     const localDateTimeMatch = dateStr.match(
-        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?$/
+        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?$/,
     );
     if (localDateTimeMatch) {
         return new Date(
@@ -59,12 +64,12 @@ function parseDateValue(dateStr: string): Date | null {
             Number(localDateTimeMatch[3]),
             Number(localDateTimeMatch[4]),
             Number(localDateTimeMatch[5]),
-            Number(localDateTimeMatch[6] ?? '0')
+            Number(localDateTimeMatch[6] ?? '0'),
         );
     }
 
     const apiUtcLikeMatch = dateStr.match(
-        /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?Z$/
+        /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?Z$/,
     );
     if (apiUtcLikeMatch) {
         return new Date(
@@ -73,7 +78,7 @@ function parseDateValue(dateStr: string): Date | null {
             Number(apiUtcLikeMatch[3]),
             Number(apiUtcLikeMatch[4]),
             Number(apiUtcLikeMatch[5]),
-            Number(apiUtcLikeMatch[6] ?? '0')
+            Number(apiUtcLikeMatch[6] ?? '0'),
         );
     }
 
@@ -108,7 +113,9 @@ export function formatDateTime(dateStr: string | null | undefined): string {
     });
 }
 
-export function formatCurrency(value: string | number | null | undefined): string {
+export function formatCurrency(
+    value: string | number | null | undefined,
+): string {
     if (value === null || value === undefined) {
         return 'R$ 0,00';
     }
@@ -119,7 +126,9 @@ export function formatCurrency(value: string | number | null | undefined): strin
     return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-export function formatPercent(value: number | string | null | undefined): string {
+export function formatPercent(
+    value: number | string | null | undefined,
+): string {
     if (value === undefined || value === null || value === '') return '--';
     const numericValue = typeof value === 'string' ? Number(value) : value;
     if (Number.isNaN(numericValue)) return '--';
@@ -148,7 +157,9 @@ export function parseCurrencyInput(value: string): number {
     return Number(digitsOnly) / 100;
 }
 
-export function toCurrencyInputValue(value: number | string | undefined): string {
+export function toCurrencyInputValue(
+    value: number | string | undefined,
+): string {
     if (value === undefined || value === null || value === '') return '';
     return formatCurrencyInput(String(value));
 }

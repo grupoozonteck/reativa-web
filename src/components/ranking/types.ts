@@ -23,7 +23,7 @@ export interface LeaderboardEntry {
     id: number;
     user_id: number;
     user: LeaderboardUser;
-    sales: number
+    sales: number;
     status: number;
     revenue: string | null;
     conversion: number;

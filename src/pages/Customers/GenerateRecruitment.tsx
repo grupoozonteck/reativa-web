@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertTriangle, Search, Sparkles, UserRound, UsersRound } from 'lucide-react';
+import { AlertTriangle, Search, UserRound, UsersRound } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { customerService, type SponsorLeader } from '@/services/customer.service';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    customerService,
+    type SponsorLeader,
+} from '@/services/customer.service';
 import { useAuth } from '@/contexts/useAuth';
 import { UserRole } from '@/config/permissions';
 import { teamService } from '@/services/team.service';
@@ -34,7 +43,10 @@ function resolveGenerateRecruitmentError(error: unknown) {
             return apiMessage;
         }
 
-        if (typeof maybeError.message === 'string' && maybeError.message.trim()) {
+        if (
+            typeof maybeError.message === 'string' &&
+            maybeError.message.trim()
+        ) {
             return maybeError.message;
         }
     }
@@ -51,7 +63,8 @@ export default function GenerateRecruitment() {
     const [searchingLeader, setSearchingLeader] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    const showFinancialNotice = userType !== undefined && userType <= UserRole.SUPERVISOR;
+    const showFinancialNotice =
+        userType !== undefined && userType <= UserRole.SUPERVISOR;
     const attendantsQuery = useQuery({
         queryKey: ['generate-recruitment-attendants'],
         queryFn: () => teamService.getAttendants({ type: UserRole.ATENDENTE }),
@@ -60,11 +73,12 @@ export default function GenerateRecruitment() {
     const attendants = attendantsQuery.data?.attendants?.data ?? [];
     const parsedOrderId = Number(orderId);
     const parsedRecruiterId = Number(recruiterId);
-    const canSubmit = !!leader?.id
-        && Number.isFinite(parsedOrderId)
-        && parsedOrderId > 0
-        && Number.isFinite(parsedRecruiterId)
-        && parsedRecruiterId > 0;
+    const canSubmit =
+        !!leader?.id &&
+        Number.isFinite(parsedOrderId) &&
+        parsedOrderId > 0 &&
+        Number.isFinite(parsedRecruiterId) &&
+        parsedRecruiterId > 0;
 
     async function handleSearchLeader() {
         if (!leaderLogin.trim()) {
@@ -74,7 +88,9 @@ export default function GenerateRecruitment() {
 
         setSearchingLeader(true);
         try {
-            const result = await customerService.searchSponsorLeader(leaderLogin.trim());
+            const result = await customerService.searchSponsorLeader(
+                leaderLogin.trim(),
+            );
             setLeader(result);
             toast.success('Lider encontrado.');
         } catch {
@@ -126,7 +142,9 @@ export default function GenerateRecruitment() {
                                     Aviso operacional
                                 </p>
                                 <p className="text-sm text-amber-50/90">
-                                    Depois de gerar o recrutamento, o responsavel precisa avisar o financeiro para reprocessar as comissoes.
+                                    Depois de gerar o recrutamento, o
+                                    responsavel precisa avisar o financeiro para
+                                    reprocessar as comissoes.
                                 </p>
                             </div>
                         </div>
@@ -136,11 +154,15 @@ export default function GenerateRecruitment() {
 
             <Card className="animate-fade-in">
                 <CardHeader>
-                    <CardTitle className="text-base">Dados para geracao</CardTitle>
+                    <CardTitle className="text-base">
+                        Dados para geracao
+                    </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-5">
                     <Field>
-                        <FieldLabel htmlFor="leader-login">Login do lider</FieldLabel>
+                        <FieldLabel htmlFor="leader-login">
+                            Login do lider
+                        </FieldLabel>
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <Input
                                 id="leader-login"
@@ -159,69 +181,100 @@ export default function GenerateRecruitment() {
                                 disabled={searchingLeader}
                             >
                                 <Search className="h-4 w-4" />
-                                {searchingLeader ? 'Buscando...' : 'Buscar lider'}
+                                {searchingLeader
+                                    ? 'Buscando...'
+                                    : 'Buscar lider'}
                             </Button>
                         </div>
                         <FieldDescription>
-                            Informe o login para localizar e confirmar o lider correto.
+                            Informe o login para localizar e confirmar o lider
+                            correto.
                         </FieldDescription>
                     </Field>
 
                     <div className="grid gap-4 md:grid-cols-2">
                         <Field>
-                            <FieldLabel htmlFor="order-id">Codigo do pedido</FieldLabel>
+                            <FieldLabel htmlFor="order-id">
+                                Codigo do pedido
+                            </FieldLabel>
                             <Input
                                 id="order-id"
                                 type="number"
                                 value={orderId}
-                                onChange={(event) => setOrderId(event.target.value)}
+                                onChange={(event) =>
+                                    setOrderId(event.target.value)
+                                }
                                 placeholder="Ex: 12345"
                                 className="bg-surface-highest border-none focus-visible:ring-0"
                             />
                             <FieldDescription>
-                                Informe o codigo do pedido que sera usado na geracao.
+                                Informe o codigo do pedido que sera usado na
+                                geracao.
                             </FieldDescription>
                         </Field>
 
                         <Field>
                             <FieldLabel>Atendente</FieldLabel>
-                            <Select value={recruiterId || undefined} onValueChange={setRecruiterId}>
+                            <Select
+                                value={recruiterId || undefined}
+                                onValueChange={setRecruiterId}
+                            >
                                 <SelectTrigger className="bg-surface-highest border-none focus:ring-0">
-                                    <SelectValue placeholder={attendantsQuery.isLoading ? 'Carregando atendentes...' : 'Selecione o atendente'} />
+                                    <SelectValue
+                                        placeholder={
+                                            attendantsQuery.isLoading
+                                                ? 'Carregando atendentes...'
+                                                : 'Selecione o atendente'
+                                        }
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {attendants.map((attendant) => (
-                                        <SelectItem key={attendant.id} value={String(attendant.user.id)}>
-                                            {attendant.user.name} (@{attendant.user.login})
+                                        <SelectItem
+                                            key={attendant.id}
+                                            value={String(attendant.user.id)}
+                                        >
+                                            {attendant.user.name} (@
+                                            {attendant.user.login})
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                             <FieldDescription>
-                                Selecione o atendente responsavel pelo recrutamento.
+                                Selecione o atendente responsavel pelo
+                                recrutamento.
                             </FieldDescription>
                         </Field>
                     </div>
 
                     {attendantsQuery.isError && (
                         <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-                            Nao foi possivel carregar a lista de atendentes para vincular o recruiter.
+                            Nao foi possivel carregar a lista de atendentes para
+                            vincular o recruiter.
                         </div>
                     )}
 
                     <div className="rounded-2xl border border-border bg-surface-highest/50 p-4">
                         <div className="flex items-center gap-2 mb-3">
                             <UsersRound className="h-4 w-4 text-on-surface-variant" />
-                            <p className="text-sm font-semibold text-on-surface">Lider selecionado</p>
+                            <p className="text-sm font-semibold text-on-surface">
+                                Lider selecionado
+                            </p>
                         </div>
 
                         {leader ? (
                             <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                    <p className="font-medium text-on-surface">{leader.name}</p>
-                                    <p className="text-sm text-on-surface-variant">@{leader.login}</p>
+                                    <p className="font-medium text-on-surface">
+                                        {leader.name}
+                                    </p>
+                                    <p className="text-sm text-on-surface-variant">
+                                        @{leader.login}
+                                    </p>
                                     {leader.email && (
-                                        <p className="text-sm text-on-surface-variant truncate">{leader.email}</p>
+                                        <p className="text-sm text-on-surface-variant truncate">
+                                            {leader.email}
+                                        </p>
                                     )}
                                 </div>
                                 <Badge variant="secondary" className="shrink-0">
@@ -237,7 +290,10 @@ export default function GenerateRecruitment() {
                     </div>
 
                     <div className="flex justify-end">
-                        <Button onClick={handleSubmit} disabled={submitting || !canSubmit}>
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={submitting || !canSubmit}
+                        >
                             {submitting ? 'Gerando...' : 'Gerar recrutamento'}
                         </Button>
                     </div>

@@ -8,7 +8,11 @@ interface InativosCardProps {
     isLoading?: boolean;
 }
 
-export default function InativosCard({ summary, totalInactive, isLoading = false }: InativosCardProps) {
+export default function InativosCard({
+    summary,
+    totalInactive,
+    isLoading = false,
+}: InativosCardProps) {
     const rows = [
         {
             label: 'Nunca compraram',
@@ -47,21 +51,29 @@ export default function InativosCard({ summary, totalInactive, isLoading = false
 
             <div className="space-y-3.5">
                 {!isLoading && totalInactive === 0 && (
-                    <p className="text-xs text-muted-foreground">Sem clientes inativos no período.</p>
+                    <p className="text-xs text-muted-foreground">
+                        Sem clientes inativos no período.
+                    </p>
                 )}
 
-                {rows.map(item => (
+                {rows.map((item) => (
                     <div key={item.label}>
                         <div className="flex justify-between text-xs mb-1.5">
-                            <span className="text-muted-foreground">{item.label}</span>
+                            <span className="text-muted-foreground">
+                                {item.label}
+                            </span>
                             <span className="font-bold">{item.val}</span>
                         </div>
                         <div className="h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                             <div
-                                className={cn('h-full rounded-full bg-gradient-to-r', item.color)}
+                                className={cn(
+                                    'h-full rounded-full bg-gradient-to-r',
+                                    item.color,
+                                )}
                                 style={{
                                     width: `${(item.val / item.total) * 100}%`,
-                                    transition: 'width 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
+                                    transition:
+                                        'width 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
                                     boxShadow: `0 0 8px ${item.glowColor}`,
                                 }}
                             />

@@ -3,7 +3,9 @@ export interface DefaultDateRange {
     endDate: string;
 }
 
-export function getCurrentMonthDateRange(referenceDate = new Date()): DefaultDateRange {
+export function getCurrentMonthDateRange(
+    referenceDate = new Date(),
+): DefaultDateRange {
     const currentYear = referenceDate.getFullYear();
     const currentMonth = String(referenceDate.getMonth() + 1).padStart(2, '0');
     const currentDay = String(referenceDate.getDate()).padStart(2, '0');

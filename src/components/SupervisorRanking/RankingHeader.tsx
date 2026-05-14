@@ -13,7 +13,9 @@ export function RankingHeader({ isFetching, onRefresh }: RankingHeaderProps) {
             <div>
                 <div className="flex items-center gap-2">
                     <Crown className="h-6 w-6 text-amber-500" />
-                    <h1 className="text-2xl font-extrabold tracking-tight">Ranking de Supervisores</h1>
+                    <h1 className="text-2xl font-extrabold tracking-tight">
+                        Ranking de Supervisores
+                    </h1>
                 </div>
             </div>
 
@@ -22,7 +24,9 @@ export function RankingHeader({ isFetching, onRefresh }: RankingHeaderProps) {
                 disabled={isFetching}
                 className="gap-2 bg-amber-500 text-slate-950 hover:bg-amber-400"
             >
-                <RefreshCcw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
+                <RefreshCcw
+                    className={cn('h-4 w-4', isFetching && 'animate-spin')}
+                />
                 {isFetching ? 'Atualizando...' : 'Atualizar'}
             </Button>
         </div>

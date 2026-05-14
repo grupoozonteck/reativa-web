@@ -1,8 +1,13 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { customerService } from '@/services/customer.service';
 import { Field, FieldDescription, FieldLabel } from '../ui/field';
 
@@ -38,7 +43,11 @@ export function EditCustomerModal({
         setLoading(true);
         setError(null);
         try {
-            await customerService.updateUserData(userId, { email, birth_date: birthDate, password });
+            await customerService.updateUserData(userId, {
+                email,
+                birth_date: birthDate,
+                password,
+            });
             await customerService.updateUserStatus(userId, status);
             if (onUpdated) onUpdated();
             onClose();
@@ -58,34 +67,66 @@ export function EditCustomerModal({
                 <div className="space-y-4">
                     <Field>
                         <FieldLabel htmlFor="email">E-mail</FieldLabel>
-                        <Input id="email" value={email} onChange={e => setEmail(e.target.value)} type="email" />
+                        <Input
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="email"
+                        />
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor="birth">Data de nascimento</FieldLabel>
-                        <Input className='text' id="birth" value={birthDate} onChange={e => setBirthDate(e.target.value)} type="date" />
+                        <FieldLabel htmlFor="birth">
+                            Data de nascimento
+                        </FieldLabel>
+                        <Input
+                            className="text"
+                            id="birth"
+                            value={birthDate}
+                            onChange={(e) => setBirthDate(e.target.value)}
+                            type="date"
+                        />
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor="status">Status do atendimento</FieldLabel>
+                        <FieldLabel htmlFor="status">
+                            Status do atendimento
+                        </FieldLabel>
                         <select
                             id="status"
                             className="field-focus flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                             value={status}
-                            onChange={e => setStatus(Number(e.target.value))}
+                            onChange={(e) => setStatus(Number(e.target.value))}
                         >
-                            {Object.entries(statusOptions).map(([key, label]) => (
-                                <option key={key} value={key}>{label}</option>
-                            ))}
+                            {Object.entries(statusOptions).map(
+                                ([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ),
+                            )}
                         </select>
                     </Field>
                     <Field>
                         <FieldLabel htmlFor="text">Nova senha</FieldLabel>
-                        <Input id="password" value={password} onChange={e => setPassword(e.target.value)} type="text" />
-                        <FieldDescription>Deixe em branco para não alterar a senha</FieldDescription>
+                        <Input
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            type="text"
+                        />
+                        <FieldDescription>
+                            Deixe em branco para não alterar a senha
+                        </FieldDescription>
                     </Field>
-                    {error && <div className="text-red-500 text-sm">{error}</div>}
+                    {error && (
+                        <div className="text-red-500 text-sm">{error}</div>
+                    )}
                 </div>
                 <DialogFooter>
-                    <Button variant="destructive" onClick={onClose} disabled={loading}>
+                    <Button
+                        variant="destructive"
+                        onClick={onClose}
+                        disabled={loading}
+                    >
                         Cancelar
                     </Button>
                     <Button onClick={handleSave} disabled={loading}>

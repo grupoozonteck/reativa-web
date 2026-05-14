@@ -9,7 +9,8 @@ export default function DeployCheck() {
                     Reativa Web no ar
                 </h1>
                 <p className="mt-4 max-w-xl text-base text-slate-300 sm:text-lg">
-                    Se esta pagina abriu no ambiente publicado, o deploy desta versao entrou corretamente.
+                    Se esta pagina abriu no ambiente publicado, o deploy desta
+                    versao entrou corretamente.
                 </p>
                 <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 px-6 py-5 shadow-2xl shadow-black/30">
                     <p className="text-sm uppercase tracking-[0.25em] text-slate-400">
@@ -21,7 +22,10 @@ export default function DeployCheck() {
                     <div className="mt-4 space-y-1 text-sm text-slate-400">
                         <p>Atualizada em 20/04/2026</p>
                         <p>Versao base: 5ed870a</p>
-                        <p>Inclui ajuste do top attendants e validacao de cache por usuario.</p>
+                        <p>
+                            Inclui ajuste do top attendants e validacao de cache
+                            por usuario.
+                        </p>
                     </div>
                 </div>
             </div>

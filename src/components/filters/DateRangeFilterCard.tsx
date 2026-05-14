@@ -52,9 +52,13 @@ export function DateRangeFilterCard({
                     <div className="flex items-center gap-2 self-start lg:self-center">
                         <CalendarRange className="h-4 w-4 text-on-surface-variant" />
                         <div>
-                            <span className="font-display text-sm font-semibold text-on-surface">{title}</span>
+                            <span className="font-display text-sm font-semibold text-on-surface">
+                                {title}
+                            </span>
                             <p className="mt-0.5 text-xs text-on-surface-variant">
-                                {hasActiveFilters ? 'Periodo aplicado' : 'Mes atual'}
+                                {hasActiveFilters
+                                    ? 'Periodo aplicado'
+                                    : 'Mes atual'}
                             </p>
                         </div>
                     </div>
@@ -65,7 +69,9 @@ export function DateRangeFilterCard({
                             id={startId}
                             type="date"
                             value={startDate}
-                            onChange={(event) => onStartDateChange(event.target.value)}
+                            onChange={(event) =>
+                                onStartDateChange(event.target.value)
+                            }
                             className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                     </Field>
@@ -76,7 +82,9 @@ export function DateRangeFilterCard({
                             id={endId}
                             type="date"
                             value={endDate}
-                            onChange={(event) => onEndDateChange(event.target.value)}
+                            onChange={(event) =>
+                                onEndDateChange(event.target.value)
+                            }
                             className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                     </Field>
@@ -105,7 +113,9 @@ export function DateRangeFilterCard({
                     </div>
                 </div>
                 {hasDraftChanges && (
-                    <p className="text-xs text-primary">Alteracoes pendentes.</p>
+                    <p className="text-xs text-primary">
+                        Alteracoes pendentes.
+                    </p>
                 )}
             </form>
         </div>

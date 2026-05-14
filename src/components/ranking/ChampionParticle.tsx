@@ -10,10 +10,12 @@ export function ChampionParticle({ i }: { i: number }) {
         <motion.div
             className="absolute rounded-full pointer-events-none"
             style={{
-                width: size, height: size,
+                width: size,
+                height: size,
                 background: color,
                 boxShadow: `0 0 ${size * 2}px ${color}`,
-                top: '50%', left: '50%',
+                top: '50%',
+                left: '50%',
             }}
             animate={{
                 x: [

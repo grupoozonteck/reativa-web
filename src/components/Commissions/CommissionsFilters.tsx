@@ -42,9 +42,14 @@ export function CommissionsFilters({
             >
                 <div className="flex items-center gap-2">
                     <CalendarRange className="w-4 h-4 text-on-surface-variant" />
-                    <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
+                    <span className="font-display text-sm font-semibold text-on-surface">
+                        Filtros
+                    </span>
                     {hasActiveFilters && (
-                        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                        <Badge
+                            variant="outline"
+                            className="text-[10px] bg-primary/10 text-primary border-primary/20"
+                        >
                             ativo
                         </Badge>
                     )}
@@ -52,37 +57,43 @@ export function CommissionsFilters({
 
                 <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.4fr)_180px_180px_minmax(0,1fr)] xl:items-end">
                     <Field>
-                        <FieldLabel htmlFor="commissions-search">Login</FieldLabel>
+                        <FieldLabel htmlFor="commissions-search">
+                            Login
+                        </FieldLabel>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                             <Input
                                 id="commissions-search"
                                 placeholder="Digite o login do cliente"
                                 value={search}
-                                onChange={e => onSearchChange(e.target.value)}
+                                onChange={(e) => onSearchChange(e.target.value)}
                                 className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                             />
                         </div>
                     </Field>
 
                     <Field>
-                        <FieldLabel htmlFor="commissions-start-date">Data inicial</FieldLabel>
+                        <FieldLabel htmlFor="commissions-start-date">
+                            Data inicial
+                        </FieldLabel>
                         <Input
                             id="commissions-start-date"
                             type="date"
                             value={startDate}
-                            onChange={e => onStartDateChange(e.target.value)}
+                            onChange={(e) => onStartDateChange(e.target.value)}
                             className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                     </Field>
 
                     <Field>
-                        <FieldLabel htmlFor="commissions-end-date">Data final</FieldLabel>
+                        <FieldLabel htmlFor="commissions-end-date">
+                            Data final
+                        </FieldLabel>
                         <Input
                             id="commissions-end-date"
                             type="date"
                             value={endDate}
-                            onChange={e => onEndDateChange(e.target.value)}
+                            onChange={(e) => onEndDateChange(e.target.value)}
                             className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                     </Field>
@@ -112,7 +123,9 @@ export function CommissionsFilters({
                 </div>
 
                 {hasDraftChanges && (
-                    <p className="text-xs text-primary">Alteracoes pendentes.</p>
+                    <p className="text-xs text-primary">
+                        Alteracoes pendentes.
+                    </p>
                 )}
             </form>
         </div>

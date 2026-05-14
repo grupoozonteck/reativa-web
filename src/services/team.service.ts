@@ -88,7 +88,9 @@ export interface PerformanceFilters {
     end_date?: string;
 }
 
-function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPerformanceResponse {
+function normalizeSupervisorPerformanceResponse(
+    payload: unknown,
+): SupervisorPerformanceResponse {
     if (Array.isArray(payload)) {
         return {
             summary: null,
@@ -114,13 +116,17 @@ function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPer
 
         const summary = candidate.supervisor
             ? {
-                total_revenue: Number(candidate.supervisor.total_revenue ?? 0),
-                total_sales: Number(candidate.supervisor.total_sales ?? 0),
-                total_reengagements: Number(candidate.supervisor.total_reengagements ?? 0),
-                conversion: Number(candidate.supervisor.conversion ?? 0),
-                xp: Number(candidate.supervisor.xp ?? 0),
-                level: candidate.supervisor.level ?? 'Nv.0',
-            }
+                  total_revenue: Number(
+                      candidate.supervisor.total_revenue ?? 0,
+                  ),
+                  total_sales: Number(candidate.supervisor.total_sales ?? 0),
+                  total_reengagements: Number(
+                      candidate.supervisor.total_reengagements ?? 0,
+                  ),
+                  conversion: Number(candidate.supervisor.conversion ?? 0),
+                  xp: Number(candidate.supervisor.xp ?? 0),
+                  level: candidate.supervisor.level ?? 'Nv.0',
+              }
             : null;
 
         if (Array.isArray(candidate.data)) {
@@ -158,7 +164,9 @@ function normalizeSupervisorPerformanceResponse(payload: unknown): SupervisorPer
     };
 }
 
-function normalizeSupervisorRankingEntry(payload: unknown): SupervisorRankingEntry | null {
+function normalizeSupervisorRankingEntry(
+    payload: unknown,
+): SupervisorRankingEntry | null {
     if (!payload || typeof payload !== 'object') {
         return null;
     }
@@ -190,14 +198,18 @@ function normalizeSupervisorRankingEntry(payload: unknown): SupervisorRankingEnt
         return null;
     }
 
-    const revenueValue = candidate.revenue === null || candidate.revenue === undefined
-        ? null
-        : Number(candidate.revenue);
+    const revenueValue =
+        candidate.revenue === null || candidate.revenue === undefined
+            ? null
+            : Number(candidate.revenue);
 
     return {
         id,
         user_id: userId,
-        revenue: revenueValue === null || Number.isNaN(revenueValue) ? null : revenueValue,
+        revenue:
+            revenueValue === null || Number.isNaN(revenueValue)
+                ? null
+                : revenueValue,
         sales: Number(candidate.sales ?? 0),
         total_reengagements: Number(candidate.total_reengagements ?? 0),
         conversion: Number(candidate.conversion ?? 0),
@@ -213,12 +225,16 @@ function normalizeSupervisorRankingEntry(payload: unknown): SupervisorRankingEnt
     };
 }
 
-function normalizeSupervisorRankingResponse(payload: unknown): SupervisorRankingResponse {
+function normalizeSupervisorRankingResponse(
+    payload: unknown,
+): SupervisorRankingResponse {
     if (Array.isArray(payload)) {
         return {
             supervisors: payload
                 .map(normalizeSupervisorRankingEntry)
-                .filter((entry): entry is SupervisorRankingEntry => entry !== null),
+                .filter(
+                    (entry): entry is SupervisorRankingEntry => entry !== null,
+                ),
         };
     }
 
@@ -232,15 +248,17 @@ function normalizeSupervisorRankingResponse(payload: unknown): SupervisorRanking
         const list = Array.isArray(candidate.supervisors)
             ? candidate.supervisors
             : Array.isArray(candidate.data)
-                ? candidate.data
-                : Array.isArray(candidate.ranking)
-                    ? candidate.ranking
-                    : [];
+              ? candidate.data
+              : Array.isArray(candidate.ranking)
+                ? candidate.ranking
+                : [];
 
         return {
             supervisors: list
                 .map(normalizeSupervisorRankingEntry)
-                .filter((entry): entry is SupervisorRankingEntry => entry !== null),
+                .filter(
+                    (entry): entry is SupervisorRankingEntry => entry !== null,
+                ),
         };
     }
 
@@ -519,7 +537,8 @@ function normalizeLeaderOption(payload: unknown): AttendantLeaderOption | null {
     const numericUserId = Number(rawUserId);
     const name = candidate.name ?? candidate.user?.name ?? '';
     const login = candidate.login ?? candidate.user?.login ?? '';
-    const status = typeof candidate.status === 'number' ? candidate.status : null;
+    const status =
+        typeof candidate.status === 'number' ? candidate.status : null;
 
     if (Number.isNaN(numericId) || !name || !login) {
         return null;
@@ -536,7 +555,11 @@ function normalizeLeaderOption(payload: unknown): AttendantLeaderOption | null {
         login,
         status,
         user: {
-            id: Number.isNaN(Number(candidate.user?.id)) ? (Number.isNaN(numericUserId) ? numericId : numericUserId) : Number(candidate.user?.id),
+            id: Number.isNaN(Number(candidate.user?.id))
+                ? Number.isNaN(numericUserId)
+                    ? numericId
+                    : numericUserId
+                : Number(candidate.user?.id),
             name,
             login,
             status,
@@ -551,7 +574,9 @@ function normalizeLeaderOptions(payload: unknown): AttendantLeaderOption[] {
 }
 
 export const teamService = {
-    getSupervisorPerformance: async (filters: PerformanceFilters = {}): Promise<SupervisorPerformanceResponse> => {
+    getSupervisorPerformance: async (
+        filters: PerformanceFilters = {},
+    ): Promise<SupervisorPerformanceResponse> => {
         const response = await api.get('/api/supervisor/performance', {
             params: {
                 ...(filters.start_date && { start_date: filters.start_date }),
@@ -561,17 +586,26 @@ export const teamService = {
         return normalizeSupervisorPerformanceResponse(response.data);
     },
 
-    getManagerPerformance: async (filters: PerformanceFilters = {}): Promise<ManagerPerformanceResponse> => {
-        const response = await api.get<ManagerPerformanceResponse>('/api/manager/performance', {
-            params: {
-                ...(filters.start_date && { start_date: filters.start_date }),
-                ...(filters.end_date && { end_date: filters.end_date }),
+    getManagerPerformance: async (
+        filters: PerformanceFilters = {},
+    ): Promise<ManagerPerformanceResponse> => {
+        const response = await api.get<ManagerPerformanceResponse>(
+            '/api/manager/performance',
+            {
+                params: {
+                    ...(filters.start_date && {
+                        start_date: filters.start_date,
+                    }),
+                    ...(filters.end_date && { end_date: filters.end_date }),
+                },
             },
-        });
+        );
         return response.data;
     },
 
-    getSupervisorRanking: async (filters: SupervisorRankingFilters = {}): Promise<SupervisorRankingResponse> => {
+    getSupervisorRanking: async (
+        filters: SupervisorRankingFilters = {},
+    ): Promise<SupervisorRankingResponse> => {
         const response = await api.get('/api/supervisor/ranking', {
             params: {
                 ...(filters.start_date && { start_date: filters.start_date }),
@@ -581,8 +615,13 @@ export const teamService = {
         return normalizeSupervisorRankingResponse(response.data);
     },
 
-    getAttendants: async (filters?: AttendantsFilters): Promise<AttendantsResponse> => {
-        const response = await api.get<{ success: boolean; data: AttendantsResponse }>('/api/attendants', {
+    getAttendants: async (
+        filters?: AttendantsFilters,
+    ): Promise<AttendantsResponse> => {
+        const response = await api.get<{
+            success: boolean;
+            data: AttendantsResponse;
+        }>('/api/attendants', {
             params: filters,
         });
 
@@ -619,8 +658,14 @@ export const teamService = {
         return response.data;
     },
 
-    getAttendantById: async (id: number, filters: AttendantDetailFilters = {}): Promise<{ success: boolean; data: AttendantShowResponse }> => {
-        const response = await api.get<{ success: boolean; data: AttendantShowResponse }>(`/api/attendants/${id}/show`, {
+    getAttendantById: async (
+        id: number,
+        filters: AttendantDetailFilters = {},
+    ): Promise<{ success: boolean; data: AttendantShowResponse }> => {
+        const response = await api.get<{
+            success: boolean;
+            data: AttendantShowResponse;
+        }>(`/api/attendants/${id}/show`, {
             params: {
                 ...(filters.start_date && { start_date: filters.start_date }),
                 ...(filters.end_date && { end_date: filters.end_date }),
@@ -634,18 +679,32 @@ export const teamService = {
         return response.data;
     },
 
-    createAttendantCommission: async (id: number, data: CreateAttendantCommissionPayload) => {
-        const response = await api.post(`/api/attendants/${id}/commissions/create`, data);
+    createAttendantCommission: async (
+        id: number,
+        data: CreateAttendantCommissionPayload,
+    ) => {
+        const response = await api.post(
+            `/api/attendants/${id}/commissions/create`,
+            data,
+        );
         return response.data;
     },
 
-    updateAttendantCommission: async (commissionId: number, data: UpdateAttendantCommissionPayload) => {
-        const response = await api.post(`/api/commissions/${commissionId}/update`, data);
+    updateAttendantCommission: async (
+        commissionId: number,
+        data: UpdateAttendantCommissionPayload,
+    ) => {
+        const response = await api.post(
+            `/api/commissions/${commissionId}/update`,
+            data,
+        );
         return response.data;
     },
 
     deleteAttendantCommission: async (commissionId: number) => {
-        const response = await api.post(`/api/commissions/${commissionId}/delete`);
+        const response = await api.post(
+            `/api/commissions/${commissionId}/delete`,
+        );
         return response.data;
     },
 };

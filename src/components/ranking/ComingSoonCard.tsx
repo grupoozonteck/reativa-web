@@ -6,7 +6,11 @@ interface ComingSoonCardProps {
     icon?: LucideIcon;
 }
 
-export function ComingSoonCard({ title, description, icon: Icon = Clock3 }: ComingSoonCardProps) {
+export function ComingSoonCard({
+    title,
+    description,
+    icon: Icon = Clock3,
+}: ComingSoonCardProps) {
     return (
         <div className="glass-card rounded-2xl p-5 border border-dashed border-white/10">
             <div className="flex items-center gap-2 mb-3">
@@ -15,7 +19,9 @@ export function ComingSoonCard({ title, description, icon: Icon = Clock3 }: Comi
                     {title}
                 </h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+                {description}
+            </p>
             <span className="inline-flex mt-3 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full">
                 Em breve
             </span>
