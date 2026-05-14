@@ -129,7 +129,7 @@ export default function TeamAttendances() {
     const statsCards = [
         { label: 'Atendimentos da Equipe', value: totalAttendances, icon: Headphones, color: 'text-secondary', iconBg: 'bg-secondary/10', iconColor: 'text-secondary' },
         { label: 'Reativados pela Equipe', value: totalReactivated, icon: RefreshCcw, color: 'text-primary [text-shadow:0_0_10px_hsl(83_98%_64%_/_0.35)]', iconBg: 'bg-primary/10', iconColor: 'text-primary' },
-        { label: 'Conversao da Equipe', value: `${conversionRate}%`, icon: TrendingUp, color: 'text-accent', iconBg: 'bg-accent/10', iconColor: 'text-accent' },
+        { label: 'Conversão da Equipe', value: `${conversionRate}%`, icon: TrendingUp, color: 'text-accent', iconBg: 'bg-accent/10', iconColor: 'text-accent' },
     ];
 
     return (

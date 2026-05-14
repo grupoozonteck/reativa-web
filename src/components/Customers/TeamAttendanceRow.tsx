@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TableRow, TableCell } from '@/components/ui/table';
-import { Eye, MessageCircle, UserRound } from 'lucide-react';
+import { Clock, Eye, MessageCircle, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getInitials, getAvatarColor, formatWhatsApp, getWhatsAppLink, formatDate, formatDateTime } from '@/utils/client-utils';
 import { statusStyleMap } from '@/utils/color-ultis';
@@ -97,11 +97,10 @@ export function TeamAttendanceRow({ reengagement, statusRecollection }: TeamAtte
                 <Button
                     size="sm"
                     disabled
-                    onClick={() => navigate(`/customers/${user.id}`)}
                     className="h-7 text-xs px-2 bg-gradient-to-br from-primary to-primary-container text-primary-foreground hover:shadow-glow-primary-sm transition-shadow font-semibold whitespace-nowrap"
                 >
-                    <Eye className="w-3 h-3" />
-                    Ver
+                    <Clock className="w-4 h-4" />
+                    Em Breve...
                 </Button>
             </TableCell>
         </TableRow>
