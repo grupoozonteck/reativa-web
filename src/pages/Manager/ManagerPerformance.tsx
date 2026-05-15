@@ -73,7 +73,7 @@ export default function ManagerPerformance() {
     const supervisors = data?.supervisors ?? [];
 
     return (
-        <div className="p-4 py-8 sm:p-6 space-y-5 max-w-screen-2xl mx-auto">
+        <div className="mx-auto max-w-screen-2xl space-y-5 p-4 py-6 sm:p-6 sm:py-8">
             <ManagerHeader isFetching={isFetching} onRefresh={refetch} />
 
             <DateRangeFilterCard

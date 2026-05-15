@@ -48,8 +48,8 @@ export function DateRangeFilterCard({
                 }}
                 className="space-y-3"
             >
-                <div className="grid grid-cols-1 gap-3 lg:grid-cols-[180px_180px_180px_minmax(0,1fr)] lg:items-end">
-                    <div className="flex items-center gap-2 self-start lg:self-center">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-[180px_180px_180px_minmax(0,1fr)] 2xl:items-end">
+                    <div className="flex items-center gap-2 self-start md:col-span-2 2xl:col-span-1 2xl:self-center">
                         <CalendarRange className="h-4 w-4 text-on-surface-variant" />
                         <div>
                             <span className="font-display text-sm font-semibold text-on-surface">
@@ -89,7 +89,7 @@ export function DateRangeFilterCard({
                         />
                     </Field>
 
-                    <div className="flex flex-col gap-2 sm:flex-row lg:justify-end">
+                    <div className="flex flex-col gap-2 sm:flex-row md:col-span-2 2xl:col-span-1 2xl:justify-end">
                         <Button
                             size="sm"
                             type="submit"

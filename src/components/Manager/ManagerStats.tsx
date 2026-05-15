@@ -21,9 +21,11 @@ interface ManagerStatsProps {
 interface StatCard {
     label: string;
     value: string | number;
+    helper: string;
     icon: LucideIcon;
     color: string;
     iconBg: string;
+    desktopSpan?: string;
 }
 
 export function ManagerStats({
@@ -38,13 +40,15 @@ export function ManagerStats({
         {
             label: 'Supervisores',
             value: isLoading ? '...' : supervisorsCount,
+            helper: 'Base ativa na operacao',
             icon: Users,
             color: 'text-indigo-600 dark:text-indigo-400',
             iconBg: 'bg-indigo-600',
         },
         {
-            label: 'Total de Vendas',
+            label: 'Total de vendas',
             value: isLoading ? '...' : totalSales,
+            helper: 'Reativacoes concluídas',
             icon: ShoppingCart,
             color: 'text-emerald-600 dark:text-emerald-400',
             iconBg: 'bg-emerald-600',
@@ -52,20 +56,24 @@ export function ManagerStats({
         {
             label: 'Atendimentos',
             value: isLoading ? '...' : totalReengagements,
+            helper: 'Contatos realizados',
             icon: Headphones,
             color: 'text-violet-600 dark:text-violet-400',
             iconBg: 'bg-violet-600',
         },
         {
-            label: 'Receita Total',
+            label: 'Receita total',
             value: isLoading ? '...' : formatCurrency(totalRevenue),
+            helper: 'Volume financeiro do periodo',
             icon: TrendingUp,
             color: 'text-amber-500 dark:text-amber-400',
             iconBg: 'bg-amber-500',
+            desktopSpan: 'lg:col-span-1',
         },
         {
             label: 'Conversão Geral',
             value: isLoading ? '...' : `${totalConversion}%`,
+            helper: 'Média consolidada do periodo', 
             icon: BarChart2,
             color: 'text-rose-600 dark:text-rose-400',
             iconBg: 'bg-rose-600',
@@ -73,31 +81,42 @@ export function ManagerStats({
     ];
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4 animate-fade-in">
+        <div className="grid grid-cols-1 gap-3 animate-fade-in lg:grid-cols-5">
             {stats.map((card) => (
                 <div
                     key={card.label}
-                    className="solid-card p-4 sm:p-6 hover:scale-[1.01] transition-transform flex items-center gap-4"
+                    className={cn(
+                        'solid-card flex min-w-0 flex-col gap-4 p-4 transition-transform hover:scale-[1.01] sm:p-5',
+                        card.desktopSpan,
+                    )}
                 >
-                    <div
-                        className={cn(
-                            'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
-                            card.iconBg,
-                        )}
-                    >
-                        <card.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                    <div className="flex items-start justify-between gap-3">
+                        <div
+                            className={cn(
+                                'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
+                                card.iconBg,
+                            )}
+                        >
+                            <card.icon className="h-5 w-5 text-white" />
+                        </div>
+                        <p className="text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                             {card.label}
                         </p>
+                    </div>
+
+                    <div className="min-w-0">
                         <p
                             className={cn(
-                                'text-2xl font-black tracking-tight tabular-nums',
+                                'text-[1.75rem] font-black leading-none tracking-tight tabular-nums sm:text-[2rem]',
                                 card.color,
+                                card.label === 'Receita total' &&
+                                    'text-[clamp(1.3rem,4vw,1.8rem)]',
                             )}
                         >
                             {card.value}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            {card.helper}
                         </p>
                     </div>
                 </div>
