@@ -19,6 +19,7 @@ interface DateRangeFilterCardProps {
     className?: string;
     startId?: string;
     endId?: string;
+    extraContent?: React.ReactNode;
 }
 
 export function DateRangeFilterCard({
@@ -36,6 +37,7 @@ export function DateRangeFilterCard({
     className,
     startId = 'start-date',
     endId = 'end-date',
+    extraContent,
 }: DateRangeFilterCardProps) {
     const disableClear = !hasActiveFilters && !hasDraftChanges;
 
@@ -48,7 +50,14 @@ export function DateRangeFilterCard({
                 }}
                 className="space-y-3"
             >
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-[180px_180px_180px_minmax(0,1fr)] 2xl:items-end">
+                <div
+                    className={cn(
+                        'grid grid-cols-1 gap-3 md:grid-cols-2 2xl:items-end',
+                        extraContent
+                            ? '2xl:grid-cols-[180px_180px_180px_220px_minmax(0,1fr)]'
+                            : '2xl:grid-cols-[180px_180px_180px_minmax(0,1fr)]',
+                    )}
+                >
                     <div className="flex items-center gap-2 self-start md:col-span-2 2xl:col-span-1 2xl:self-center">
                         <CalendarRange className="h-4 w-4 text-on-surface-variant" />
                         <div>
@@ -88,6 +97,8 @@ export function DateRangeFilterCard({
                             className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                     </Field>
+
+                    {extraContent}
 
                     <div className="flex flex-col gap-2 sm:flex-row md:col-span-2 2xl:col-span-1 2xl:justify-end">
                         <Button

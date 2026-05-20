@@ -21,6 +21,7 @@ import Attendants from './pages/Attendants/Attendants';
 import AttendantDetails from './pages/Attendants/AttendantDetails';
 import EditAttendant from './pages/Attendants/EditAttendant';
 import DeployCheck from './pages/DeployCheck/DeployCheck';
+import RecruitersRanking from './pages/RecruitersRanking/RecruitersRanking';
 import * as React from 'react';
 import { ToastContainer } from 'react-toastify';
 
@@ -116,6 +117,14 @@ export default function App() {
                         />
                         <Route path="/commissions" element={<Commissions />} />
                         <Route
+                            path="/recruiters-ranking"
+                            element={<RecruitersRanking />}
+                        />
+                        <Route
+                            path="/ranking/recruiters"
+                            element={<RecruitersRanking />}
+                        />
+                        <Route
                             path="/supervisor/ranking"
                             element={
                                 <RoleGuard route="/supervisor/ranking">
@@ -189,6 +198,14 @@ export default function App() {
                     <Route
                         path="/commissions"
                         element={<Navigate to="/commissions" replace />}
+                    />
+                    <Route
+                        path="/recruiters-ranking"
+                        element={<Navigate to="/recruiters-ranking" replace />}
+                    />
+                    <Route
+                        path="/ranking/recruiters"
+                        element={<Navigate to="/ranking/recruiters" replace />}
                     />
                     <Route
                         path="/supervisor/ranking"

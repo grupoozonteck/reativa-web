@@ -9,6 +9,7 @@ import {
     UserCog,
     UserStar,
     ScanSearch,
+    Medal,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -25,15 +26,12 @@ export const navItems: NavItem[] = [
     { to: '/supervisor/ranking', label: 'Rank Supervisores', icon: Trophy },
     { to: '/customers', label: 'Clientes', icon: UsersRound },
     { to: '/reengagements/generate', label: 'Gerar Recrut.', icon: UserStar },
-    {
-        to: '/reengagements/situation',
-        label: 'Consulta de Situação',
-        icon: ScanSearch,
-    },
+    { to: '/reengagements/situation', label: 'Consulta de Situação', icon: ScanSearch },
     { to: '/my-attendances', label: 'Meus Atendimentos', icon: Headphones },
     { to: '/team-attendances', label: 'Atend. Equipe', icon: Headphones },
     { to: '/supervisor/performance', label: 'Minha Equipe', icon: Handshake },
     { to: '/manager/performance', label: 'Minha Operação', icon: Handshake },
     { to: '/attendants', label: 'Atendentes', icon: UserCog },
     { to: '/commissions', label: 'Comissões', icon: HandCoins },
+    { to: '/ranking/recruiters', label: 'Ranking Recrutadores', icon: Medal },
 ];
