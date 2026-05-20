@@ -8,18 +8,24 @@ import { CommissionsTable } from '@/components/Commissions/CommissionsTable';
 import { CommissionsFilters } from '@/components/Commissions/CommissionsFilters';
 import { DollarSign, TrendingUp, FileText } from 'lucide-react';
 import { getCurrentMonthDateRange } from '@/utils/date-range';
+import { useAuth } from '@/contexts/useAuth';
+import { UserRole } from '@/config/permissions';
 
 export default function Comissoes() {
+    const { userType } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
     const appliedSearch = searchParams.get('login') ?? '';
     const appliedStartDate =
         searchParams.get('start_date') ?? defaultRange.startDate;
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
+    const appliedWithoutLeader = searchParams.get('without_leader') === 'true';
     const [search, setSearch] = useState(appliedSearch);
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
+    const [withoutLeader, setWithoutLeader] = useState(appliedWithoutLeader);
     const [page, setPage] = useState(1);
+    const isAttendant = userType === UserRole.ATENDENTE;
 
     const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: [
@@ -27,6 +33,7 @@ export default function Comissoes() {
             appliedSearch,
             appliedStartDate,
             appliedEndDate,
+            appliedWithoutLeader,
             page,
         ],
         queryFn: () =>
@@ -34,6 +41,7 @@ export default function Comissoes() {
                 login: appliedSearch || undefined,
                 start_date: appliedStartDate || undefined,
                 end_date: appliedEndDate || undefined,
+                without_leader: isAttendant ? appliedWithoutLeader : undefined,
                 page,
             }),
         placeholderData: keepPreviousData,
@@ -51,6 +59,9 @@ export default function Comissoes() {
                 if (endDate && endDate !== defaultRange.endDate)
                     params.set('end_date', endDate);
                 else params.delete('end_date');
+                if (isAttendant && withoutLeader)
+                    params.set('without_leader', 'true');
+                else params.delete('without_leader');
                 if (page !== 1) params.delete('page');
                 return params;
             },
@@ -62,12 +73,14 @@ export default function Comissoes() {
         setSearch('');
         setStartDate(defaultRange.startDate);
         setEndDate(defaultRange.endDate);
+        setWithoutLeader(false);
         setPage(1);
         setSearchParams(
             (params) => {
                 params.delete('login');
                 params.delete('start_date');
                 params.delete('end_date');
+                params.delete('without_leader');
                 params.delete('page');
                 return params;
             },
@@ -78,11 +91,13 @@ export default function Comissoes() {
     const hasActiveFilters =
         !!appliedSearch ||
         appliedStartDate !== defaultRange.startDate ||
-        appliedEndDate !== defaultRange.endDate;
+        appliedEndDate !== defaultRange.endDate ||
+        (isAttendant && appliedWithoutLeader);
     const hasDraftChanges =
         search !== appliedSearch ||
         startDate !== appliedStartDate ||
-        endDate !== appliedEndDate;
+        endDate !== appliedEndDate ||
+        (isAttendant && withoutLeader !== appliedWithoutLeader);
 
     const items = data?.data?.commissions?.data ?? [];
     const totalCommissions = Number(data?.data?.total_commissions_value ?? 0);
@@ -125,9 +140,12 @@ export default function Comissoes() {
                 search={search}
                 startDate={startDate}
                 endDate={endDate}
+                withoutLeader={withoutLeader}
+                showWithoutLeaderFilter={isAttendant}
                 onSearchChange={setSearch}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
+                onWithoutLeaderChange={setWithoutLeader}
                 onApplyFilters={handleApplyFilters}
                 onClearFilters={clearFilters}
                 hasActiveFilters={hasActiveFilters}

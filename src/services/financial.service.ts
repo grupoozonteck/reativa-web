@@ -5,6 +5,7 @@ export interface CommissionFilters {
     start_date?: string;
     end_date?: string;
     page?: number;
+    without_leader?: boolean;
 }
 
 export const financialService = {
@@ -15,6 +16,7 @@ export const financialService = {
                 ...(params.start_date && { start_date: params.start_date }),
                 ...(params.end_date && { end_date: params.end_date }),
                 ...(params.page && { page: params.page }),
+                ...(params.without_leader && { without_leader: true }),
             },
         });
         return response.data;

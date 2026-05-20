@@ -3,14 +3,18 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Field, FieldLabel } from '@/components/ui/field';
+import { Switch } from '@/components/ui/switch';
 
 interface CommissionsFiltersProps {
     search: string;
     startDate: string;
     endDate: string;
+    withoutLeader?: boolean;
+    showWithoutLeaderFilter?: boolean;
     onSearchChange: (value: string) => void;
     onStartDateChange: (value: string) => void;
     onEndDateChange: (value: string) => void;
+    onWithoutLeaderChange?: (value: boolean) => void;
     onApplyFilters: () => void;
     onClearFilters: () => void;
     hasActiveFilters: boolean;
@@ -22,9 +26,12 @@ export function CommissionsFilters({
     search,
     startDate,
     endDate,
+    withoutLeader = false,
+    showWithoutLeaderFilter = false,
     onSearchChange,
     onStartDateChange,
     onEndDateChange,
+    onWithoutLeaderChange,
     onApplyFilters,
     onClearFilters,
     hasActiveFilters,
@@ -55,7 +62,7 @@ export function CommissionsFilters({
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.4fr)_180px_180px_minmax(0,1fr)] xl:items-end">
+                <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.4fr)_180px_180px_220px_minmax(0,1fr)] xl:items-end">
                     <Field>
                         <FieldLabel htmlFor="commissions-search">
                             Login
@@ -97,6 +104,32 @@ export function CommissionsFilters({
                             className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
                         />
                     </Field>
+
+                    {showWithoutLeaderFilter ? (
+                        <Field>
+                            <FieldLabel htmlFor="commissions-without-leader">
+                                Sem lider
+                            </FieldLabel>
+                            <label
+                                htmlFor="commissions-without-leader"
+                                className="flex h-9 items-center gap-3 rounded-lg border border-border/60 bg-surface-highest px-3"
+                            >
+                                <Switch
+                                    id="commissions-without-leader"
+                                    checked={withoutLeader}
+                                    onCheckedChange={(checked) =>
+                                        onWithoutLeaderChange?.(checked)
+                                    }
+                                    disabled={isFetching}
+                                />
+                                <span className="text-xs text-on-surface-variant">
+                                    Mostrar apenas sem lider
+                                </span>
+                            </label>
+                        </Field>
+                    ) : (
+                        <div />
+                    )}
 
                     <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
                         <Button
