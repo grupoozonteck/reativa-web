@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     UserX,
     DollarSign,
@@ -15,9 +15,14 @@ import StatCard from '@/components/dashboard/StatCard';
 import TopSellersCard from '@/components/dashboard/TopSellersCard';
 import InativosCard from '@/components/dashboard/InativosCard';
 import RecentSalesCard from '@/components/dashboard/RecentSalesCard';
+import { RevenueMilestoneModal } from '@/components/dashboard/RevenueMilestoneModal';
 import { dashboardService } from '@/services/dashboard.service';
 import { DateRangeFilterCard } from '@/components/filters/DateRangeFilterCard';
 import { getCurrentMonthDateRange } from '@/utils/date-range';
+
+const REVENUE_GOAL = 100000;
+const REVENUE_MILESTONE_TRIGGER = 99000;
+const REVENUE_MODAL_STORAGE_KEY = 'dashboard-revenue-modal-disabled';
 
 function getGreeting() {
     const h = new Date().getHours();
@@ -36,6 +41,7 @@ export default function Dashboard() {
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
+    const [revenueModalOpen, setRevenueModalOpen] = useState(false);
 
     const { data, isLoading, isFetching, refetch } = useQuery({
         queryKey: ['dashboard', user?.id, appliedStartDate, appliedEndDate],
@@ -83,14 +89,61 @@ export default function Dashboard() {
     };
 
     const stats = data?.stats;
+    const monthlyRevenue = Number(stats?.monthly_revenue ?? 0);
     const inactiveSummary = data?.inactive_clients_summary;
     const topAttendants = (data?.top_attendants ?? []).filter(
         (item) => item.type === undefined || item.type === 3,
     );
     const recentSales = data?.recent_sales ?? [];
+    const shouldCelebrateRevenue = monthlyRevenue >= REVENUE_MILESTONE_TRIGGER;
+    const revenueModalPreferenceKey = `${REVENUE_MODAL_STORAGE_KEY}:${user?.id ?? 'guest'}`;
+
+    useEffect(() => {
+        if (!shouldCelebrateRevenue) {
+            setRevenueModalOpen(false);
+            return;
+        }
+
+        if (typeof window !== 'undefined') {
+            const isDisabled = window.localStorage.getItem(
+                revenueModalPreferenceKey,
+            );
+            if (isDisabled === '1') {
+                setRevenueModalOpen(false);
+                return;
+            }
+        }
+
+        setRevenueModalOpen(true);
+    }, [
+        shouldCelebrateRevenue,
+        appliedStartDate,
+        appliedEndDate,
+        revenueModalPreferenceKey,
+        user?.id,
+    ]);
+
+    const handleRevenueModalChange = (open: boolean) => {
+        setRevenueModalOpen(open);
+    };
+
+    const handleDisableRevenueModal = () => {
+        if (typeof window !== 'undefined') {
+            window.localStorage.setItem(revenueModalPreferenceKey, '1');
+        }
+        setRevenueModalOpen(false);
+    };
 
     return (
         <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
+            <RevenueMilestoneModal
+                open={revenueModalOpen}
+                onOpenChange={handleRevenueModalChange}
+                onDisable={handleDisableRevenueModal}
+                revenue={monthlyRevenue}
+                goal={REVENUE_GOAL}
+            />
+
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
                 <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-emerald-500/4 rounded-full blur-3xl" />

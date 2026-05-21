@@ -13,8 +13,7 @@ export default function SupervisorPerformance() {
     const { user } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
-    const appliedStartDate =
-        searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
