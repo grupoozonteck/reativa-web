@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeProvider';
 import AppLayout from '@/layouts/AppLayout';
 import Login from '@/pages/Login/Login';
 import Dashboard from '@/pages/Dashboard/Dashboard';
+import GoalMilestoneReport from '@/pages/Dashboard/GoalMilestoneReport';
 import Ranking from '@/pages/Ranking/Ranking';
 import Customers from '@/pages/Customers/Customers';
 import CustomerDetails from '@/pages/Customers/CustomerDetails';
@@ -85,6 +86,10 @@ export default function App() {
                     <Route path="/deploy-check" element={<DeployCheck />} />
                     <Route element={<ProtectedApp />}>
                         <Route path="/" element={<Dashboard />} />
+                        <Route
+                            path="/dashboard/meta-report"
+                            element={<GoalMilestoneReport />}
+                        />
                         <Route path="/ranking" element={<Ranking />} />
                         <Route path="/customers" element={<Customers />} />
                         <Route

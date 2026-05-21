@@ -8,7 +8,7 @@ import {
     RefreshCcw,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/useAuth';
 import { Button } from '@/components/ui/button';
 import StatCard from '@/components/dashboard/StatCard';
@@ -21,8 +21,7 @@ import { DateRangeFilterCard } from '@/components/filters/DateRangeFilterCard';
 import { getCurrentMonthDateRange } from '@/utils/date-range';
 
 const REVENUE_GOAL = 100000;
-const REVENUE_MILESTONE_TRIGGER = 99000;
-const REVENUE_MODAL_STORAGE_KEY = 'dashboard-revenue-modal-disabled';
+const REVENUE_GOAL_MODAL_STORAGE_KEY = 'dashboard-revenue-goal-modal-disabled';
 
 function getGreeting() {
     const h = new Date().getHours();
@@ -33,6 +32,7 @@ function getGreeting() {
 
 export default function Dashboard() {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const name = user?.name ?? 'Usuario';
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
@@ -95,8 +95,9 @@ export default function Dashboard() {
         (item) => item.type === undefined || item.type === 3,
     );
     const recentSales = data?.recent_sales ?? [];
-    const shouldCelebrateRevenue = monthlyRevenue >= REVENUE_MILESTONE_TRIGGER;
-    const revenueModalPreferenceKey = `${REVENUE_MODAL_STORAGE_KEY}:${user?.id ?? 'guest'}`;
+    const hasReachedRevenueGoal = monthlyRevenue >= REVENUE_GOAL;
+    const shouldCelebrateRevenue = hasReachedRevenueGoal;
+    const revenueModalPreferenceKey = `${REVENUE_GOAL_MODAL_STORAGE_KEY}:${user?.id ?? 'guest'}`;
 
     useEffect(() => {
         if (!shouldCelebrateRevenue) {
@@ -134,12 +135,19 @@ export default function Dashboard() {
         setRevenueModalOpen(false);
     };
 
+    const handleOpenRevenueReport = () => {
+        setRevenueModalOpen(false);
+        const query = searchParams.toString();
+        navigate(`/dashboard/meta-report${query ? `?${query}` : ''}`);
+    };
+
     return (
         <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
             <RevenueMilestoneModal
                 open={revenueModalOpen}
                 onOpenChange={handleRevenueModalChange}
                 onDisable={handleDisableRevenueModal}
+                onViewReport={handleOpenRevenueReport}
                 revenue={monthlyRevenue}
                 goal={REVENUE_GOAL}
             />

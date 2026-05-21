@@ -1,4 +1,4 @@
-import { Award, Sparkles, Target, TrendingUp } from 'lucide-react';
+import { CheckCircle2, Sparkles, Target, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,6 +12,7 @@ interface RevenueMilestoneModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onDisable: () => void;
+    onViewReport: () => void;
     revenue: number;
     goal: number;
 }
@@ -29,12 +30,11 @@ export function RevenueMilestoneModal({
     open,
     onOpenChange,
     onDisable,
+    onViewReport,
     revenue,
     goal,
 }: RevenueMilestoneModalProps) {
-    const remaining = Math.max(goal - revenue, 0);
     const progress = Math.min((revenue / goal) * 100, 100);
-    const isGoalReached = revenue >= goal;
 
     const currencyFormatter = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -44,7 +44,7 @@ export function RevenueMilestoneModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="overflow-hidden border border-primary/20 bg-[#0b1324] p-0 text-white shadow-2xl shadow-primary/10 sm:max-w-[760px]">
+            <DialogContent className="overflow-hidden border border-primary/15 bg-[#0b1324] p-0 text-white shadow-2xl shadow-primary/10 sm:max-w-[760px]">
                 <div className="relative">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(163,255,18,0.14),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.12),_transparent_36%)]" />
 
@@ -67,23 +67,19 @@ export function RevenueMilestoneModal({
                         ))}
                     </div>
 
-                    <div className="relative p-6 sm:p-7">
+                    <div className="relative p-4 sm:p-6">
                         <div className="space-y-6">
                             <div className="space-y-4 pr-8">
                                 <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_28px_rgba(163,255,18,0.15)]">
-                                    <Award className="h-7 w-7" />
+                                    <CheckCircle2 className="h-7 w-7" />
                                 </div>
 
                                 <DialogHeader className="space-y-3 text-left">
-                                    <DialogTitle className="max-w-[18ch] text-3xl font-black leading-[1.05] tracking-tight text-white sm:text-[3.25rem]">
-                                        {isGoalReached
-                                            ? 'Meta de 100 mil batida'
-                                            : 'Vocês estão encostando nos 100 mil'}
+                                    <DialogTitle className="max-w-[16ch] text-3xl font-black leading-[1.02] tracking-tight text-white sm:text-[3.25rem]">
+                                        Parabens, meta alcancada
                                     </DialogTitle>
-                                    <DialogDescription className="max-w-2xl text-base leading-7 text-slate-300">
-                                        {isGoalReached
-                                            ? 'A equipe virou a meta mensal em receita. Esse momento merece destaque logo na abertura da dashboard.'
-                                            : `Faltam ${currencyFormatter.format(remaining)} para a equipe alcançar a meta mensal de ${currencyFormatter.format(goal)}.`}
+                                    <DialogDescription className="max-w-2xl text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
+                                        {`A equipe fechou ${currencyFormatter.format(revenue)} no periodo e ultrapassou a meta mensal de ${currencyFormatter.format(goal)}.`}
                                     </DialogDescription>
                                 </DialogHeader>
                             </div>
@@ -110,16 +106,14 @@ export function RevenueMilestoneModal({
                                 <div className="rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.06] p-4 sm:col-span-2 xl:col-span-1">
                                     <div className="flex items-start justify-between gap-3">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200/75">
-                                            Progresso
+                                            Meta
                                         </p>
                                         <span className="shrink-0 rounded-full bg-emerald-400/12 px-2 py-1 text-[10px] font-semibold leading-none text-emerald-300">
-                                            {isGoalReached
-                                                ? 'Meta batida'
-                                                : 'Reta final'}
+                                            Meta batida
                                         </span>
                                     </div>
                                     <p className="mt-4 text-[2.1rem] font-black leading-none tabular-nums text-emerald-300">
-                                        {progress.toFixed(1)}%
+                                        {`${progress.toFixed(1)}%`}
                                     </p>
                                 </div>
                             </div>
@@ -132,9 +126,7 @@ export function RevenueMilestoneModal({
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-semibold text-emerald-300">
                                         <TrendingUp className="h-4 w-4" />
-                                        {isGoalReached
-                                            ? 'Objetivo concluído'
-                                            : `${currencyFormatter.format(remaining)} restantes`}
+                                        Objetivo concluido
                                     </div>
                                 </div>
 
@@ -152,25 +144,32 @@ export function RevenueMilestoneModal({
                                 <div className="flex max-w-xl items-start gap-2 text-sm leading-6 text-slate-300">
                                     <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
                                     <span>
-                                        {isGoalReached
-                                            ? 'A abertura passa a reforçar o resultado do mês sem poluir a dashboard.'
-                                            : 'A celebração entra como um destaque rápido para marcar que a equipe está muito perto da meta.'}
+                                        Abra o resumo para ver os numeros do
+                                        periodo, quem mais vendeu e a sequencia
+                                        das ultimas vendas.
                                     </span>
                                 </div>
 
-                                <div className="flex flex-col gap-2 sm:flex-row">
+                                <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-3">
+                                    <Button
+                                        type="button"
+                                        onClick={onViewReport}
+                                        className="h-11 w-full bg-primary text-slate-950 hover:bg-primary/90 sm:min-w-36"
+                                    >
+                                        Ver resumo
+                                    </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={onDisable}
-                                        className="h-11 min-w-40 border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                                        className="h-11 w-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:min-w-36"
                                     >
-                                        Não mostrar novamente
+                                        Nao mostrar novamente
                                     </Button>
                                     <Button
                                         type="button"
                                         onClick={() => onOpenChange(false)}
-                                        className="h-11 min-w-40 bg-primary text-slate-950 hover:bg-primary/90"
+                                        className="h-11 w-full bg-white/10 text-white hover:bg-white/15 sm:min-w-36"
                                     >
                                         Fechar
                                     </Button>
