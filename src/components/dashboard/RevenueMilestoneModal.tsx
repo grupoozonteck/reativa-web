@@ -44,7 +44,7 @@ export function RevenueMilestoneModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="overflow-hidden border border-primary/15 bg-[#0b1324] p-0 text-white shadow-2xl shadow-primary/10 sm:max-w-[760px]">
+            <DialogContent className="max-h-[88vh] w-[calc(100vw-1.5rem)] overflow-y-auto overflow-x-hidden border border-primary/15 bg-[#0b1324] p-0 text-white shadow-2xl shadow-primary/10 sm:max-h-[90vh] sm:max-w-[760px]">
                 <div className="relative">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(163,255,18,0.14),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.12),_transparent_36%)]" />
 
@@ -75,7 +75,7 @@ export function RevenueMilestoneModal({
                                 </div>
 
                                 <DialogHeader className="space-y-3 text-left">
-                                    <DialogTitle className="max-w-[16ch] text-3xl font-black leading-[1.02] tracking-tight text-white sm:text-[3.25rem]">
+                                    <DialogTitle className="max-w-[12ch] text-3xl font-black leading-[1.02] tracking-tight text-white sm:max-w-[14ch] sm:text-[3.25rem]">
                                         Parabens, meta alcancada
                                     </DialogTitle>
                                     <DialogDescription className="max-w-2xl text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
@@ -140,7 +140,7 @@ export function RevenueMilestoneModal({
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-4 border-t border-white/8 pt-3 sm:flex-row sm:items-end sm:justify-between">
+                            <div className="flex flex-col gap-4 border-t border-white/8 pt-3">
                                 <div className="flex max-w-xl items-start gap-2 text-sm leading-6 text-slate-300">
                                     <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
                                     <span>
@@ -150,11 +150,11 @@ export function RevenueMilestoneModal({
                                     </span>
                                 </div>
 
-                                <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-3">
+                                <div className="grid w-full gap-2 md:grid-cols-3">
                                     <Button
                                         type="button"
                                         onClick={onViewReport}
-                                        className="h-11 w-full bg-primary text-slate-950 hover:bg-primary/90 sm:min-w-36"
+                                        className="h-11 w-full bg-primary text-slate-950 hover:bg-primary/90"
                                     >
                                         Ver resumo
                                     </Button>
@@ -162,14 +162,14 @@ export function RevenueMilestoneModal({
                                         type="button"
                                         variant="outline"
                                         onClick={onDisable}
-                                        className="h-11 w-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:min-w-36"
+                                        className="h-11 w-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
                                     >
                                         Nao mostrar novamente
                                     </Button>
                                     <Button
                                         type="button"
                                         onClick={() => onOpenChange(false)}
-                                        className="h-11 w-full bg-white/10 text-white hover:bg-white/15 sm:min-w-36"
+                                        className="h-11 w-full bg-white/10 text-white hover:bg-white/15"
                                     >
                                         Fechar
                                     </Button>
