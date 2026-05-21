@@ -142,7 +142,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="p-6 space-y-6 max-w-screen-2xl mx-auto relative">
+        <div className="relative mx-auto max-w-screen-2xl space-y-6 px-4 py-4 sm:p-6">
             <RevenueMilestoneModal
                 open={revenueModalOpen}
                 onOpenChange={handleRevenueModalChange}
@@ -163,10 +163,10 @@ export default function Dashboard() {
                 className="animate-fade-in"
                 style={{ animationDelay: '0ms', opacity: 0 }}
             >
-                <div className="flex items-center justify-between gap-3 mb-1">
-                    <div className="flex items-center gap-2">
+                <div className="mb-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-start gap-2 sm:items-center">
                         <div className="w-1 h-6 rounded-full bg-primary" />
-                        <h1 className="md:text-2xl font-extrabold tracking-tight flex items-center gap-2">
+                        <h1 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl font-extrabold leading-tight tracking-tight md:text-2xl">
                             {getGreeting()},{' '}
                             <span className="gradient-text">
                                 {name.split(' ')[0]}
@@ -180,7 +180,7 @@ export default function Dashboard() {
                         variant="outline"
                         onClick={() => refetch()}
                         disabled={isFetching}
-                        className="h-8"
+                        className="h-8 self-start sm:self-auto"
                     >
                         <RefreshCcw
                             className={`w-3.5 h-3.5 mr-1 ${isFetching ? 'animate-spin' : ''}`}

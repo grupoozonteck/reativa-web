@@ -28,7 +28,7 @@ export default function AppLayout() {
     const closeSidebar = () => setSidebarOpen(false);
 
     return (
-        <div className="flex h-screen overflow-hidden bg-background">
+        <div className="flex min-h-svh bg-background supports-[height:100dvh]:min-h-dvh supports-[height:100dvh]:h-dvh">
             {/* â”€â”€ Desktop sidebar â”€â”€ */}
             <aside
                 className="hidden lg:flex w-[220px] shrink-0 min-h-0 border-r border-border flex-col bg-card"
@@ -52,10 +52,17 @@ export default function AppLayout() {
                     />
                     <aside
                         className="absolute left-0 inset-y-0 w-64 min-h-0 bg-card border-r border-border flex flex-col shadow-2xl animate-fade-in-left"
-                        style={{ zIndex: 51 }}
+                        style={{
+                            zIndex: 51,
+                            paddingTop: 'env(safe-area-inset-top)',
+                            paddingBottom: 'env(safe-area-inset-bottom)',
+                        }}
                     >
                         <button
-                            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+                            className="absolute right-4 text-muted-foreground hover:text-foreground transition-colors"
+                            style={{
+                                top: 'calc(env(safe-area-inset-top) + 1rem)',
+                            }}
                             onClick={closeSidebar}
                         >
                             <X className="w-5 h-5" />
@@ -78,7 +85,13 @@ export default function AppLayout() {
                 style={{ position: 'relative', zIndex: 5 }}
             >
                 {/* Mobile top bar */}
-                <header className="lg:hidden flex items-center gap-3 px-4 h-14 border-b border-border bg-card justify-between">
+                <header
+                    className="lg:hidden flex items-center gap-3 px-4 border-b border-border bg-card justify-between"
+                    style={{
+                        minHeight: '3.5rem',
+                        paddingTop: 'env(safe-area-inset-top)',
+                    }}
+                >
                     <Button
                         variant="ghost"
                         size="icon"
@@ -91,7 +104,10 @@ export default function AppLayout() {
                     <ThemeToggleButton />
                 </header>
 
-                <main className="flex-1 overflow-y-auto">
+                <main
+                    className="flex-1 overflow-y-auto"
+                    style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+                >
                     <Outlet />
                 </main>
             </div>
