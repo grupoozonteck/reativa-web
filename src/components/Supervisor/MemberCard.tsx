@@ -27,7 +27,13 @@ export function MemberCardSkeleton() {
     );
 }
 
-export function MemberCard({ member, index }: { member: TeamMemberPerformance; index: number }) {
+export function MemberCard({
+    member,
+    index,
+}: {
+    member: TeamMemberPerformance;
+    index: number;
+}) {
     const navigate = useNavigate();
     const initials = (member.user?.name ?? 'Membro')
         .split(' ')
@@ -68,33 +74,64 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                            <p className="truncate text-sm font-semibold text-foreground">{member.user?.name ?? 'Membro sem nome'}</p>
+                            <p className="truncate text-sm font-semibold text-foreground">
+                                {member.user?.name ?? 'Membro sem nome'}
+                            </p>
                             {isTopPerformer && (
                                 <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary">
                                     Top 1
                                 </span>
                             )}
                         </div>
-                        <p className="truncate text-xs text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                            @{member.user?.login ?? 'sem-login'}
+                        </p>
                     </div>
-                    <span className={cn('text-lg font-black tabular-nums', isTopPerformer ? 'text-primary' : 'text-muted-foreground')}>
+                    <span
+                        className={cn(
+                            'text-lg font-black tabular-nums',
+                            isTopPerformer
+                                ? 'text-primary'
+                                : 'text-muted-foreground',
+                        )}
+                    >
                         {String(index + 1).padStart(2, '0')}
                     </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <MobileMetric label="Cargo" value={member.type_label} />
-                    <MobileMetric label="Graduacao" value={member.graduation_label} />
+                    <MobileMetric
+                        label="Graduacao"
+                        value={member.graduation_label}
+                    />
                     <MobileMetric label="Vendas" value={member.sales} />
-                    <MobileMetric label="Reat." value={member.total_reengagements} />
-                    <MobileMetric label="Conv." value={`${member.conversion}%`} />
+                    <MobileMetric
+                        label="Reat."
+                        value={member.total_reengagements}
+                    />
+                    <MobileMetric
+                        label="Conv."
+                        value={`${member.conversion}%`}
+                    />
                     <MobileMetric label="XP" value={xpValue.toFixed(2)} />
-                    <MobileMetric label="Receita" value={formatCurrency(revenueValue)} valueClassName="text-emerald-600 dark:text-emerald-400" />
+                    <MobileMetric
+                        label="Receita"
+                        value={formatCurrency(revenueValue)}
+                        valueClassName="text-emerald-600 dark:text-emerald-400"
+                    />
                     <div className="space-y-1">
-                        <p className="text-xs uppercase tracking-wide text-muted-foreground">Nivel</p>
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Nivel
+                        </p>
                         <div className="flex items-center gap-2">
-                            <Progress value={conversionPct} className="h-1.5 flex-1" />
-                            <span className="w-10 text-right text-xs text-muted-foreground">{member.level}</span>
+                            <Progress
+                                value={conversionPct}
+                                className="h-1.5 flex-1"
+                            />
+                            <span className="w-10 text-right text-xs text-muted-foreground">
+                                {member.level}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -102,29 +139,46 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
 
             <div className="hidden lg:grid lg:grid-cols-[56px_minmax(260px,1fr)_88px_70px_70px_82px_120px_96px] lg:items-center lg:gap-3">
                 <div className="flex items-center gap-2">
-                    <span className={cn('text-lg font-black tabular-nums', isTopPerformer ? 'text-primary' : 'text-muted-foreground')}>
+                    <span
+                        className={cn(
+                            'text-lg font-black tabular-nums',
+                            isTopPerformer
+                                ? 'text-primary'
+                                : 'text-muted-foreground',
+                        )}
+                    >
                         {String(index + 1).padStart(2, '0')}
                     </span>
-                    {isTopPerformer && <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.55)]" />}
+                    {isTopPerformer && (
+                        <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.55)]" />
+                    )}
                 </div>
 
                 <div className="flex min-w-0 items-center gap-3">
-                    <div className={cn(
-                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold',
-                        isTopPerformer ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
-                    )}>
+                    <div
+                        className={cn(
+                            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold',
+                            isTopPerformer
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-secondary text-secondary-foreground',
+                        )}
+                    >
                         {initials}
                     </div>
                     <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                            <p className="truncate text-sm font-semibold text-foreground">{member.user?.name ?? 'Membro sem nome'}</p>
+                            <p className="truncate text-sm font-semibold text-foreground">
+                                {member.user?.name ?? 'Membro sem nome'}
+                            </p>
                             {isTopPerformer && (
                                 <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-primary">
                                     Top 1
                                 </span>
                             )}
                         </div>
-                        <p className="truncate text-xs text-muted-foreground">@{member.user?.login ?? 'sem-login'}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                            @{member.user?.login ?? 'sem-login'}
+                        </p>
                     </div>
                 </div>
 
@@ -140,16 +194,23 @@ export function MemberCard({ member, index }: { member: TeamMemberPerformance; i
                     >
                         {member.type_label}
                     </Badge>
-                    <p className="text-xs text-muted-foreground">{member.graduation_label}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {member.graduation_label}
+                    </p>
                 </div>
 
                 <Metric value={member.sales} />
                 <Metric value={member.total_reengagements} />
                 <Metric value={`${member.conversion}%`} />
-                <Metric value={formatCurrency(revenueValue)} valueClassName="text-emerald-600 dark:text-emerald-400" />
+                <Metric
+                    value={formatCurrency(revenueValue)}
+                    valueClassName="text-emerald-600 dark:text-emerald-400"
+                />
 
                 <div className="space-y-1">
-                    <p className="text-sm font-bold tabular-nums text-foreground">{member.level}</p>
+                    <p className="text-sm font-bold tabular-nums text-foreground">
+                        {member.level}
+                    </p>
                     <Progress value={conversionPct} className="h-1.5" />
                 </div>
             </div>
@@ -164,7 +225,16 @@ function Metric({
     value: string | number;
     valueClassName?: string;
 }) {
-    return <p className={cn('text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</p>;
+    return (
+        <p
+            className={cn(
+                'text-sm font-bold tabular-nums text-foreground',
+                valueClassName,
+            )}
+        >
+            {value}
+        </p>
+    );
 }
 
 function MobileMetric({
@@ -178,8 +248,17 @@ function MobileMetric({
 }) {
     return (
         <div className="space-y-1 rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-            <p className={cn('text-sm font-bold tabular-nums text-foreground', valueClassName)}>{value}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                {label}
+            </p>
+            <p
+                className={cn(
+                    'text-sm font-bold tabular-nums text-foreground',
+                    valueClassName,
+                )}
+            >
+                {value}
+            </p>
         </div>
     );
 }

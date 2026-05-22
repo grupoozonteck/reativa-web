@@ -19,6 +19,7 @@ interface DateRangeFilterCardProps {
     className?: string;
     startId?: string;
     endId?: string;
+    extraContent?: React.ReactNode;
 }
 
 export function DateRangeFilterCard({
@@ -36,6 +37,7 @@ export function DateRangeFilterCard({
     className,
     startId = 'start-date',
     endId = 'end-date',
+    extraContent,
 }: DateRangeFilterCardProps) {
     const disableClear = !hasActiveFilters && !hasDraftChanges;
 
@@ -48,40 +50,57 @@ export function DateRangeFilterCard({
                 }}
                 className="space-y-3"
             >
-                <div className="grid grid-cols-1 gap-3 lg:grid-cols-[180px_180px_180px_minmax(0,1fr)] lg:items-end">
-                    <div className="flex items-center gap-2 self-start lg:self-center">
+                <div
+                    className={cn(
+                        'grid grid-cols-1 gap-3 md:grid-cols-2 2xl:items-end',
+                        extraContent
+                            ? '2xl:grid-cols-[180px_180px_180px_220px_minmax(0,1fr)]'
+                            : '2xl:grid-cols-[180px_180px_180px_minmax(0,1fr)]',
+                    )}
+                >
+                    <div className="flex items-center gap-2 self-start md:col-span-2 2xl:col-span-1 2xl:self-center">
                         <CalendarRange className="h-4 w-4 text-on-surface-variant" />
                         <div>
-                            <span className="font-display text-sm font-semibold text-on-surface">{title}</span>
+                            <span className="font-display text-sm font-semibold text-on-surface">
+                                {title}
+                            </span>
                             <p className="mt-0.5 text-xs text-on-surface-variant">
-                                {hasActiveFilters ? 'Periodo aplicado' : 'Mes atual'}
+                                {hasActiveFilters
+                                    ? 'Periodo aplicado'
+                                    : 'Mes atual'}
                             </p>
                         </div>
                     </div>
 
-                    <Field>
+                    <Field className="min-w-0">
                         <FieldLabel htmlFor={startId}>Data inicial</FieldLabel>
                         <Input
                             id={startId}
                             type="date"
                             value={startDate}
-                            onChange={(event) => onStartDateChange(event.target.value)}
-                            className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                            onChange={(event) =>
+                                onStartDateChange(event.target.value)
+                            }
+                            className="date-input-trigger h-9 w-full min-w-0 border-none bg-surface-highest focus-visible:ring-0"
                         />
                     </Field>
 
-                    <Field>
+                    <Field className="min-w-0">
                         <FieldLabel htmlFor={endId}>Data final</FieldLabel>
                         <Input
                             id={endId}
                             type="date"
                             value={endDate}
-                            onChange={(event) => onEndDateChange(event.target.value)}
-                            className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                            onChange={(event) =>
+                                onEndDateChange(event.target.value)
+                            }
+                            className="date-input-trigger h-9 w-full min-w-0 border-none bg-surface-highest focus-visible:ring-0"
                         />
                     </Field>
 
-                    <div className="flex flex-col gap-2 sm:flex-row lg:justify-end">
+                    {extraContent}
+
+                    <div className="flex flex-col gap-2 sm:flex-row md:col-span-2 2xl:col-span-1 2xl:justify-end">
                         <Button
                             size="sm"
                             type="submit"
@@ -105,7 +124,9 @@ export function DateRangeFilterCard({
                     </div>
                 </div>
                 {hasDraftChanges && (
-                    <p className="text-xs text-primary">Alteracoes pendentes.</p>
+                    <p className="text-xs text-primary">
+                        Alteracoes pendentes.
+                    </p>
                 )}
             </form>
         </div>

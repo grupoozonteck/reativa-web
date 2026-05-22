@@ -7,16 +7,25 @@ export interface LeaderboardFilters {
 }
 
 export const LeaderboardService = {
-    getLeaderboard: async (filters: LeaderboardFilters = {}): Promise<LeaderboardResponse> => {
-        const response = await api.get<LeaderboardResponse>('/api/leaderboard', {
-            params: {
-                ...(filters.start_date && { start_date: filters.start_date }),
-                ...(filters.end_date && { end_date: filters.end_date }),
+    getLeaderboard: async (
+        filters: LeaderboardFilters = {},
+    ): Promise<LeaderboardResponse> => {
+        const response = await api.get<LeaderboardResponse>(
+            '/api/leaderboard',
+            {
+                params: {
+                    ...(filters.start_date && {
+                        start_date: filters.start_date,
+                    }),
+                    ...(filters.end_date && { end_date: filters.end_date }),
+                },
             },
-        });
+        );
 
         return {
-            leaderboard: Array.isArray(response.data?.leaderboard) ? response.data.leaderboard : [],
+            leaderboard: Array.isArray(response.data?.leaderboard)
+                ? response.data.leaderboard
+                : [],
             summary: response.data?.summary,
         };
     },

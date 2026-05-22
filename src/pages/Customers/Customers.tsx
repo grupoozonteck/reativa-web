@@ -8,13 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Search,
-    Filter,
-    X,
-    Headphones,
-    Users,
-} from 'lucide-react';
+import { Search, Filter, X, Headphones, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,10 +41,23 @@ const SEARCH_TYPE_OPTIONS: Array<{ value: SearchType; label: string }> = [
 ];
 
 function isSearchType(value: string | null): value is SearchType {
-    return value === 'login' || value === 'email' || value === 'name' || value === 'document';
+    return (
+        value === 'login' ||
+        value === 'email' ||
+        value === 'name' ||
+        value === 'document'
+    );
 }
 
-function buildParams(page: number, search: string, status: FilterStatus, state: string, region: string, minOrders: number, searchType: string) {
+function buildParams(
+    page: number,
+    search: string,
+    status: FilterStatus,
+    state: string,
+    region: string,
+    minOrders: number,
+    searchType: string,
+) {
     const params: Record<string, number | string> = { page };
     if (search) params.search = search;
     if (status === 'sem_pedidos') params.without_orders = 1;
@@ -63,7 +70,6 @@ function buildParams(page: number, search: string, status: FilterStatus, state: 
     return params;
 }
 
-
 // ─── Main ────────────────────────────────────────────────────────────────────
 export default function Clientes() {
     const navigate = useNavigate();
@@ -73,8 +79,11 @@ export default function Clientes() {
 
     const appliedSearch = searchParams.get('search') ?? '';
     const rawSearchType = searchParams.get('search_type');
-    const appliedSearchType = isSearchType(rawSearchType) ? rawSearchType : 'login';
-    const appliedStatus = (searchParams.get('status') as FilterStatus) ?? 'todos';
+    const appliedSearchType = isSearchType(rawSearchType)
+        ? rawSearchType
+        : 'login';
+    const appliedStatus =
+        (searchParams.get('status') as FilterStatus) ?? 'todos';
     const appliedState = searchParams.get('state') ?? '';
     const appliedRegion = searchParams.get('region') ?? '';
     const page = Number(searchParams.get('page') ?? 1);
@@ -82,21 +91,36 @@ export default function Clientes() {
 
     // Rascunho local (o que o usuário está editando antes de clicar em Filtrar)
     const [search, setSearch] = useState(appliedSearch);
-    const [filterStatus, setFilterStatus] = useState<FilterStatus>(appliedStatus);
+    const [filterStatus, setFilterStatus] =
+        useState<FilterStatus>(appliedStatus);
     const [selectedState, setSelectedState] = useState(appliedState);
     const [selectedRegion, setSelectedRegion] = useState(appliedRegion);
     const [minOrders, setMinOrders] = useState(appliedMinOrders);
     const [searchType, setSearchType] = useState(appliedSearchType);
 
-    const setPage = (val: number) => setSearchParams(p => { p.set('page', String(val)); return p; }, { replace: true });
+    const setPage = (val: number) =>
+        setSearchParams(
+            (p) => {
+                p.set('page', String(val));
+                return p;
+            },
+            { replace: true },
+        );
 
-    const params = buildParams(page, appliedSearch, appliedStatus, appliedState, appliedRegion, appliedMinOrders, appliedSearchType);
+    const params = buildParams(
+        page,
+        appliedSearch,
+        appliedStatus,
+        appliedState,
+        appliedRegion,
+        appliedMinOrders,
+        appliedSearchType,
+    );
     const { data: statesData } = useQuery({
         queryKey: ['states'],
         queryFn: getStates,
         staleTime: 45 * 60 * 1000,
     });
-
 
     const { data: regionsData } = useQuery({
         queryKey: ['regions'],
@@ -118,37 +142,51 @@ export default function Clientes() {
     const showingFrom = data?.from ?? 0;
     const showingTo = data?.to ?? 0;
 
-
-
-    const allStates: { id: number; name: string; uf: string; region_id: number }[] = statesData ?? [];
+    const allStates: {
+        id: number;
+        name: string;
+        uf: string;
+        region_id: number;
+    }[] = statesData ?? [];
     const states = selectedRegion
-        ? allStates.filter(s => String(s.region_id) === selectedRegion)
+        ? allStates.filter((s) => String(s.region_id) === selectedRegion)
         : allStates;
     const loading = isLoading;
-    const hasActiveFilters = appliedSearch !== ''
-        || appliedSearchType !== 'login'
-        || appliedStatus !== 'todos'
-        || appliedState !== ''
-        || appliedRegion !== ''
-        || appliedMinOrders > 0;
-    const hasDraftChanges = search !== appliedSearch
-        || searchType !== appliedSearchType
-        || filterStatus !== appliedStatus
-        || selectedState !== appliedState
-        || selectedRegion !== appliedRegion
-        || minOrders !== appliedMinOrders;
+    const hasActiveFilters =
+        appliedSearch !== '' ||
+        appliedSearchType !== 'login' ||
+        appliedStatus !== 'todos' ||
+        appliedState !== '' ||
+        appliedRegion !== '' ||
+        appliedMinOrders > 0;
+    const hasDraftChanges =
+        search !== appliedSearch ||
+        searchType !== appliedSearchType ||
+        filterStatus !== appliedStatus ||
+        selectedState !== appliedState ||
+        selectedRegion !== appliedRegion ||
+        minOrders !== appliedMinOrders;
 
     const handleApplyFilters = () => {
-        setSearchParams(p => {
-            if (search) p.set('search', search); else p.delete('search');
-            if (searchType !== 'login') p.set('search_type', searchType); else p.delete('search_type');
-            if (filterStatus !== 'todos') p.set('status', filterStatus); else p.delete('status');
-            if (selectedState) p.set('state', selectedState); else p.delete('state');
-            if (selectedRegion) p.set('region', selectedRegion); else p.delete('region');
-            if (minOrders > 0) p.set('min_orders', String(minOrders)); else p.delete('min_orders');
-            p.set('page', '1');
-            return p;
-        }, { replace: true });
+        setSearchParams(
+            (p) => {
+                if (search) p.set('search', search);
+                else p.delete('search');
+                if (searchType !== 'login') p.set('search_type', searchType);
+                else p.delete('search_type');
+                if (filterStatus !== 'todos') p.set('status', filterStatus);
+                else p.delete('status');
+                if (selectedState) p.set('state', selectedState);
+                else p.delete('state');
+                if (selectedRegion) p.set('region', selectedRegion);
+                else p.delete('region');
+                if (minOrders > 0) p.set('min_orders', String(minOrders));
+                else p.delete('min_orders');
+                p.set('page', '1');
+                return p;
+            },
+            { replace: true },
+        );
     };
 
     const handleClearFilters = () => {
@@ -215,9 +253,14 @@ export default function Clientes() {
             <div className="solid-card p-4 animate-fade-in">
                 <div className="flex items-center gap-2 mb-3">
                     <Filter className="w-4 h-4 text-on-surface-variant" />
-                    <span className="font-display text-sm font-semibold text-on-surface">Filtros</span>
+                    <span className="font-display text-sm font-semibold text-on-surface">
+                        Filtros
+                    </span>
                     {hasActiveFilters && (
-                        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                        <Badge
+                            variant="outline"
+                            className="text-[10px] bg-primary/10 text-primary border-primary/20"
+                        >
                             ativo
                         </Badge>
                     )}
@@ -230,9 +273,9 @@ export default function Clientes() {
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
                             <Input
-                                placeholder={`Pesquisar por ${SEARCH_TYPE_OPTIONS.find(option => option.value === searchType)?.label.toLowerCase() ?? 'login'}...`}
+                                placeholder={`Pesquisar por ${SEARCH_TYPE_OPTIONS.find((option) => option.value === searchType)?.label.toLowerCase() ?? 'login'}...`}
                                 value={search}
-                                onChange={e => setSearch(e.target.value)}
+                                onChange={(e) => setSearch(e.target.value)}
                                 className="pl-9 h-9  w-full bg-surface-highest border-none focus-visible:ring-0"
                                 disabled={loading}
                             />
@@ -241,13 +284,24 @@ export default function Clientes() {
 
                     <Field className="w-full md:w-44">
                         <FieldLabel>Tipo de busca</FieldLabel>
-                        <Select value={searchType} onValueChange={(val) => setSearchType(val as SearchType)} disabled={loading}>
-                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                        <Select
+                            value={searchType}
+                            onValueChange={(val) =>
+                                setSearchType(val as SearchType)
+                            }
+                            disabled={loading}
+                        >
+                            <SelectTrigger className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm">
                                 <SelectValue placeholder="Selecione o tipo" />
                             </SelectTrigger>
                             <SelectContent>
                                 {SEARCH_TYPE_OPTIONS.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -255,29 +309,53 @@ export default function Clientes() {
 
                     <Field className="w-full md:w-44">
                         <FieldLabel>Região</FieldLabel>
-                        <Select value={selectedRegion} onValueChange={(val) => setSelectedRegion(val === 'todos' ? '' : val)}>
-                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                        <Select
+                            value={selectedRegion}
+                            onValueChange={(val) =>
+                                setSelectedRegion(val === 'todos' ? '' : val)
+                            }
+                        >
+                            <SelectTrigger className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm">
                                 <SelectValue placeholder="Todas as regiões" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="todos">Todas as regiões</SelectItem>
-                                {regionsData?.data.map((region: { id: string; name: string }) => (
-                                    <SelectItem key={region.id} value={String(region.id)}>{region.name}</SelectItem>
-                                ))}
+                                <SelectItem value="todos">
+                                    Todas as regiões
+                                </SelectItem>
+                                {regionsData?.data.map(
+                                    (region: { id: string; name: string }) => (
+                                        <SelectItem
+                                            key={region.id}
+                                            value={String(region.id)}
+                                        >
+                                            {region.name}
+                                        </SelectItem>
+                                    ),
+                                )}
                             </SelectContent>
                         </Select>
                     </Field>
 
                     <Field className="w-full md:w-44">
                         <FieldLabel>Estado</FieldLabel>
-                        <Select value={selectedState} onValueChange={(val) => setSelectedState(val === 'todos' ? '' : val)} disabled={isFetching}>
-                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                        <Select
+                            value={selectedState}
+                            onValueChange={(val) =>
+                                setSelectedState(val === 'todos' ? '' : val)
+                            }
+                            disabled={isFetching}
+                        >
+                            <SelectTrigger className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm">
                                 <SelectValue placeholder="Todos os estados" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="todos">Todos os estados</SelectItem>
+                                <SelectItem value="todos">
+                                    Todos os estados
+                                </SelectItem>
                                 {states.map((s) => (
-                                    <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
+                                    <SelectItem key={s.id} value={String(s.id)}>
+                                        {s.name}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -288,7 +366,9 @@ export default function Clientes() {
                         <Input
                             type="number"
                             value={minOrders}
-                            onChange={(e) => setMinOrders(Number(e.target.value) || 0)}
+                            onChange={(e) =>
+                                setMinOrders(Number(e.target.value) || 0)
+                            }
                             className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0"
                             placeholder="0"
                         />
@@ -298,7 +378,7 @@ export default function Clientes() {
                 {/* Linha 2: switches + botões */}
                 <div className="flex flex-col md:flex-row md:items-center gap-3 mt-3">
                     <div className="flex flex-wrap gap-2">
-                        {filterOptions.map(opt => (
+                        {filterOptions.map((opt) => (
                             <label
                                 key={opt.key}
                                 className={cn(
@@ -306,12 +386,15 @@ export default function Clientes() {
                                     filterStatus === opt.key
                                         ? 'bg-primary/10 text-primary'
                                         : 'bg-surface-container text-on-surface-variant hover:bg-surface-high hover:text-on-surface',
-                                    isFetching && 'opacity-60 pointer-events-none'
+                                    isFetching &&
+                                        'opacity-60 pointer-events-none',
                                 )}
                             >
                                 <Switch
                                     checked={filterStatus === opt.key}
-                                    onCheckedChange={() => handleStatusToggle(opt.key)}
+                                    onCheckedChange={() =>
+                                        handleStatusToggle(opt.key)
+                                    }
                                     disabled={isFetching}
                                 />
                                 {opt.label}
@@ -320,7 +403,6 @@ export default function Clientes() {
                     </div>
 
                     <div className="md:ml-auto flex flex-col md:flex-row gap-2">
-
                         <Button
                             size="sm"
                             onClick={handleApplyFilters}
@@ -334,7 +416,10 @@ export default function Clientes() {
                             size="sm"
                             variant="destructive"
                             onClick={handleClearFilters}
-                            disabled={loading || (!hasActiveFilters && !hasDraftChanges)}
+                            disabled={
+                                loading ||
+                                (!hasActiveFilters && !hasDraftChanges)
+                            }
                             className="gap-1.5 h-9  w-full md:w-auto  disabled:opacity-40"
                         >
                             <X className="w-3.5 h-3.5" />
@@ -349,7 +434,9 @@ export default function Clientes() {
                 <div className="px-5 py-4 bg-surface-highest/60 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-on-surface-variant" />
-                        <h2 className="font-display text-sm font-semibold text-on-surface">Clientes</h2>
+                        <h2 className="font-display text-sm font-semibold text-on-surface">
+                            Clientes
+                        </h2>
                     </div>
                     <div className="flex items-center gap-3">
                         {showingFrom > 0 && !loading && (
@@ -367,29 +454,57 @@ export default function Clientes() {
                             <div className="overflow-y-auto max-h-[600px]">
                                 <Table>
                                     <TableHeader className="sticky top-0 z-10">
-                                        <TableRow className="border-none hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
-                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">ID</TableHead>
-                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">Cliente</TableHead>
-                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pedidos</TableHead>
-                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">Pagos</TableHead>
-                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">Ações</TableHead>
+                                        <TableRow className="border-none hover:bg-transparent bg-surface-highest/95">
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">
+                                                ID
+                                            </TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant px-4">
+                                                Cliente
+                                            </TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">
+                                                Pedidos
+                                            </TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-center w-[12%] px-4">
+                                                Pagos
+                                            </TableHead>
+                                            <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant text-right w-[20%] px-4">
+                                                Ações
+                                            </TableHead>
                                         </TableRow>
                                     </TableHeader>
-                                    <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+                                    <TableBody
+                                        className={cn(
+                                            'transition-opacity duration-200',
+                                            isFetching &&
+                                                !isLoading &&
+                                                'opacity-50',
+                                        )}
+                                    >
                                         {loading ? (
-                                            Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+                                            Array.from({ length: 8 }).map(
+                                                (_, i) => (
+                                                    <SkeletonRow key={i} />
+                                                ),
+                                            )
                                         ) : clients.length === 0 ? (
                                             <TableRow className="border-none">
-                                                <TableCell colSpan={5} className="text-center py-16">
+                                                <TableCell
+                                                    colSpan={5}
+                                                    className="text-center py-16"
+                                                >
                                                     <div className="flex flex-col items-center gap-2">
                                                         <Users className="w-8 h-8 text-on-surface-variant/30" />
                                                         <p className="text-on-surface-variant text-sm">
-                                                            Nenhum cliente encontrado
-                                                            {hasActiveFilters && ' com os filtros aplicados'}
+                                                            Nenhum cliente
+                                                            encontrado
+                                                            {hasActiveFilters &&
+                                                                ' com os filtros aplicados'}
                                                         </p>
                                                         {hasActiveFilters && (
                                                             <button
-                                                                onClick={handleClearFilters}
+                                                                onClick={
+                                                                    handleClearFilters
+                                                                }
                                                                 className="text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                                             >
                                                                 Limpar filtros
@@ -399,8 +514,11 @@ export default function Clientes() {
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            clients.map(client => (
-                                                <ClientRow key={client.id} client={client} />
+                                            clients.map((client) => (
+                                                <ClientRow
+                                                    key={client.id}
+                                                    client={client}
+                                                />
                                             ))
                                         )}
                                     </TableBody>
@@ -414,7 +532,10 @@ export default function Clientes() {
                         <div className="max-h-[600px] overflow-y-auto p-4 space-y-3">
                             {loading ? (
                                 Array.from({ length: 8 }).map((_, i) => (
-                                    <div key={i} className="arena-card p-4 space-y-3">
+                                    <div
+                                        key={i}
+                                        className="arena-card p-4 space-y-3"
+                                    >
                                         <div className="h-12 w-12 rounded-xl bg-surface-container animate-pulse" />
                                         <div className="space-y-2">
                                             <div className="h-4 w-24 bg-surface-container animate-pulse rounded-md" />
@@ -428,7 +549,8 @@ export default function Clientes() {
                                         <Users className="w-8 h-8 text-on-surface-variant/30" />
                                         <p className="text-on-surface-variant text-sm">
                                             Nenhum cliente encontrado
-                                            {hasActiveFilters && ' com os filtros aplicados'}
+                                            {hasActiveFilters &&
+                                                ' com os filtros aplicados'}
                                         </p>
                                         {hasActiveFilters && (
                                             <button
@@ -441,9 +563,19 @@ export default function Clientes() {
                                     </div>
                                 </div>
                             ) : (
-                                <div className={cn('space-y-3 transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
-                                    {clients.map(client => (
-                                        <ClientCard key={client.id} client={client} />
+                                <div
+                                    className={cn(
+                                        'space-y-3 transition-opacity duration-200',
+                                        isFetching &&
+                                            !isLoading &&
+                                            'opacity-50',
+                                    )}
+                                >
+                                    {clients.map((client) => (
+                                        <ClientCard
+                                            key={client.id}
+                                            client={client}
+                                        />
                                     ))}
                                 </div>
                             )}

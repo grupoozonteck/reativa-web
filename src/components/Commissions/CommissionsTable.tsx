@@ -32,8 +32,6 @@ export function CommissionsTable({
     isLoading,
     isFetching,
     isError,
-    showingFrom,
-    showingTo,
     currentPage,
     hasPrevPage,
     hasNextPage,
@@ -44,7 +42,9 @@ export function CommissionsTable({
         <div className="space-y-4 animate-fade-in">
             <div className="px-3 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                 <div className="flex items-center gap-2">
-                    <h2 className="font-display text-base font-semibold text-on-surface">Transações</h2>
+                    <h2 className="font-display text-base font-semibold text-on-surface">
+                        Transações
+                    </h2>
                 </div>
             </div>
 
@@ -52,7 +52,10 @@ export function CommissionsTable({
                 {isLoading ? (
                     <div className="space-y-3 px-3">
                         {Array.from({ length: 6 }).map((_, index) => (
-                            <div key={`skeleton-${index}`} className="h-40 bg-surface-container animate-pulse rounded-xl" />
+                            <div
+                                key={`skeleton-${index}`}
+                                className="h-40 bg-surface-container animate-pulse rounded-xl"
+                            />
                         ))}
                     </div>
                 ) : isError ? (
@@ -66,7 +69,10 @@ export function CommissionsTable({
                 ) : (
                     <div className="space-y-3 px-1">
                         {items.map((item: CommissionItem, index: number) => (
-                            <CommissionCard key={item.id ?? item.order_id ?? index} item={item} />
+                            <CommissionCard
+                                key={item.id ?? item.order_id ?? index}
+                                item={item}
+                            />
                         ))}
                     </div>
                 )}
@@ -76,7 +82,7 @@ export function CommissionsTable({
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
-                            <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
+                            <TableRow className="border-none hover:bg-transparent bg-surface-highest/95">
                                 <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
                                     #ID
                                 </TableHead>
@@ -107,75 +113,118 @@ export function CommissionsTable({
                             </TableRow>
                         </TableHeader>
 
-                        <TableBody className={cn('transition-opacity duration-200', isFetching && !isLoading && 'opacity-50')}>
+                        <TableBody
+                            className={cn(
+                                'transition-opacity duration-200',
+                                isFetching && !isLoading && 'opacity-50',
+                            )}
+                        >
                             {isLoading ? (
                                 Array.from({ length: 6 }).map((_, index) => (
-                                    <TableRow key={`skeleton-${index}`} className="border-none">
-                                        <TableCell className="py-4 sm:py-5" colSpan={8}>
+                                    <TableRow
+                                        key={`skeleton-${index}`}
+                                        className="border-none"
+                                    >
+                                        <TableCell
+                                            className="py-4 sm:py-5"
+                                            colSpan={8}
+                                        >
                                             <div className="h-4 w-full bg-surface-container animate-pulse rounded-md" />
                                         </TableCell>
                                     </TableRow>
                                 ))
                             ) : isError ? (
                                 <TableRow className="border-none">
-                                    <TableCell colSpan={8} className="text-center py-8 sm:py-10 text-sm text-destructive">
-                                        Erro ao carregar comissoes. Tente atualizar.
+                                    <TableCell
+                                        colSpan={8}
+                                        className="text-center py-8 sm:py-10 text-sm text-destructive"
+                                    >
+                                        Erro ao carregar comissoes. Tente
+                                        atualizar.
                                     </TableCell>
                                 </TableRow>
                             ) : items.length === 0 ? (
                                 <TableRow className="border-none">
-                                    <TableCell colSpan={8} className="text-center py-8 sm:py-10 text-sm text-on-surface-variant">
+                                    <TableCell
+                                        colSpan={8}
+                                        className="text-center py-8 sm:py-10 text-sm text-on-surface-variant"
+                                    >
                                         Nenhuma comissao encontrada.
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                items.map((item: CommissionItem, index: number) => (
-                                    <TableRow
-                                        key={item.id ?? item.order_id ?? index}
-                                        className="border-none even:bg-surface-container/30 hover:bg-surface-high/50 transition-colors"
-                                    >
-                                        <TableCell className="font-mono text-xs sm:text-sm text-on-surface-variant">
-                                            {item.id ?? 'NA'}
-                                        </TableCell>
-                                        <TableCell className="text-sm">
-                                            <p className="">
-                                                {item.personal_order?.user?.name?.trim().split(/\s+/)[0] || 'NA'}
-                                            </p>
+                                items.map(
+                                    (item: CommissionItem, index: number) => (
+                                        <TableRow
+                                            key={
+                                                item.id ??
+                                                item.order_id ??
+                                                index
+                                            }
+                                            className="border-none even:bg-surface-container/30 hover:bg-surface-high/50 transition-colors"
+                                        >
+                                            <TableCell className="font-mono text-xs sm:text-sm text-on-surface-variant">
+                                                {item.id ?? 'NA'}
+                                            </TableCell>
+                                            <TableCell className="text-sm">
+                                                <p className="">
+                                                    {item.personal_order?.user?.name
+                                                        ?.trim()
+                                                        .split(/\s+/)[0] ||
+                                                        'NA'}
+                                                </p>
 
-                                            <p className="text-on-surface-variant text-xs">
-                                                ({item.personal_order?.user?.login ?? 'NA'})
-                                            </p>
-                                        </TableCell>
-                                        <TableCell className="max-w-[320px] text-xs">
-                                            <p className="text-on-surface font-medium line-clamp-2">
-                                                {item.description_extra?.trim() || 'Sem descricao informada.'}
-                                            </p>
-                                        </TableCell>
-                                        <TableCell className="text-xs sm:text-sm">
-                                            <p className="text-on-surface-variant text-xs">
-                                                {item.personal_order?.customer_reengagement?.attendant?.user?.login ?? 'NA'}
-                                            </p>
-                                        </TableCell>
-                                        <TableCell className="text-xs sm:text-sm text-on-surface-variant">
-                                            {item.order_id ?? 'NA'}
-                                        </TableCell>
-                                        <TableCell className="text-right tabular-nums text-xs sm:text-sm text-secondary">
-                                            {formatCurrency(item.personal_order?.value ?? 0)}
-                                        </TableCell>
-                                        <TableCell className="text-right tabular-nums font-semibold text-xs sm:text-sm text-primary [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.4)]">
-                                            {formatCurrency(item.value ?? 0)}
-                                        </TableCell>
-                                        <TableCell className="text-xs sm:text-sm text-on-surface-variant">
-                                            {item.created_at ? formatDateTime(item.created_at) : 'NA'}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <CommissionDetailsDialog
-                                                item={item}
-                                                triggerClassName="h-8 gap-1.5 px-3 text-xs"
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                                <p className="text-on-surface-variant text-xs">
+                                                    (
+                                                    {item.personal_order?.user
+                                                        ?.login ?? 'NA'}
+                                                    )
+                                                </p>
+                                            </TableCell>
+                                            <TableCell className="max-w-[320px] text-xs">
+                                                <p className="text-on-surface font-medium line-clamp-2">
+                                                    {item.description_extra?.trim() ||
+                                                        'Sem descricao informada.'}
+                                                </p>
+                                            </TableCell>
+                                            <TableCell className="text-xs sm:text-sm">
+                                                <p className="text-on-surface-variant text-xs">
+                                                    {item.personal_order
+                                                        ?.customer_reengagement
+                                                        ?.attendant?.user
+                                                        ?.login ?? 'NA'}
+                                                </p>
+                                            </TableCell>
+                                            <TableCell className="text-xs sm:text-sm text-on-surface-variant">
+                                                {item.order_id ?? 'NA'}
+                                            </TableCell>
+                                            <TableCell className="text-right tabular-nums text-xs sm:text-sm text-secondary">
+                                                {formatCurrency(
+                                                    item.personal_order
+                                                        ?.value ?? 0,
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right tabular-nums font-semibold text-xs sm:text-sm text-primary [text-shadow:0_0_8px_hsl(83_98%_64%_/_0.4)]">
+                                                {formatCurrency(
+                                                    item.value ?? 0,
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-xs sm:text-sm text-on-surface-variant">
+                                                {item.created_at
+                                                    ? formatDateTime(
+                                                          item.created_at,
+                                                      )
+                                                    : 'NA'}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <CommissionDetailsDialog
+                                                    item={item}
+                                                    triggerClassName="h-8 gap-1.5 px-3 text-xs"
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ),
+                                )
                             )}
                         </TableBody>
                     </Table>

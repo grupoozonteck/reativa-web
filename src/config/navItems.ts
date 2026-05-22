@@ -1,4 +1,16 @@
-import { LayoutDashboard, Trophy, UsersRound, Headphones, type LucideIcon, HandCoins, Handshake, UserCog, UserStar, ScanSearch } from 'lucide-react';
+import {
+    LayoutDashboard,
+    Trophy,
+    UsersRound,
+    Headphones,
+    type LucideIcon,
+    HandCoins,
+    Handshake,
+    UserCog,
+    UserStar,
+    ScanSearch,
+    Medal,
+} from 'lucide-react';
 
 export interface NavItem {
     to: string;
@@ -21,5 +33,5 @@ export const navItems: NavItem[] = [
     { to: '/manager/performance', label: 'Minha Operação', icon: Handshake },
     { to: '/attendants', label: 'Atendentes', icon: UserCog },
     { to: '/commissions', label: 'Comissões', icon: HandCoins },
-
+    { to: '/ranking/recruiters', label: 'Ranking Recrutadores', icon: Medal },
 ];

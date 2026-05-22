@@ -9,11 +9,18 @@ interface RecentSalesCardProps {
 }
 
 function getTypeConfig(_type: string) {
-    return { label: 'Reativação', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' };
+    return {
+        label: 'Reativação',
+        color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    };
 }
 
 function getInitials(name: string) {
-    return name.split(' ').map((w) => w[0]).slice(0, 2).join('');
+    return name
+        .split(' ')
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join('');
 }
 
 const AVATAR_GRADIENTS = [
@@ -26,11 +33,16 @@ const AVATAR_GRADIENTS = [
 ];
 
 function getAvatarGradient(name: string) {
-    const idx = (name.charCodeAt(0) + (name.charCodeAt(1) ?? 0)) % AVATAR_GRADIENTS.length;
+    const idx =
+        (name.charCodeAt(0) + (name.charCodeAt(1) ?? 0)) %
+        AVATAR_GRADIENTS.length;
     return AVATAR_GRADIENTS[idx];
 }
 
-export default function RecentSalesCard({ sales, isLoading = false }: RecentSalesCardProps) {
+export default function RecentSalesCard({
+    sales,
+    isLoading = false,
+}: RecentSalesCardProps) {
     const recentNotifs = sales.slice(0, 6);
 
     return (
@@ -47,7 +59,9 @@ export default function RecentSalesCard({ sales, isLoading = false }: RecentSale
 
             <div className="space-y-3">
                 {!isLoading && recentNotifs.length === 0 && (
-                    <p className="text-xs text-muted-foreground">Sem vendas recentes para exibir.</p>
+                    <p className="text-xs text-muted-foreground">
+                        Sem vendas recentes para exibir.
+                    </p>
                 )}
 
                 {recentNotifs.map((n, i) => {
@@ -56,29 +70,51 @@ export default function RecentSalesCard({ sales, isLoading = false }: RecentSale
                         <div
                             key={`${n.attendant_name}-${n.customer_name}-${i}`}
                             className="flex items-start gap-2.5 animate-fade-in"
-                            style={{ animationDelay: `${600 + i * 60}ms`, opacity: 0 }}
+                            style={{
+                                animationDelay: `${600 + i * 60}ms`,
+                                opacity: 0,
+                            }}
                         >
                             {/* Avatar initials */}
-                            <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${getAvatarGradient(n.attendant_name)} flex items-center justify-center text-xs font-bold text-white shrink-0`}>
+                            <div
+                                className={`w-7 h-7 rounded-full bg-gradient-to-br ${getAvatarGradient(n.attendant_name)} flex items-center justify-center text-xs font-bold text-white shrink-0`}
+                            >
                                 {getInitials(n.attendant_name)}
                             </div>
 
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-1">
                                     <div className="flex items-center gap-1.5 min-w-0">
-                                        <span className="text-xs font-semibold truncate">{n.attendant_name}</span>
-                                        <Badge variant="outline" className={cn('text-xs px-1 h-3.5 shrink-0', cfg.color)}>
+                                        <span className="text-xs font-semibold truncate">
+                                            {n.attendant_name}
+                                        </span>
+                                        <Badge
+                                            variant="outline"
+                                            className={cn(
+                                                'text-xs px-1 h-3.5 shrink-0',
+                                                cfg.color,
+                                            )}
+                                        >
                                             {cfg.label}
                                         </Badge>
                                     </div>
                                     <span className="text-xs font-bold text-emerald-500 shrink-0">
-                                        +{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(n.value)}
+                                        +
+                                        {new Intl.NumberFormat('pt-BR', {
+                                            style: 'currency',
+                                            currency: 'BRL',
+                                            minimumFractionDigits: 2,
+                                        }).format(n.value)}
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between mt-0.5">
-                                    <p className="text-xs text-muted-foreground truncate">{n.customer_name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">
+                                        {n.customer_name}
+                                    </p>
                                     {n.created_at && (
-                                        <span className="text-[10px] text-muted-foreground/60 shrink-0 ml-1">{n.created_at}</span>
+                                        <span className="text-[10px] text-muted-foreground/60 shrink-0 ml-1">
+                                            {n.created_at}
+                                        </span>
                                     )}
                                 </div>
                             </div>

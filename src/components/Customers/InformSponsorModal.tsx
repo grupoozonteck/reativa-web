@@ -1,10 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
-import { customerService, type SponsorLeader } from '@/services/customer.service';
-import { Loader2, Search, UserPlus, X, BadgeCheck, Mail, Hash } from 'lucide-react';
+import {
+    customerService,
+    type SponsorLeader,
+} from '@/services/customer.service';
+import {
+    Loader2,
+    Search,
+    UserPlus,
+    X,
+    BadgeCheck,
+    Mail,
+    Hash,
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface InformSponsorModalProps {
@@ -15,7 +32,13 @@ interface InformSponsorModalProps {
     onUpdated?: () => void;
 }
 
-export function InformSponsorModal({ open, onClose, userId, existingLeader, onUpdated }: InformSponsorModalProps) {
+export function InformSponsorModal({
+    open,
+    onClose,
+    userId,
+    existingLeader,
+    onUpdated,
+}: InformSponsorModalProps) {
     const [sponsorLogin, setSponsorLogin] = useState('');
     const [leader, setLeader] = useState<SponsorLeader | null>(null);
     const [searching, setSearching] = useState(false);
@@ -48,7 +71,9 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
         setSearching(true);
         setError(null);
         try {
-            const foundLeader = await customerService.searchSponsorLeader(sponsorLogin.trim());
+            const foundLeader = await customerService.searchSponsorLeader(
+                sponsorLogin.trim(),
+            );
             setLeader(foundLeader);
         } catch {
             setLeader(null);
@@ -71,7 +96,11 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
             if (onUpdated) onUpdated();
             onClose();
         } catch {
-            setError(existingLeader ? 'Erro ao atualizar leader.' : 'Erro ao vincular leader.');
+            setError(
+                existingLeader
+                    ? 'Erro ao atualizar leader.'
+                    : 'Erro ao vincular leader.',
+            );
         } finally {
             setSaving(false);
         }
@@ -81,16 +110,20 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle>{existingLeader ? 'Editar leader' : 'Informar lider'}</DialogTitle>
+                    <DialogTitle>
+                        {existingLeader ? 'Editar leader' : 'Informar lider'}
+                    </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                     <Field className="flex w-full !justify-between">
-                        <FieldLabel htmlFor="sponsor_login">Login do lider</FieldLabel>
+                        <FieldLabel htmlFor="sponsor_login">
+                            Login do lider
+                        </FieldLabel>
                         <div className="flex items-center gap-2">
                             <Input
                                 id="sponsor_login"
                                 value={sponsorLogin}
-                                onChange={e => {
+                                onChange={(e) => {
                                     setSponsorLogin(e.target.value);
                                     setLeader(null);
                                 }}
@@ -104,7 +137,11 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                                 onClick={handleSearch}
                                 disabled={searching || saving}
                             >
-                                {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                                {searching ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Search className="w-4 h-4" />
+                                )}
                                 {searching ? 'Buscando...' : 'Buscar'}
                             </Button>
                         </div>
@@ -120,23 +157,33 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                             <>
                                 <div className="mb-2 flex items-center gap-2 text-xs font-medium text-primary">
                                     <BadgeCheck className="h-3.5 w-3.5" />
-                                    {existingLeader ? 'Leader selecionado para atualizacao' : 'Leader encontrado'}
+                                    {existingLeader
+                                        ? 'Leader selecionado para atualizacao'
+                                        : 'Leader encontrado'}
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <Avatar className="h-16 w-16 border-2 border-primary/30 shadow-[0_0_0_2px_rgba(0,0,0,0.15)]">
-                                        <AvatarImage src={leader.personal_data?.avatar} />
+                                        <AvatarImage
+                                            src={leader.personal_data?.avatar}
+                                        />
                                         <AvatarFallback className="text-base font-bold">
                                             {leader.name
                                                 .split(' ')
                                                 .filter(Boolean)
                                                 .slice(0, 2)
-                                                .map(part => part[0]?.toUpperCase())
+                                                .map((part) =>
+                                                    part[0]?.toUpperCase(),
+                                                )
                                                 .join('')}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="min-w-0 flex-1 space-y-1">
-                                        <p className="truncate font-semibold text-on-surface">{leader.name}</p>
-                                        <p className="truncate text-slate-300">@{leader.login}</p>
+                                        <p className="truncate font-semibold text-on-surface">
+                                            {leader.name}
+                                        </p>
+                                        <p className="truncate text-slate-300">
+                                            @{leader.login}
+                                        </p>
                                         <div className="mt-2 flex flex-wrap gap-2 text-xs">
                                             <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-slate-300">
                                                 <Hash className="h-3 w-3" />
@@ -145,7 +192,9 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                                             {leader.email && (
                                                 <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-slate-300">
                                                     <Mail className="h-3 w-3" />
-                                                    <span className="max-w-[220px] truncate">{leader.email}</span>
+                                                    <span className="max-w-[220px] truncate">
+                                                        {leader.email}
+                                                    </span>
                                                 </span>
                                             )}
                                         </div>
@@ -155,7 +204,8 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
                         ) : (
                             <div className="flex h-full min-h-[120px] items-center justify-center rounded-md border border-dashed border-border/80 bg-background/20 p-3">
                                 <p className="text-center text-slate-300">
-                                    Nenhum lider selecionado. Busque um login para validar antes de vincular.
+                                    Nenhum lider selecionado. Busque um login
+                                    para validar antes de vincular.
                                 </p>
                             </div>
                         )}
@@ -169,19 +219,33 @@ export function InformSponsorModal({ open, onClose, userId, existingLeader, onUp
 
                     {existingLeader && (
                         <div className="text-xs text-slate-300">
-                            Leader atual carregado. Voce pode buscar outro login para atualizar o vinculo.
+                            Leader atual carregado. Voce pode buscar outro login
+                            para atualizar o vinculo.
                         </div>
                     )}
                 </div>
 
                 <DialogFooter className="gap-3">
-                    <Button variant="destructive" onClick={onClose} disabled={searching || saving}>
+                    <Button
+                        variant="destructive"
+                        onClick={onClose}
+                        disabled={searching || saving}
+                    >
                         <X className="w-4 h-4" />
                         Cancelar
                     </Button>
-                    <Button onClick={handleSave} disabled={searching || saving || !leader}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={searching || saving || !leader}
+                    >
                         <UserPlus className="w-4 h-4" />
-                        {saving ? (existingLeader ? 'Salvando...' : 'Vinculando...') : existingLeader ? 'Salvar leader' : 'Vincular leader'}
+                        {saving
+                            ? existingLeader
+                                ? 'Salvando...'
+                                : 'Vinculando...'
+                            : existingLeader
+                              ? 'Salvar leader'
+                              : 'Vincular leader'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

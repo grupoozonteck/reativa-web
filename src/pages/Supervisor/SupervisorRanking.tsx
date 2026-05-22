@@ -16,17 +16,24 @@ export default function SupervisorRanking() {
     const { user } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
-    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedStartDate =
+        searchParams.get('start_date') ?? defaultRange.startDate;
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
 
     const { data, isLoading, isFetching, isError, refetch } = useQuery({
-        queryKey: ['supervisor-ranking', user?.id, appliedStartDate, appliedEndDate],
-        queryFn: () => teamService.getSupervisorRanking({
-            start_date: appliedStartDate || undefined,
-            end_date: appliedEndDate || undefined,
-        }),
+        queryKey: [
+            'supervisor-ranking',
+            user?.id,
+            appliedStartDate,
+            appliedEndDate,
+        ],
+        queryFn: () =>
+            teamService.getSupervisorRanking({
+                start_date: appliedStartDate || undefined,
+                end_date: appliedEndDate || undefined,
+            }),
         enabled: !!user?.id,
         staleTime: 60 * 1000,
         refetchInterval: 2 * 60 * 1000,
@@ -42,29 +49,54 @@ export default function SupervisorRanking() {
         return b.conversion - a.conversion;
     });
 
-    const totalRevenue = supervisors.reduce((acc, supervisor) => acc + Number(supervisor.revenue ?? 0), 0);
-    const totalSales = supervisors.reduce((acc, supervisor) => acc + supervisor.sales, 0);
-    const totalReengagements = supervisors.reduce((acc, supervisor) => acc + supervisor.total_reengagements, 0);
-    const bestConversion = supervisors.reduce((acc, supervisor) => Math.max(acc, supervisor.conversion), 0);
-    const hasDraftChanges = startDate !== appliedStartDate || endDate !== appliedEndDate;
-    const hasActiveFilters = appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
+    const totalRevenue = supervisors.reduce(
+        (acc, supervisor) => acc + Number(supervisor.revenue ?? 0),
+        0,
+    );
+    const totalSales = supervisors.reduce(
+        (acc, supervisor) => acc + supervisor.sales,
+        0,
+    );
+    const totalReengagements = supervisors.reduce(
+        (acc, supervisor) => acc + supervisor.total_reengagements,
+        0,
+    );
+    const bestConversion = supervisors.reduce(
+        (acc, supervisor) => Math.max(acc, supervisor.conversion),
+        0,
+    );
+    const hasDraftChanges =
+        startDate !== appliedStartDate || endDate !== appliedEndDate;
+    const hasActiveFilters =
+        appliedStartDate !== defaultRange.startDate ||
+        appliedEndDate !== defaultRange.endDate;
 
     const handleApplyFilters = () => {
-        setSearchParams((params) => {
-            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
-            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                if (startDate && startDate !== defaultRange.startDate)
+                    params.set('start_date', startDate);
+                else params.delete('start_date');
+                if (endDate && endDate !== defaultRange.endDate)
+                    params.set('end_date', endDate);
+                else params.delete('end_date');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     const clearFilters = () => {
         setStartDate(defaultRange.startDate);
         setEndDate(defaultRange.endDate);
-        setSearchParams((params) => {
-            params.delete('start_date');
-            params.delete('end_date');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                params.delete('start_date');
+                params.delete('end_date');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     if (isError) {
@@ -74,11 +106,18 @@ export default function SupervisorRanking() {
                     <div className="flex items-start gap-3">
                         <AlertCircle className="mt-0.5 h-5 w-5 text-rose-400" />
                         <div>
-                            <h2 className="text-base font-bold">Nao foi possivel carregar o ranking</h2>
+                            <h2 className="text-base font-bold">
+                                Nao foi possivel carregar o ranking
+                            </h2>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Verifique sua conexao com a API e tente novamente.
+                                Verifique sua conexao com a API e tente
+                                novamente.
                             </p>
-                            <Button type="button" onClick={() => refetch()} className="mt-4">
+                            <Button
+                                type="button"
+                                onClick={() => refetch()}
+                                className="mt-4"
+                            >
                                 Tentar novamente
                             </Button>
                         </div>
@@ -134,31 +173,49 @@ export default function SupervisorRanking() {
                                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
                                     Líder do Ranking
                                 </p>
-                                <h2 className="text-xl font-black tracking-tight">{supervisors[0].user.name}</h2>
-                                <p className="text-sm text-muted-foreground">@{supervisors[0].user.login}</p>
+                                <h2 className="text-xl font-black tracking-tight">
+                                    {supervisors[0].user.name}
+                                </h2>
+                                <p className="text-sm text-muted-foreground">
+                                    @{supervisors[0].user.login}
+                                </p>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 sm:w-auto sm:grid-cols-3">
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Receita</p>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                                    Receita
+                                </p>
                                 <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                                     {formatCurrency(supervisors[0].revenue)}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Vendas</p>
-                                <p className="text-lg font-bold">{supervisors[0].sales}</p>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                                    Vendas
+                                </p>
+                                <p className="text-lg font-bold">
+                                    {supervisors[0].sales}
+                                </p>
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Conversão</p>
-                                <p className="text-lg font-bold">{supervisors[0].conversion}%</p>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                                    Conversão
+                                </p>
+                                <p className="text-lg font-bold">
+                                    {supervisors[0].conversion}%
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <RankingList supervisors={supervisors} isLoading={isLoading} isFetching={isFetching} />
+            <RankingList
+                supervisors={supervisors}
+                isLoading={isLoading}
+                isFetching={isFetching}
+            />
         </div>
     );
 }

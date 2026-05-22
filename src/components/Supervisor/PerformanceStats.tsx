@@ -1,4 +1,11 @@
-import { Users, ShoppingCart, TrendingUp, Headphones, BarChart2, type LucideIcon } from 'lucide-react';
+import {
+    Users,
+    ShoppingCart,
+    TrendingUp,
+    Headphones,
+    BarChart2,
+    type LucideIcon,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/utils/client-utils';
 
@@ -81,14 +88,26 @@ export function PerformanceStats({
                         card.cardBg,
                     )}
                 >
-                    <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl', card.iconBg)}>
+                    <div
+                        className={cn(
+                            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
+                            card.iconBg,
+                        )}
+                    >
                         <card.icon className="h-5 w-5 text-white" />
                     </div>
                     <div>
                         <p className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                             {card.label}
                         </p>
-                        <p className={cn('text-xl font-black tracking-tight tabular-nums', card.color)}>{card.value}</p>
+                        <p
+                            className={cn(
+                                'text-xl font-black tracking-tight tabular-nums',
+                                card.color,
+                            )}
+                        >
+                            {card.value}
+                        </p>
                     </div>
                 </div>
             ))}

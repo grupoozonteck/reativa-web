@@ -17,9 +17,10 @@ export default function ThemeToggleButton() {
             className={`
                 relative w-8 h-8 rounded-lg flex items-center justify-center
                 transition-colors duration-300 cursor-pointer
-                ${isDark
-                    ? 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25'
-                    : 'bg-amber-400/10 text-amber-500 hover:bg-amber-400/20'
+                ${
+                    isDark
+                        ? 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25'
+                        : 'bg-amber-400/10 text-amber-500 hover:bg-amber-400/20'
                 }
             `}
         >
@@ -32,10 +33,11 @@ export default function ThemeToggleButton() {
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                     className="flex items-center justify-center"
                 >
-                    {isDark
-                        ? <Sun className="w-4 h-4" />
-                        : <Moon className="w-4 h-4" />
-                    }
+                    {isDark ? (
+                        <Sun className="w-4 h-4" />
+                    ) : (
+                        <Moon className="w-4 h-4" />
+                    )}
                 </motion.span>
             </AnimatePresence>
         </motion.button>

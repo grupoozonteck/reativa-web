@@ -37,7 +37,10 @@ function formatCurrency(value: string | number | null | undefined) {
     if (value === null || value === undefined || value === '') return '--';
     const num = typeof value === 'string' ? parseFloat(value) : value;
     if (Number.isNaN(num)) return '--';
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(num);
 }
 
 interface StatCardProps {
@@ -48,25 +51,55 @@ interface StatCardProps {
     iconClassName?: string;
 }
 
-function StatCard({ label, value, icon: Icon, iconBg, iconClassName }: StatCardProps) {
+function StatCard({
+    label,
+    value,
+    icon: Icon,
+    iconBg,
+    iconClassName,
+}: StatCardProps) {
     return (
         <div className="solid-card p-4 sm:p-5 flex items-center gap-4 min-w-0">
-            <div className={cn('w-11 h-11 rounded-2xl flex items-center justify-center shrink-0', iconBg)}>
+            <div
+                className={cn(
+                    'w-11 h-11 rounded-2xl flex items-center justify-center shrink-0',
+                    iconBg,
+                )}
+            >
                 <Icon className={cn('w-5 h-5 text-white', iconClassName)} />
             </div>
             <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-                <p className="text-xl font-black tracking-tight truncate">{value}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    {label}
+                </p>
+                <p className="text-xl font-black tracking-tight truncate">
+                    {value}
+                </p>
             </div>
         </div>
     );
 }
 
-function InfoItem({ label, value, muted = false }: { label: string; value: React.ReactNode; muted?: boolean }) {
+function InfoItem({
+    label,
+    value,
+    muted = false,
+}: {
+    label: string;
+    value: React.ReactNode;
+    muted?: boolean;
+}) {
     return (
         <div className="flex items-start justify-between gap-4 py-3">
             <span className="text-sm text-muted-foreground">{label}</span>
-            <span className={cn('text-right text-sm font-medium', muted && 'text-muted-foreground')}>{value}</span>
+            <span
+                className={cn(
+                    'text-right text-sm font-medium',
+                    muted && 'text-muted-foreground',
+                )}
+            >
+                {value}
+            </span>
         </div>
     );
 }
@@ -93,18 +126,21 @@ export default function AtendenteDetalhes() {
     const [appliedStartDate, setAppliedStartDate] = useState(currentMonthStart);
     const [appliedEndDate, setAppliedEndDate] = useState(today);
 
-    const { data, isLoading, isError, refetch, isFetching } = useQuery({
+    const { data, isLoading, isError, isFetching } = useQuery({
         queryKey: ['attendant-detail', id, appliedStartDate, appliedEndDate],
-        queryFn: () => teamService.getAttendantById(Number(id), {
-            start_date: appliedStartDate || undefined,
-            end_date: appliedEndDate || undefined,
-        }),
+        queryFn: () =>
+            teamService.getAttendantById(Number(id), {
+                start_date: appliedStartDate || undefined,
+                end_date: appliedEndDate || undefined,
+            }),
         enabled: !!id,
         select: (res) => res.data,
     });
 
     if (isLoading) {
-        return <PageLoadingState message="Carregando detalhes do atendente..." />;
+        return (
+            <PageLoadingState message="Carregando detalhes do atendente..." />
+        );
     }
 
     if (isError || !data) {
@@ -120,7 +156,8 @@ export default function AtendenteDetalhes() {
     const attendant = data.attendant;
     const commissionRows = attendant.commissions ?? [];
     const attendanceRows = attendant.reengagements ?? [];
-    const hasDraftChanges = startDate !== appliedStartDate || endDate !== appliedEndDate;
+    const hasDraftChanges =
+        startDate !== appliedStartDate || endDate !== appliedEndDate;
     const periodLabel = `${formatDate(appliedStartDate)} - ${formatDate(appliedEndDate)}`;
 
     const handleApplyFilters = () => {
@@ -139,12 +176,18 @@ export default function AtendenteDetalhes() {
         <div className="min-h-screen max-w-screen-2xl mx-auto px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 space-y-4 sm:space-y-5">
             <div className="animate-fade-in flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="space-y-3">
-                    <Button variant="default" onClick={() => navigate(-1)} className="gap-2 w-fit">
+                    <Button
+                        variant="default"
+                        onClick={() => navigate(-1)}
+                        className="gap-2 w-fit"
+                    >
                         <ArrowLeft className="w-4 h-4" />
                         Voltar
                     </Button>
                     <div className="space-y-1">
-                        <h1 className="text-2xl font-black tracking-tight sm:text-3xl">Detalhes do Atendente</h1>
+                        <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
+                            Detalhes do Atendente
+                        </h1>
                     </div>
                 </div>
                 <div className="">
@@ -167,7 +210,10 @@ export default function AtendenteDetalhes() {
                     <div className="p-5 sm:p-6 md:p-7">
                         <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
                             <Avatar className="w-20 h-20 rounded-3xl border border-white/10 shadow-lg">
-                                <AvatarImage src={attendant.user?.personal_data?.avatar} className="object-cover" />
+                                <AvatarImage
+                                    src={attendant.user?.personal_data?.avatar}
+                                    className="object-cover"
+                                />
                                 <AvatarFallback className="rounded-3xl text-xl font-bold">
                                     {getInitials(attendant.user?.name)}
                                 </AvatarFallback>
@@ -176,24 +222,43 @@ export default function AtendenteDetalhes() {
                             <div className="flex-1 min-w-0 space-y-4">
                                 <div className="space-y-2">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <Badge variant="outline" className="h-6 px-2.5 text-[10px] uppercase tracking-[0.14em]">
+                                        <Badge
+                                            variant="outline"
+                                            className="h-6 px-2.5 text-[10px] uppercase tracking-[0.14em]"
+                                        >
                                             Perfil ativo
                                         </Badge>
-                                        <Badge variant="outline" className="h-6 px-2.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                                        <Badge
+                                            variant="outline"
+                                            className="h-6 px-2.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground"
+                                        >
                                             Período {periodLabel}
                                         </Badge>
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-black tracking-tight sm:text-3xl">{attendant.user?.name}</h2>
-                                        <p className="text-sm text-muted-foreground sm:text-base">@{attendant.user?.login}</p>
+                                        <h2 className="text-2xl font-black tracking-tight sm:text-3xl">
+                                            {attendant.user?.name}
+                                        </h2>
+                                        <p className="text-sm text-muted-foreground sm:text-base">
+                                            @{attendant.user?.login}
+                                        </p>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
-                                    <Badge variant="outline" className={cn('text-[10px] px-2.5 h-6', typeColors[attendant.type])}>
+                                    <Badge
+                                        variant="outline"
+                                        className={cn(
+                                            'text-[10px] px-2.5 h-6',
+                                            typeColors[attendant.type],
+                                        )}
+                                    >
                                         {attendant.type_label}
                                     </Badge>
-                                    <Badge variant="outline" className="text-[10px] px-2.5 h-6">
+                                    <Badge
+                                        variant="outline"
+                                        className="text-[10px] px-2.5 h-6"
+                                    >
                                         {attendant.graduation_label}
                                     </Badge>
                                     <Badge
@@ -218,19 +283,28 @@ export default function AtendenteDetalhes() {
                                     {data.metrics.total_attendances || 0}
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    atendimentos registrados entre as datas aplicadas
+                                    atendimentos registrados entre as datas
+                                    aplicadas
                                 </p>
                             </div>
                         </div>
 
                         <div className="mt-6 grid grid-cols-2 gap-3">
                             <div className="rounded-2xl border border-white/5 bg-background/30 p-3">
-                                <p className="text-xs uppercase text-muted-foreground">Vendas</p>
-                                <p className="mt-1 font-bold">{data.metrics.total_orders || 0}</p>
+                                <p className="text-xs uppercase text-muted-foreground">
+                                    Vendas
+                                </p>
+                                <p className="mt-1 font-bold">
+                                    {data.metrics.total_orders || 0}
+                                </p>
                             </div>
                             <div className="rounded-2xl border border-white/5 bg-background/30 p-3">
-                                <p className="text-xs uppercase text-muted-foreground">Conversão</p>
-                                <p className="mt-1 font-bold">{data.metrics.conversion_rate || 0}%</p>
+                                <p className="text-xs uppercase text-muted-foreground">
+                                    Conversão
+                                </p>
+                                <p className="mt-1 font-bold">
+                                    {data.metrics.conversion_rate || 0}%
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -241,10 +315,30 @@ export default function AtendenteDetalhes() {
                 className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 animate-fade-in"
                 style={{ animationDelay: '120ms', opacity: 0 }}
             >
-                <StatCard label="Comissões" value={formatCurrency(data.metrics.commissions_received)} icon={Coins} iconBg="bg-emerald-500" />
-                <StatCard label="Vendas" value={data.metrics.total_orders || 0} icon={ShoppingCart} iconBg="bg-blue-500" />
-                <StatCard label="Atendimentos" value={data.metrics.total_attendances || 0} icon={Users} iconBg="bg-violet-500" />
-                <StatCard label="Conversão" value={`${data.metrics.conversion_rate || 0}%`} icon={TrendingUp} iconBg="bg-amber-500" />
+                <StatCard
+                    label="Comissões"
+                    value={formatCurrency(data.metrics.commissions_received)}
+                    icon={Coins}
+                    iconBg="bg-emerald-500"
+                />
+                <StatCard
+                    label="Vendas"
+                    value={data.metrics.total_orders || 0}
+                    icon={ShoppingCart}
+                    iconBg="bg-blue-500"
+                />
+                <StatCard
+                    label="Atendimentos"
+                    value={data.metrics.total_attendances || 0}
+                    icon={Users}
+                    iconBg="bg-violet-500"
+                />
+                <StatCard
+                    label="Conversão"
+                    value={`${data.metrics.conversion_rate || 0}%`}
+                    icon={TrendingUp}
+                    iconBg="bg-amber-500"
+                />
             </div>
 
             <div
@@ -257,25 +351,44 @@ export default function AtendenteDetalhes() {
                             <Users className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                            <h3 className="text-base font-semibold">Lideranca</h3>
-                            <p className="text-sm text-muted-foreground">Estrutura acima do atendente.</p>
+                            <h3 className="text-base font-semibold">
+                                Lideranca
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                Estrutura acima do atendente.
+                            </p>
                         </div>
                     </div>
                     {attendant.parent ? (
                         <div className="divide-y divide-white/5">
-                            <InfoItem label="Nome" value={attendant.parent.user?.name} />
-                            <InfoItem label="Login" value={`@${attendant.parent.user?.login}`} muted />
+                            <InfoItem
+                                label="Nome"
+                                value={attendant.parent.user?.name}
+                            />
+                            <InfoItem
+                                label="Login"
+                                value={`@${attendant.parent.user?.login}`}
+                                muted
+                            />
                             <InfoItem
                                 label="Cargo"
-                                value={(
-                                    <Badge variant="outline" className={cn('text-[10px] px-2.5 h-6', typeColors[attendant.parent.type])}>
+                                value={
+                                    <Badge
+                                        variant="outline"
+                                        className={cn(
+                                            'text-[10px] px-2.5 h-6',
+                                            typeColors[attendant.parent.type],
+                                        )}
+                                    >
                                         {attendant.parent.type_label}
                                     </Badge>
-                                )}
+                                }
                             />
                         </div>
                     ) : (
-                        <p className="text-sm text-muted-foreground/60 pt-2">Sem lider vinculado</p>
+                        <p className="text-sm text-muted-foreground/60 pt-2">
+                            Sem lider vinculado
+                        </p>
                     )}
                 </div>
 
@@ -285,24 +398,46 @@ export default function AtendenteDetalhes() {
                             <Calendar className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                            <h3 className="text-base font-semibold">Registro</h3>
-                            <p className="text-sm text-muted-foreground">Dados fixos de cadastro e identificação.</p>
+                            <h3 className="text-base font-semibold">
+                                Registro
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                Dados fixos de cadastro e identificação.
+                            </p>
                         </div>
                     </div>
                     <div className="divide-y divide-white/5">
-                        <InfoItem label="Cadastrado em" value={formatDate(attendant.created_at)} />
-                        <InfoItem label="ID interno" value={<span className="font-mono">#{attendant.user_id}</span>} muted />
+                        <InfoItem
+                            label="Cadastrado em"
+                            value={formatDate(attendant.created_at)}
+                        />
+                        <InfoItem
+                            label="ID interno"
+                            value={
+                                <span className="font-mono">
+                                    #{attendant.user_id}
+                                </span>
+                            }
+                            muted
+                        />
                     </div>
                 </div>
             </div>
 
-            <div className="solid-card p-5 sm:p-6 animate-fade-in space-y-4" style={{ animationDelay: '240ms', opacity: 0 }}>
+            <div
+                className="solid-card p-5 sm:p-6 animate-fade-in space-y-4"
+                style={{ animationDelay: '240ms', opacity: 0 }}
+            >
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
-                        <span className="font-display text-sm font-semibold">Filtros do historico</span>
+                        <span className="font-display text-sm font-semibold">
+                            Filtros do historico
+                        </span>
                     </div>
                     <span className="text-xs text-muted-foreground">
-                        {hasDraftChanges ? 'Existem alteracoes pendentes para aplicar.' : `Periodo ativo: ${periodLabel}`}
+                        {hasDraftChanges
+                            ? 'Existem alteracoes pendentes para aplicar.'
+                            : `Periodo ativo: ${periodLabel}`}
                     </span>
                 </div>
 
@@ -315,7 +450,9 @@ export default function AtendenteDetalhes() {
                 >
                     <div className="grid grid-cols-1 gap-3 lg:grid-cols-[180px_180px_minmax(0,1fr)]">
                         <Field>
-                            <FieldLabel htmlFor="attendant-start-date">Data inicial</FieldLabel>
+                            <FieldLabel htmlFor="attendant-start-date">
+                                Data inicial
+                            </FieldLabel>
                             <Input
                                 id="attendant-start-date"
                                 type="date"
@@ -325,7 +462,9 @@ export default function AtendenteDetalhes() {
                             />
                         </Field>
                         <Field>
-                            <FieldLabel htmlFor="attendant-end-date">Data final</FieldLabel>
+                            <FieldLabel htmlFor="attendant-end-date">
+                                Data final
+                            </FieldLabel>
                             <Input
                                 id="attendant-end-date"
                                 type="date"
@@ -348,7 +487,12 @@ export default function AtendenteDetalhes() {
                                     type="button"
                                     variant="destructive"
                                     onClick={clearFilters}
-                                    disabled={isFetching || (!hasDraftChanges && startDate === currentMonthStart && endDate === today)}
+                                    disabled={
+                                        isFetching ||
+                                        (!hasDraftChanges &&
+                                            startDate === currentMonthStart &&
+                                            endDate === today)
+                                    }
                                     className="gap-2 w-full lg:w-auto"
                                 >
                                     <Trash2 className="w-4 h-4" />
@@ -360,7 +504,11 @@ export default function AtendenteDetalhes() {
                 </form>
             </div>
 
-            <Tabs defaultValue="attendances" className="animate-fade-in" style={{ animationDelay: '300ms', opacity: 0 }}>
+            <Tabs
+                defaultValue="attendances"
+                className="animate-fade-in"
+                style={{ animationDelay: '300ms', opacity: 0 }}
+            >
                 <TabsList className="grid w-full grid-cols-2 h-11 p-1.5 rounded-2xl bg-surface-highest/70 md:w-[360px]">
                     <TabsTrigger value="attendances">Atendimentos</TabsTrigger>
                     <TabsTrigger value="commissions">Comissões</TabsTrigger>
@@ -382,25 +530,59 @@ export default function AtendenteDetalhes() {
                                 <TableBody>
                                     {attendanceRows.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
-                                                Nenhum atendimento encontrado para o periodo.
+                                            <TableCell
+                                                colSpan={5}
+                                                className="text-center text-muted-foreground py-10"
+                                            >
+                                                Nenhum atendimento encontrado
+                                                para o periodo.
                                             </TableCell>
                                         </TableRow>
                                     ) : (
                                         attendanceRows.map((reengagement) => {
-                                            const statusStyle = statusStyleMap[reengagement.status] ?? statusStyleMap[1];
+                                            const statusStyle =
+                                                statusStyleMap[
+                                                    reengagement.status
+                                                ] ?? statusStyleMap[1];
                                             return (
                                                 <TableRow key={reengagement.id}>
-                                                    <TableCell className="font-mono text-xs">#{reengagement.id}</TableCell>
-                                                    <TableCell>{reengagement.user?.name ?? '--'}</TableCell>
-                                                    <TableCell className="text-muted-foreground">@{reengagement.user?.login ?? '--'}</TableCell>
+                                                    <TableCell className="font-mono text-xs">
+                                                        #{reengagement.id}
+                                                    </TableCell>
                                                     <TableCell>
-                                                        <Badge className={cn('border gap-1 whitespace-nowrap', statusStyle.color)}>
-                                                            <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
-                                                            {REENGAGEMENT_STATUS_LABELS[reengagement.status] ?? `Status ${reengagement.status}`}
+                                                        {reengagement.user
+                                                            ?.name ?? '--'}
+                                                    </TableCell>
+                                                    <TableCell className="text-muted-foreground">
+                                                        @
+                                                        {reengagement.user
+                                                            ?.login ?? '--'}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge
+                                                            className={cn(
+                                                                'border gap-1 whitespace-nowrap',
+                                                                statusStyle.color,
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={cn(
+                                                                    'w-1.5 h-1.5 rounded-full shrink-0',
+                                                                    statusStyle.dotColor,
+                                                                )}
+                                                            />
+                                                            {REENGAGEMENT_STATUS_LABELS[
+                                                                reengagement
+                                                                    .status
+                                                            ] ??
+                                                                `Status ${reengagement.status}`}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell>{formatDate(reengagement.created_at)}</TableCell>
+                                                    <TableCell>
+                                                        {formatDate(
+                                                            reengagement.created_at,
+                                                        )}
+                                                    </TableCell>
                                                 </TableRow>
                                             );
                                         })
@@ -412,13 +594,19 @@ export default function AtendenteDetalhes() {
                         <div className="space-y-3 p-1 md:p-4 md:hidden">
                             {attendanceRows.length === 0 ? (
                                 <div className="rounded-2xl border border-dashed border-white/10 px-4 py-10 text-center text-sm text-muted-foreground">
-                                    Nenhum atendimento encontrado para o periodo.
+                                    Nenhum atendimento encontrado para o
+                                    periodo.
                                 </div>
                             ) : (
                                 attendanceRows.map((reengagement) => {
-                                    const statusStyle = statusStyleMap[reengagement.status] ?? statusStyleMap[1];
+                                    const statusStyle =
+                                        statusStyleMap[reengagement.status] ??
+                                        statusStyleMap[1];
                                     return (
-                                        <div key={reengagement.id} className="overflow-hidden rounded-3xl border border-white/5 bg-surface-highest/35">
+                                        <div
+                                            key={reengagement.id}
+                                            className="overflow-hidden rounded-3xl border border-white/5 bg-surface-highest/35"
+                                        >
                                             <div className="border-b border-white/5 bg-background/30 px-4 py-3">
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div className="min-w-0">
@@ -433,11 +621,19 @@ export default function AtendenteDetalhes() {
                                                 <Badge
                                                     className={cn(
                                                         'mt-3 inline-flex h-auto max-w-full items-center gap-1.5 whitespace-normal rounded-full border px-2.5 py-1 text-[11px] leading-tight',
-                                                        statusStyle.color
+                                                        statusStyle.color,
                                                     )}
                                                 >
-                                                    <div className={cn('h-1.5 w-1.5 rounded-full shrink-0', statusStyle.dotColor)} />
-                                                    {REENGAGEMENT_STATUS_LABELS[reengagement.status] ?? `Status ${reengagement.status}`}
+                                                    <div
+                                                        className={cn(
+                                                            'h-1.5 w-1.5 rounded-full shrink-0',
+                                                            statusStyle.dotColor,
+                                                        )}
+                                                    />
+                                                    {REENGAGEMENT_STATUS_LABELS[
+                                                        reengagement.status
+                                                    ] ??
+                                                        `Status ${reengagement.status}`}
                                                 </Badge>
                                             </div>
 
@@ -447,10 +643,13 @@ export default function AtendenteDetalhes() {
                                                         Cliente
                                                     </p>
                                                     <p className="mt-1 text-base font-semibold leading-tight text-on-surface">
-                                                        {reengagement.user?.name ?? '--'}
+                                                        {reengagement.user
+                                                            ?.name ?? '--'}
                                                     </p>
                                                     <p className="mt-1 text-sm text-muted-foreground">
-                                                        @{reengagement.user?.login ?? '--'}
+                                                        @
+                                                        {reengagement.user
+                                                            ?.login ?? '--'}
                                                     </p>
                                                 </div>
 
@@ -460,7 +659,9 @@ export default function AtendenteDetalhes() {
                                                         Data
                                                     </span>
                                                     <span className="font-medium text-on-surface">
-                                                        {formatDate(reengagement.created_at)}
+                                                        {formatDate(
+                                                            reengagement.created_at,
+                                                        )}
                                                     </span>
                                                 </div>
                                             </div>
@@ -488,20 +689,48 @@ export default function AtendenteDetalhes() {
                                 <TableBody>
                                     {commissionRows.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
-                                                Nenhuma comissao encontrada para o periodo.
+                                            <TableCell
+                                                colSpan={5}
+                                                className="text-center text-muted-foreground py-10"
+                                            >
+                                                Nenhuma comissao encontrada para
+                                                o periodo.
                                             </TableCell>
                                         </TableRow>
                                     ) : (
                                         commissionRows.map((commission) => (
                                             <TableRow key={commission.id}>
-                                                <TableCell className="font-mono text-xs">#{commission.id}</TableCell>
-                                                <TableCell>{commission.order_id ? `#${commission.order_id}` : '--'}</TableCell>
-                                                <TableCell className={cn(Number(commission.value) < 0 ? 'text-rose-400' : 'text-emerald-400', 'font-medium')}>
-                                                    {formatCurrency(commission.value)}
+                                                <TableCell className="font-mono text-xs">
+                                                    #{commission.id}
                                                 </TableCell>
-                                                <TableCell className="max-w-[520px] truncate">{commission.description_extra ?? '--'}</TableCell>
-                                                <TableCell>{formatDate(commission.created_at)}</TableCell>
+                                                <TableCell>
+                                                    {commission.order_id
+                                                        ? `#${commission.order_id}`
+                                                        : '--'}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        Number(
+                                                            commission.value,
+                                                        ) < 0
+                                                            ? 'text-rose-400'
+                                                            : 'text-emerald-400',
+                                                        'font-medium',
+                                                    )}
+                                                >
+                                                    {formatCurrency(
+                                                        commission.value,
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="max-w-[520px] truncate">
+                                                    {commission.description_extra ??
+                                                        '--'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatDate(
+                                                        commission.created_at,
+                                                    )}
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -516,7 +745,10 @@ export default function AtendenteDetalhes() {
                                 </div>
                             ) : (
                                 commissionRows.map((commission) => (
-                                    <div key={commission.id} className="overflow-hidden rounded-3xl border border-white/5 bg-surface-highest/35">
+                                    <div
+                                        key={commission.id}
+                                        className="overflow-hidden rounded-3xl border border-white/5 bg-surface-highest/35"
+                                    >
                                         <div className="border-b border-white/5 bg-background/30 px-4 py-3">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="min-w-0">
@@ -527,7 +759,6 @@ export default function AtendenteDetalhes() {
                                                         #{commission.id}
                                                     </p>
                                                 </div>
-                                           
                                             </div>
 
                                             <div className="mt-3 flex items-end justify-between gap-3">
@@ -536,11 +767,24 @@ export default function AtendenteDetalhes() {
                                                         Pedido
                                                     </p>
                                                     <p className="mt-1 text-sm font-medium text-on-surface">
-                                                        {commission.order_id ? `#${commission.order_id}` : '--'}
+                                                        {commission.order_id
+                                                            ? `#${commission.order_id}`
+                                                            : '--'}
                                                     </p>
                                                 </div>
-                                                <p className={cn(Number(commission.value) < 0 ? 'text-rose-400' : 'text-primary', 'text-lg font-semibold')}>
-                                                    {formatCurrency(commission.value)}
+                                                <p
+                                                    className={cn(
+                                                        Number(
+                                                            commission.value,
+                                                        ) < 0
+                                                            ? 'text-rose-400'
+                                                            : 'text-primary',
+                                                        'text-lg font-semibold',
+                                                    )}
+                                                >
+                                                    {formatCurrency(
+                                                        commission.value,
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
@@ -551,7 +795,8 @@ export default function AtendenteDetalhes() {
                                                     Descrição
                                                 </p>
                                                 <p className="mt-1 text-sm leading-6 text-on-surface-variant">
-                                                    {commission.description_extra ?? '--'}
+                                                    {commission.description_extra ??
+                                                        '--'}
                                                 </p>
                                             </div>
 
@@ -561,7 +806,9 @@ export default function AtendenteDetalhes() {
                                                     Data
                                                 </span>
                                                 <span className="font-medium text-on-surface">
-                                                    {formatDate(commission.created_at)}
+                                                    {formatDate(
+                                                        commission.created_at,
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>

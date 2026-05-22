@@ -42,7 +42,10 @@ const restrictedRoutes: Record<string, number[]> = {
 /**
  * Verifica se o usuário com o dado type tem permissão para acessar a rota.
  */
-export function canAccessRoute(userType: number | undefined, route: string): boolean {
+export function canAccessRoute(
+    userType: number | undefined,
+    route: string,
+): boolean {
     const allowed = restrictedRoutes[route];
     // Se a rota não tem restrição, qualquer um acessa
     if (!allowed) return true;
@@ -55,7 +58,10 @@ export function canAccessRoute(userType: number | undefined, route: string): boo
  * Verifica se o usuário tem nível igual ou superior ao mínimo exigido.
  * Gerente (1) >= Supervisor (2) >= Atendente (3)
  */
-export function hasMinRole(userType: number | undefined, minRole: UserRoleType): boolean {
+export function hasMinRole(
+    userType: number | undefined,
+    minRole: UserRoleType,
+): boolean {
     if (userType === undefined) return false;
     // type menor = mais poder → userType <= minRole
     return userType <= minRole;
@@ -77,8 +83,11 @@ const hiddenNavItems: Record<string, number[]> = {
 /**
  * Filtra os itens de navegação baseado no type do usuário.
  */
-export function filterNavItems<T extends { to: string }>(items: T[], userType: number | undefined): T[] {
-    return items.filter(item => {
+export function filterNavItems<T extends { to: string }>(
+    items: T[],
+    userType: number | undefined,
+): T[] {
+    return items.filter((item) => {
         const allowed = hiddenNavItems[item.to];
         if (!allowed) return true;
         if (userType === undefined) return false;

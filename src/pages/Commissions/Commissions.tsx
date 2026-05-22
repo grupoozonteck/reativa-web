@@ -8,57 +8,96 @@ import { CommissionsTable } from '@/components/Commissions/CommissionsTable';
 import { CommissionsFilters } from '@/components/Commissions/CommissionsFilters';
 import { DollarSign, TrendingUp, FileText } from 'lucide-react';
 import { getCurrentMonthDateRange } from '@/utils/date-range';
-
+import { useAuth } from '@/contexts/useAuth';
+import { UserRole } from '@/config/permissions';
 
 export default function Comissoes() {
+    const { userType } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultRange = getCurrentMonthDateRange();
     const appliedSearch = searchParams.get('login') ?? '';
-    const appliedStartDate = searchParams.get('start_date') ?? defaultRange.startDate;
+    const appliedStartDate =
+        searchParams.get('start_date') ?? defaultRange.startDate;
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
+    const appliedWithoutLeader = searchParams.get('without_leader') === 'true';
     const [search, setSearch] = useState(appliedSearch);
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
+    const [withoutLeader, setWithoutLeader] = useState(appliedWithoutLeader);
     const [page, setPage] = useState(1);
+    const isAttendant = userType === UserRole.ATENDENTE;
 
     const { data, isLoading, isFetching, isError } = useQuery({
-        queryKey: ['comissoes', appliedSearch, appliedStartDate, appliedEndDate, page],
-        queryFn: () => financialService.getCommissions({
-            login: appliedSearch || undefined,
-            start_date: appliedStartDate || undefined,
-            end_date: appliedEndDate || undefined,
+        queryKey: [
+            'comissoes',
+            appliedSearch,
+            appliedStartDate,
+            appliedEndDate,
+            appliedWithoutLeader,
             page,
-        }),
+        ],
+        queryFn: () =>
+            financialService.getCommissions({
+                login: appliedSearch || undefined,
+                start_date: appliedStartDate || undefined,
+                end_date: appliedEndDate || undefined,
+                without_leader: isAttendant ? appliedWithoutLeader : undefined,
+                page,
+            }),
         placeholderData: keepPreviousData,
     });
 
     const handleApplyFilters = () => {
         setPage(1);
-        setSearchParams((params) => {
-            if (search.trim()) params.set('login', search.trim()); else params.delete('login');
-            if (startDate && startDate !== defaultRange.startDate) params.set('start_date', startDate); else params.delete('start_date');
-            if (endDate && endDate !== defaultRange.endDate) params.set('end_date', endDate); else params.delete('end_date');
-            if (page !== 1) params.delete('page');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                if (search.trim()) params.set('login', search.trim());
+                else params.delete('login');
+                if (startDate && startDate !== defaultRange.startDate)
+                    params.set('start_date', startDate);
+                else params.delete('start_date');
+                if (endDate && endDate !== defaultRange.endDate)
+                    params.set('end_date', endDate);
+                else params.delete('end_date');
+                if (isAttendant && withoutLeader)
+                    params.set('without_leader', 'true');
+                else params.delete('without_leader');
+                if (page !== 1) params.delete('page');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
     const clearFilters = () => {
         setSearch('');
         setStartDate(defaultRange.startDate);
         setEndDate(defaultRange.endDate);
+        setWithoutLeader(false);
         setPage(1);
-        setSearchParams((params) => {
-            params.delete('login');
-            params.delete('start_date');
-            params.delete('end_date');
-            params.delete('page');
-            return params;
-        }, { replace: true });
+        setSearchParams(
+            (params) => {
+                params.delete('login');
+                params.delete('start_date');
+                params.delete('end_date');
+                params.delete('without_leader');
+                params.delete('page');
+                return params;
+            },
+            { replace: true },
+        );
     };
 
-    const hasActiveFilters = !!appliedSearch || appliedStartDate !== defaultRange.startDate || appliedEndDate !== defaultRange.endDate;
-    const hasDraftChanges = search !== appliedSearch || startDate !== appliedStartDate || endDate !== appliedEndDate;
+    const hasActiveFilters =
+        !!appliedSearch ||
+        appliedStartDate !== defaultRange.startDate ||
+        appliedEndDate !== defaultRange.endDate ||
+        (isAttendant && appliedWithoutLeader);
+    const hasDraftChanges =
+        search !== appliedSearch ||
+        startDate !== appliedStartDate ||
+        endDate !== appliedEndDate ||
+        (isAttendant && withoutLeader !== appliedWithoutLeader);
 
     const items = data?.data?.commissions?.data ?? [];
     const totalCommissions = Number(data?.data?.total_commissions_value ?? 0);
@@ -72,13 +111,13 @@ export default function Comissoes() {
 
     const handleNextPage = () => {
         if (hasNextPage) {
-            setPage(prev => prev + 1);
+            setPage((prev) => prev + 1);
         }
     };
 
     const handlePrevPage = () => {
         if (hasPrevPage) {
-            setPage(prev => Math.max(1, prev - 1));
+            setPage((prev) => Math.max(1, prev - 1));
         }
     };
 
@@ -90,9 +129,10 @@ export default function Comissoes() {
                     <div className="bg-primary/10 rounded-lg p-1.5">
                         <DollarSign className="w-5 h-5 text-primary" />
                     </div>
-                    <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">Comissões</h1>
+                    <h1 className="font-display text-2xl font-black tracking-tight text-on-surface">
+                        Comissões
+                    </h1>
                 </div>
-
             </div>
 
             {/* Filters */}
@@ -100,9 +140,12 @@ export default function Comissoes() {
                 search={search}
                 startDate={startDate}
                 endDate={endDate}
+                withoutLeader={withoutLeader}
+                showWithoutLeaderFilter={isAttendant}
                 onSearchChange={setSearch}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
+                onWithoutLeaderChange={setWithoutLeader}
                 onApplyFilters={handleApplyFilters}
                 onClearFilters={clearFilters}
                 hasActiveFilters={hasActiveFilters}
