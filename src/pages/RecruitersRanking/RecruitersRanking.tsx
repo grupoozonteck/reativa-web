@@ -754,7 +754,7 @@ export default function RecruitersRanking() {
                         >
                             <SelectTrigger
                                 id="recruiters-ranking-type"
-                                className="h-9 w-full border-none bg-surface-highest px-3 text-left text-sm focus:ring-0 [&>span]:line-clamp-1 [&>span]:text-left"
+                                className="h-9 w-full border-none bg-surface-highest px-3 text-left focus:ring-0 md:text-sm [&>span]:line-clamp-1 [&>span]:text-left"
                             >
                                 <SelectValue placeholder="Selecione a ordenação" />
                             </SelectTrigger>

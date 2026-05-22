@@ -28,12 +28,9 @@ export default function AppLayout() {
     const closeSidebar = () => setSidebarOpen(false);
 
     return (
-        <div className="flex h-screen overflow-hidden bg-background">
+        <div className="flex h-screen min-h-screen overflow-x-clip bg-background supports-[height:100dvh]:h-dvh">
             {/* â”€â”€ Desktop sidebar â”€â”€ */}
-            <aside
-                className="hidden lg:flex w-[220px] shrink-0 min-h-0 border-r border-border flex-col bg-card"
-                style={{ position: 'relative', zIndex: 10 }}
-            >
+            <aside className="hidden w-[220px] shrink-0 min-h-0 flex-col border-r border-border bg-card lg:flex">
                 <SidebarShell
                     name={name}
                     email={email}
@@ -44,41 +41,65 @@ export default function AppLayout() {
             </aside>
 
             {/* â”€â”€ Mobile overlay â”€â”€ */}
-            {sidebarOpen && (
-                <div className="lg:hidden fixed inset-0" style={{ zIndex: 50 }}>
-                    <div
-                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            <div
+                className={`fixed inset-0 lg:hidden transition-opacity duration-200 ${
+                    sidebarOpen
+                        ? 'pointer-events-auto opacity-100'
+                        : 'pointer-events-none opacity-0'
+                }`}
+                style={{ zIndex: 50 }}
+                aria-hidden={!sidebarOpen}
+            >
+                <div
+                    className="absolute inset-0 bg-black/55"
+                    onClick={closeSidebar}
+                />
+                <aside
+                    className={`absolute inset-y-0 left-0 flex w-64 min-h-0 flex-col border-r border-border bg-card shadow-xl transition-transform duration-200 ease-out ${
+                        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
+                    style={{
+                        zIndex: 51,
+                        paddingTop: 'env(safe-area-inset-top)',
+                        paddingBottom: 'env(safe-area-inset-bottom)',
+                        transform: sidebarOpen
+                            ? 'translate3d(0, 0, 0)'
+                            : 'translate3d(-100%, 0, 0)',
+                        willChange: 'transform, opacity',
+                        WebkitBackfaceVisibility: 'hidden',
+                    }}
+                >
+                    <button
+                        className="absolute right-3 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        style={{
+                            top: 'calc(env(safe-area-inset-top) + 0.75rem)',
+                        }}
                         onClick={closeSidebar}
-                    />
-                    <aside
-                        className="absolute left-0 inset-y-0 w-64 min-h-0 bg-card border-r border-border flex flex-col shadow-2xl animate-fade-in-left"
-                        style={{ zIndex: 51 }}
+                        aria-label="Fechar menu"
                     >
-                        <button
-                            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
-                            onClick={closeSidebar}
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                        <SidebarShell
-                            name={name}
-                            email={email}
-                            initials={initials}
-                            userRole={userRole}
-                            onLogout={handleLogout}
-                            onNav={closeSidebar}
-                        />
-                    </aside>
-                </div>
-            )}
+                        <X className="h-6 w-6" />
+                    </button>
+                    <SidebarShell
+                        name={name}
+                        email={email}
+                        initials={initials}
+                        userRole={userRole}
+                        onLogout={handleLogout}
+                        onNav={closeSidebar}
+                    />
+                </aside>
+            </div>
 
             {/* â”€â”€ Main content â”€â”€ */}
-            <div
-                className="flex-1 flex flex-col min-w-0 overflow-hidden"
-                style={{ position: 'relative', zIndex: 5 }}
-            >
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
                 {/* Mobile top bar */}
-                <header className="lg:hidden flex items-center gap-3 px-4 h-14 border-b border-border bg-card justify-between">
+                <header
+                    className="sticky top-0 z-30 flex shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4 lg:hidden"
+                    style={{
+                        minHeight: '3.5rem',
+                        paddingTop: 'env(safe-area-inset-top)',
+                    }}
+                >
                     <Button
                         variant="ghost"
                         size="icon"
@@ -91,7 +112,22 @@ export default function AppLayout() {
                     <ThemeToggleButton />
                 </header>
 
-                <main className="flex-1 overflow-y-auto">
+                <main
+                    className="relative flex-1 overflow-y-auto overscroll-y-contain bg-background"
+                    style={{
+                        paddingBottom:
+                            'calc(env(safe-area-inset-bottom) + 5rem)',
+                        scrollPaddingBottom:
+                            'calc(env(safe-area-inset-bottom) + 5rem)',
+                        WebkitOverflowScrolling: 'touch',
+                    }}
+                >
+                    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl" />
+                        <div className="absolute bottom-1/3 right-1/4 h-96 w-96 rounded-full bg-emerald-500/4 blur-3xl" />
+                        <div className="absolute -left-20 top-1/2 h-80 w-80 rounded-full bg-secondary/4 blur-3xl" />
+                        <div className="absolute right-0 top-1/4 h-72 w-72 rounded-full bg-accent/3 blur-3xl" />
+                    </div>
                     <Outlet />
                 </main>
             </div>

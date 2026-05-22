@@ -261,7 +261,7 @@ export default function MyAttendances() {
                                     placeholder="Pesquisar por nome, email ou WhatsApp..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="pl-9 h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                                    className="h-9 w-full border-none bg-surface-highest pl-9 text-base focus-visible:ring-0 md:text-sm"
                                 />
                                 {search && (
                                     <button
@@ -284,7 +284,7 @@ export default function MyAttendances() {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                                className="h-9 w-full border-none bg-surface-highest text-base focus-visible:ring-0 md:text-sm"
                             />
                         </Field>
 
@@ -297,7 +297,7 @@ export default function MyAttendances() {
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                                className="h-9 w-full border-none bg-surface-highest text-base focus-visible:ring-0 md:text-sm"
                             />
                         </Field>
 
@@ -315,7 +315,7 @@ export default function MyAttendances() {
                             >
                                 <SelectTrigger
                                     id="my-attendances-status"
-                                    className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0"
+                                    className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm"
                                 >
                                     <SelectValue placeholder="Todos os status" />
                                 </SelectTrigger>
@@ -413,7 +413,7 @@ export default function MyAttendances() {
                         <div className="overflow-y-auto max-h-[600px]">
                             <Table>
                                 <TableHeader className="sticky top-0 z-10">
-                                    <TableRow className="border-none hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
+                                    <TableRow className="border-none hover:bg-transparent bg-surface-highest/95">
                                         <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[7%] px-3">
                                             ID
                                         </TableHead>

@@ -94,7 +94,7 @@ export function AttendantsFiltersBar({
                                             })
                                         }
                                     >
-                                        <SelectTrigger className="h-10 w-full text-sm">
+                                        <SelectTrigger className="h-10 w-full md:text-sm">
                                             <SelectValue placeholder="Todos os cargos" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -134,7 +134,7 @@ export function AttendantsFiltersBar({
                                             })
                                         }
                                     >
-                                        <SelectTrigger className="h-10 w-full text-sm">
+                                        <SelectTrigger className="h-10 w-full md:text-sm">
                                             <SelectValue placeholder="Selecione o status" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -170,7 +170,7 @@ export function AttendantsFiltersBar({
                                             })
                                         }
                                     >
-                                        <SelectTrigger className="h-10 w-full text-sm">
+                                        <SelectTrigger className="h-10 w-full md:text-sm">
                                             <SelectValue placeholder="Todos os paises" />
                                         </SelectTrigger>
                                         <SelectContent>

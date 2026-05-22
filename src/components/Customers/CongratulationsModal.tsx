@@ -10,7 +10,7 @@ export function CongratulationsModal({ onClose }: CongratulationsModalProps) {
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onClick={onClose}
         >
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-black/55" />
             <div
                 className="relative z-10 solid-card p-8 max-w-sm w-full text-center animate-fade-in shadow-2xl"
                 onClick={(e) => e.stopPropagation()}

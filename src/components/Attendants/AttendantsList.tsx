@@ -68,7 +68,7 @@ export function AttendantsList({
                 <div className="overflow-y-auto max-h-[600px]">
                     <Table>
                         <TableHeader className="sticky top-0 z-10">
-                            <TableRow className="hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
+                            <TableRow className="hover:bg-transparent bg-surface-highest/95">
                                 <TableHead>Atendente</TableHead>
                                 <TableHead>Cargo</TableHead>
                                 <TableHead>Status</TableHead>

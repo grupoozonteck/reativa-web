@@ -72,7 +72,7 @@ export function DateRangeFilterCard({
                         </div>
                     </div>
 
-                    <Field>
+                    <Field className="min-w-0">
                         <FieldLabel htmlFor={startId}>Data inicial</FieldLabel>
                         <Input
                             id={startId}
@@ -81,11 +81,11 @@ export function DateRangeFilterCard({
                             onChange={(event) =>
                                 onStartDateChange(event.target.value)
                             }
-                            className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                            className="date-input-trigger h-9 w-full min-w-0 border-none bg-surface-highest focus-visible:ring-0"
                         />
                     </Field>
 
-                    <Field>
+                    <Field className="min-w-0">
                         <FieldLabel htmlFor={endId}>Data final</FieldLabel>
                         <Input
                             id={endId}
@@ -94,7 +94,7 @@ export function DateRangeFilterCard({
                             onChange={(event) =>
                                 onEndDateChange(event.target.value)
                             }
-                            className="h-9 text-sm w-full bg-surface-highest border-none focus-visible:ring-0"
+                            className="date-input-trigger h-9 w-full min-w-0 border-none bg-surface-highest focus-visible:ring-0"
                         />
                     </Field>
 
