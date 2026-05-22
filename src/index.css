@@ -115,9 +115,18 @@
         scroll-behavior: smooth;
     }
 
+    html,
+    body,
+    #root {
+        min-height: 100%;
+    }
+
     body {
         font-family: "Inter", -apple-system, sans-serif;
         @apply bg-background text-foreground;
+        min-height: 100vh;
+        min-height: 100svh;
+        overflow-x: hidden;
         transition:
             background-color 0.25s ease,
             color 0.25s ease;
@@ -394,10 +403,24 @@
 }
 
 .date-input-trigger {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
     cursor: pointer;
     box-shadow: none !important;
     background-color: hsl(var(--surface-container-highest));
     color: hsl(var(--on-surface));
+    font-size: 16px;
+    line-height: 1.25rem;
+    inline-size: 100%;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+}
+
+@media (min-width: 768px) {
+    .date-input-trigger {
+        font-size: 0.875rem;
+    }
 }
 
 .date-input-trigger:focus,
@@ -426,8 +449,15 @@
 }
 
 .date-input-trigger::-webkit-datetime-edit,
-.date-input-trigger::-webkit-date-and-time-value {
+.date-input-trigger::-webkit-date-and-time-value,
+.date-input-trigger::-webkit-datetime-edit-fields-wrapper {
     color: inherit;
+    min-width: 0;
+    padding: 0;
+}
+
+.date-input-trigger::-webkit-date-and-time-value {
+    text-align: left;
 }
 
 .field-focus {

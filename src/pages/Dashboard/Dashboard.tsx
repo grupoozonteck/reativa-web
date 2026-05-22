@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     UserX,
     DollarSign,
@@ -15,13 +15,14 @@ import StatCard from '@/components/dashboard/StatCard';
 import TopSellersCard from '@/components/dashboard/TopSellersCard';
 import InativosCard from '@/components/dashboard/InativosCard';
 import RecentSalesCard from '@/components/dashboard/RecentSalesCard';
-import { RevenueMilestoneModal } from '@/components/dashboard/RevenueMilestoneModal';
 import { dashboardService } from '@/services/dashboard.service';
 import { DateRangeFilterCard } from '@/components/filters/DateRangeFilterCard';
-import { getCurrentMonthDateRange } from '@/utils/date-range';
+import {
+    getCurrentMonthDateRange,
+    getPreviousMonthEquivalentRange,
+} from '@/utils/date-range';
 
-const REVENUE_GOAL = 100000;
-const REVENUE_GOAL_MODAL_STORAGE_KEY = 'dashboard-revenue-goal-modal-disabled';
+const REVENUE_GOAL = 150000;
 
 function getGreeting() {
     const h = new Date().getHours();
@@ -41,7 +42,10 @@ export default function Dashboard() {
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
-    const [revenueModalOpen, setRevenueModalOpen] = useState(false);
+    const previousRange = getPreviousMonthEquivalentRange(
+        appliedStartDate,
+        appliedEndDate,
+    );
 
     const { data, isLoading, isFetching, refetch } = useQuery({
         queryKey: ['dashboard', user?.id, appliedStartDate, appliedEndDate],
@@ -49,6 +53,22 @@ export default function Dashboard() {
             dashboardService.getDashboard({
                 start_date: appliedStartDate || undefined,
                 end_date: appliedEndDate || undefined,
+            }),
+        enabled: !!user?.id,
+        refetchInterval: 5 * 60 * 1000,
+    });
+
+    const { data: previousPeriodData } = useQuery({
+        queryKey: [
+            'dashboard-previous-period',
+            user?.id,
+            previousRange.startDate,
+            previousRange.endDate,
+        ],
+        queryFn: () =>
+            dashboardService.getDashboard({
+                start_date: previousRange.startDate,
+                end_date: previousRange.endDate,
             }),
         enabled: !!user?.id,
         refetchInterval: 5 * 60 * 1000,
@@ -90,75 +110,38 @@ export default function Dashboard() {
 
     const stats = data?.stats;
     const monthlyRevenue = Number(stats?.monthly_revenue ?? 0);
+    const previousMonthlyRevenue = Number(
+        previousPeriodData?.stats?.monthly_revenue ?? 0,
+    );
     const inactiveSummary = data?.inactive_clients_summary;
     const topAttendants = (data?.top_attendants ?? []).filter(
         (item) => item.type === undefined || item.type === 3,
     );
     const recentSales = data?.recent_sales ?? [];
-    const hasReachedRevenueGoal = monthlyRevenue >= REVENUE_GOAL;
-    const shouldCelebrateRevenue = hasReachedRevenueGoal;
-    const revenueModalPreferenceKey = `${REVENUE_GOAL_MODAL_STORAGE_KEY}:${user?.id ?? 'guest'}`;
-
-    useEffect(() => {
-        if (!shouldCelebrateRevenue) {
-            setRevenueModalOpen(false);
-            return;
-        }
-
-        if (typeof window !== 'undefined') {
-            const isDisabled = window.localStorage.getItem(
-                revenueModalPreferenceKey,
-            );
-            if (isDisabled === '1') {
-                setRevenueModalOpen(false);
-                return;
-            }
-        }
-
-        setRevenueModalOpen(true);
-    }, [
-        shouldCelebrateRevenue,
-        appliedStartDate,
-        appliedEndDate,
-        revenueModalPreferenceKey,
-        user?.id,
-    ]);
-
-    const handleRevenueModalChange = (open: boolean) => {
-        setRevenueModalOpen(open);
-    };
-
-    const handleDisableRevenueModal = () => {
-        if (typeof window !== 'undefined') {
-            window.localStorage.setItem(revenueModalPreferenceKey, '1');
-        }
-        setRevenueModalOpen(false);
-    };
-
+    const revenueGoalProgress = Math.min(
+        (monthlyRevenue / REVENUE_GOAL) * 100,
+        100,
+    );
+    const revenueTrend =
+        previousMonthlyRevenue > 0
+            ? ((monthlyRevenue - previousMonthlyRevenue) /
+                  previousMonthlyRevenue) *
+              100
+            : null;
+    const revenueTrendText =
+        revenueTrend === null
+            ? undefined
+            : `${revenueTrend >= 0 ? '+' : ''}${new Intl.NumberFormat('pt-BR', {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+              }).format(revenueTrend)}%`;
     const handleOpenRevenueReport = () => {
-        setRevenueModalOpen(false);
         const query = searchParams.toString();
         navigate(`/dashboard/meta-report${query ? `?${query}` : ''}`);
     };
 
     return (
         <div className="relative mx-auto max-w-screen-2xl space-y-6 px-4 py-4 sm:p-6">
-            <RevenueMilestoneModal
-                open={revenueModalOpen}
-                onOpenChange={handleRevenueModalChange}
-                onDisable={handleDisableRevenueModal}
-                onViewReport={handleOpenRevenueReport}
-                revenue={monthlyRevenue}
-                goal={REVENUE_GOAL}
-            />
-
-            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-emerald-500/4 rounded-full blur-3xl" />
-                <div className="absolute top-1/2 -left-20 w-80 h-80 bg-secondary/4 rounded-full blur-3xl" />
-                <div className="absolute top-1/4 right-0 w-72 h-72 bg-accent/3 rounded-full blur-3xl" />
-            </div>
-
             <div
                 className="animate-fade-in"
                 style={{ animationDelay: '0ms', opacity: 0 }}
@@ -191,6 +174,17 @@ export default function Dashboard() {
                 <p className="text-muted-foreground text-sm ml-3">
                     Visao geral do sistema de reativacao
                 </p>
+                <button
+                    type="button"
+                    onClick={handleOpenRevenueReport}
+                    className="ml-3 mt-2 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
+                >
+                    Meta atual: {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                        minimumFractionDigits: 0,
+                    }).format(REVENUE_GOAL)}
+                </button>
             </div>
 
             <DateRangeFilterCard
@@ -232,7 +226,23 @@ export default function Dashboard() {
                     icon={DollarSign}
                     colorClass="text-primary"
                     bgClass="bg-primary/10"
-                    trend="+18%"
+                    trend={revenueTrendText}
+                    trendLabel={
+                        revenueTrendText
+                            ? `vs. ${previousRange.startDate.split('-').reverse().join('/')} a ${previousRange.endDate.split('-').reverse().join('/')}`
+                            : 'Sem base comparativa no mês anterior'
+                    }
+                    helperText={`${new Intl.NumberFormat('pt-BR', {
+                        maximumFractionDigits: 1,
+                        minimumFractionDigits: 1,
+                    }).format(revenueGoalProgress)}% da meta de ${new Intl.NumberFormat(
+                        'pt-BR',
+                        {
+                            style: 'currency',
+                            currency: 'BRL',
+                            minimumFractionDigits: 0,
+                        },
+                    ).format(REVENUE_GOAL)}`}
                     delay={160}
                 />
                 <StatCard
@@ -251,7 +261,6 @@ export default function Dashboard() {
                     icon={TrendingUp}
                     colorClass="text-amber-500"
                     bgClass="bg-amber-500/10"
-                    trend="+5%"
                     delay={320}
                 />
             </div>

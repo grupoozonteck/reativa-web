@@ -291,7 +291,7 @@ export default function Clientes() {
                             }
                             disabled={loading}
                         >
-                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                            <SelectTrigger className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm">
                                 <SelectValue placeholder="Selecione o tipo" />
                             </SelectTrigger>
                             <SelectContent>
@@ -315,7 +315,7 @@ export default function Clientes() {
                                 setSelectedRegion(val === 'todos' ? '' : val)
                             }
                         >
-                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                            <SelectTrigger className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm">
                                 <SelectValue placeholder="Todas as regiões" />
                             </SelectTrigger>
                             <SelectContent>
@@ -345,7 +345,7 @@ export default function Clientes() {
                             }
                             disabled={isFetching}
                         >
-                            <SelectTrigger className="h-9 text-sm w-full bg-surface-highest border-none focus:ring-0">
+                            <SelectTrigger className="h-9 w-full border-none bg-surface-highest focus:ring-0 md:text-sm">
                                 <SelectValue placeholder="Todos os estados" />
                             </SelectTrigger>
                             <SelectContent>
@@ -454,7 +454,7 @@ export default function Clientes() {
                             <div className="overflow-y-auto max-h-[600px]">
                                 <Table>
                                     <TableHeader className="sticky top-0 z-10">
-                                        <TableRow className="border-none hover:bg-transparent bg-surface-highest/90 backdrop-blur-sm">
+                                        <TableRow className="border-none hover:bg-transparent bg-surface-highest/95">
                                             <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant w-[15%] px-4">
                                                 ID
                                             </TableHead>

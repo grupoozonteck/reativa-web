@@ -28,7 +28,7 @@ import {
 } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
 
-const REVENUE_GOAL = 100000;
+const REVENUE_GOAL = 150000;
 const reveal = {
     initial: { opacity: 0, y: 22 },
     whileInView: { opacity: 1, y: 0 },
@@ -235,7 +235,7 @@ export default function GoalMilestoneReport() {
                         </div>
 
                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                            <div className="rounded-[24px] bg-white/[0.02] p-5 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]">
+                            <div className="rounded-[24px] bg-white/[0.04] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]">
                                 <div className="flex items-center gap-2 text-primary">
                                     <Target className="h-4 w-4" />
                                     <p className="text-xs font-semibold uppercase tracking-[0.18em]">
@@ -251,7 +251,7 @@ export default function GoalMilestoneReport() {
                                 </p>
                             </div>
 
-                            <div className="rounded-[24px] bg-emerald-400/[0.04] p-5 backdrop-blur-sm shadow-[inset_0_0_0_1px_rgba(52,211,153,0.08)]">
+                            <div className="rounded-[24px] bg-emerald-400/[0.06] p-5 shadow-[inset_0_0_0_1px_rgba(52,211,153,0.08)]">
                                 <div className="flex items-center gap-2 text-emerald-300">
                                     <Award className="h-4 w-4" />
                                     <p className="text-xs font-semibold uppercase tracking-[0.18em]">

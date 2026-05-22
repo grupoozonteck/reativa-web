@@ -10,6 +10,8 @@ interface StatCardProps {
     colorClass: string;
     bgClass: string;
     trend?: string;
+    trendLabel?: string;
+    helperText?: string;
     delay?: number;
 }
 
@@ -21,6 +23,8 @@ export default function StatCard({
     colorClass,
     bgClass,
     trend,
+    trendLabel,
+    helperText,
     delay,
 }: StatCardProps) {
     const count = useCountUp(rawValue, 1400);
@@ -79,6 +83,20 @@ export default function StatCard({
             <p className="text-xs text-muted-foreground mt-1 font-medium">
                 {label}
             </p>
+            {(trendLabel || helperText) && (
+                <div className="mt-2 space-y-1">
+                    {trendLabel && (
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                            {trendLabel}
+                        </p>
+                    )}
+                    {helperText && (
+                        <p className="text-[11px] font-semibold text-primary/80">
+                            {helperText}
+                        </p>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Target, TrendingUp, Flame, Zap } from 'lucide-react';
 import { AnimatedNumber } from './AnimatedNumber';
 
-const GOAL = 100_000;
+const GOAL = 150_000;
 
 interface GlobalGoalProps {
     totalRevenue: number;
@@ -91,7 +91,7 @@ export function GlobalGoal({ totalRevenue }: GlobalGoalProps) {
                     <p className="text-xs text-muted-foreground mt-1">
                         de{' '}
                         <span className="font-semibold text-foreground">
-                            R$ 100.000
+                            R$ 150.000
                         </span>
                     </p>
                 </div>
@@ -141,7 +141,7 @@ export function GlobalGoal({ totalRevenue }: GlobalGoalProps) {
                             <Zap className="w-2.5 h-2.5" />
                             50%
                         </span>
-                        <span>R$ 100k</span>
+                        <span>R$ 150k</span>
                     </div>
                 </div>
 

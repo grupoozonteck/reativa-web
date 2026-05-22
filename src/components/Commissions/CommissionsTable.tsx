@@ -82,7 +82,7 @@ export function CommissionsTable({
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
-                            <TableRow className="border-none hover:bg-transparent bg-surface-highest/80 backdrop-blur-sm">
+                            <TableRow className="border-none hover:bg-transparent bg-surface-highest/95">
                                 <TableHead className="uppercase tracking-wider font-semibold text-on-surface-variant">
                                     #ID
                                 </TableHead>

@@ -299,7 +299,7 @@ export default function CustomerSituation() {
                                     mutation.reset();
                                 }}
                             >
-                                <SelectTrigger className="h-9 bg-surface-highest border-none text-sm focus:ring-0">
+                                <SelectTrigger className="h-9 border-none bg-surface-highest focus:ring-0 md:text-sm">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -335,7 +335,7 @@ export default function CustomerSituation() {
                                     e.key === 'Enter' && handleSearch()
                                 }
                                 placeholder={placeholders[searchField]}
-                                className="h-9 bg-surface-highest border-none focus-visible:ring-0 text-sm"
+                                className="h-9 border-none bg-surface-highest text-base focus-visible:ring-0 md:text-sm"
                             />
                         </div>
 
@@ -357,7 +357,7 @@ export default function CustomerSituation() {
                                     setInactiveDays(e.target.value)
                                 }
                                 placeholder="Padrão: 90"
-                                className="h-9 bg-surface-highest border-none focus-visible:ring-0 text-sm"
+                                className="h-9 border-none bg-surface-highest text-base focus-visible:ring-0 md:text-sm"
                             />
                         </div>
 
