@@ -25,6 +25,7 @@ import DeployCheck from './pages/DeployCheck/DeployCheck';
 import RecruitersRanking from './pages/RecruitersRanking/RecruitersRanking';
 import * as React from 'react';
 import { ToastContainer } from 'react-toastify';
+import { Analytics } from '@vercel/analytics/react';
 
 function ProtectedApp() {
     const { isAuthenticated, isLoading } = useAuth();
@@ -231,6 +232,7 @@ export default function App() {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>
+            <Analytics />
         </ThemeProvider>
     );
 }
