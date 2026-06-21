@@ -43,6 +43,13 @@ function formatCurrency(value: string | number | null | undefined) {
     }).format(num);
 }
 
+function formatPercent(value: number | string | null | undefined) {
+    if (value === undefined || value === null || value === '') return '--';
+    const numericValue = typeof value === 'string' ? Number(value) : value;
+    if (Number.isNaN(numericValue)) return '--';
+    return `${numericValue.toFixed(2)}%`;
+}
+
 interface StatCardProps {
     label: string;
     value: string | number;
@@ -155,6 +162,7 @@ export default function AtendenteDetalhes() {
 
     const attendant = data.attendant;
     const commissionRows = attendant.commissions ?? [];
+    const commissionRanges = attendant.commissions_attendant ?? [];
     const attendanceRows = attendant.reengagements ?? [];
     const hasDraftChanges =
         startDate !== appliedStartDate || endDate !== appliedEndDate;
@@ -312,12 +320,18 @@ export default function AtendenteDetalhes() {
             </section>
 
             <div
-                className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 animate-fade-in"
+                className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5 animate-fade-in"
                 style={{ animationDelay: '120ms', opacity: 0 }}
             >
                 <StatCard
                     label="Comissões"
                     value={formatCurrency(data.metrics.commissions_received)}
+                    icon={Coins}
+                    iconBg="bg-emerald-500"
+                />
+                <StatCard
+                    label="Total Vendido"
+                    value={formatCurrency(data.metrics.total_order_value)}
                     icon={Coins}
                     iconBg="bg-emerald-500"
                 />
@@ -342,7 +356,7 @@ export default function AtendenteDetalhes() {
             </div>
 
             <div
-                className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] animate-fade-in"
+                className="grid grid-cols-1 gap-4 lg:grid-cols-3 animate-fade-in"
                 style={{ animationDelay: '180ms', opacity: 0 }}
             >
                 <div className="solid-card p-5 sm:p-6">
@@ -420,6 +434,48 @@ export default function AtendenteDetalhes() {
                             }
                             muted
                         />
+                    </div>
+                </div>
+
+                <div className="solid-card p-5 sm:p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
+                            <Coins className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                            <h3 className="text-base font-semibold">
+                                Faixas de comissão
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                Regras de comissionamento do atendente.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="divide-y divide-white/5">
+                        {!commissionRanges || commissionRanges.length === 0 ? (
+                            <p className="text-sm text-muted-foreground/60 pt-2">
+                                Nenhuma faixa cadastrada
+                            </p>
+                        ) : (
+                            commissionRanges.map((commission) => (
+                                <div
+                                    key={commission.id}
+                                    className="flex items-center justify-between gap-4 py-3 first:pt-1 last:pb-1"
+                                >
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium">
+                                            {formatCurrency(commission.min_sales)} até {formatCurrency(commission.max_sales)}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {formatPercent(commission.commission_percent ?? commission.value)} de comissão
+                                        </p>
+                                    </div>
+                                    <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                                        #{commission.id}
+                                    </Badge>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
@@ -542,7 +598,7 @@ export default function AtendenteDetalhes() {
                                         attendanceRows.map((reengagement) => {
                                             const statusStyle =
                                                 statusStyleMap[
-                                                    reengagement.status
+                                                reengagement.status
                                                 ] ?? statusStyleMap[1];
                                             return (
                                                 <TableRow key={reengagement.id}>
