@@ -23,6 +23,7 @@ import AttendantDetails from './pages/Attendants/AttendantDetails';
 import EditAttendant from './pages/Attendants/EditAttendant';
 import DeployCheck from './pages/DeployCheck/DeployCheck';
 import RecruitersRanking from './pages/RecruitersRanking/RecruitersRanking';
+import Catalog from './pages/Catalog/Catalog';
 import * as React from 'react';
 import { ToastContainer } from 'react-toastify';
 
@@ -121,6 +122,7 @@ export default function App() {
                             }
                         />
                         <Route path="/commissions" element={<Commissions />} />
+                        <Route path="/catalog" element={<Catalog />} />
                         <Route
                             path="/recruiters-ranking"
                             element={<RecruitersRanking />}
@@ -199,6 +201,10 @@ export default function App() {
                     <Route
                         path="/team-attendances"
                         element={<Navigate to="/team-attendances" replace />}
+                    />
+                    <Route
+                        path="/catalog"
+                        element={<Navigate to="/catalog" replace />}
                     />
                     <Route
                         path="/commissions"
