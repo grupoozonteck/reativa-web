@@ -43,11 +43,12 @@ export default function Login() {
             const e = err as {
                 response?: { data?: { message?: string }; status?: number };
             };
-            if (e.response?.status === 401)
+            if (e.response?.status === 401) {
                 setError('E-mail ou senha incorretos');
-            else if (e.response?.data?.message)
-                setError(e.response.data.message);
-            else setError('Erro ao conectar. Tente novamente.');
+            } else {
+                // Qualquer outro erro (500, 502, etc.) mostra mensagem generica
+                setError('Servidor indisponivel. Tente novamente mais tarde.');
+            }
         } finally {
             setIsLoading(false);
         }

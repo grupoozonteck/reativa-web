@@ -10,6 +10,7 @@ import {
     UserStar,
     ScanSearch,
     Medal,
+    ShoppingCart,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -33,5 +34,6 @@ export const navItems: NavItem[] = [
     { to: '/manager/performance', label: 'Minha Operação', icon: Handshake },
     { to: '/attendants', label: 'Atendentes', icon: UserCog },
     { to: '/commissions', label: 'Comissões', icon: HandCoins },
+    { to: '/catalog', label: 'Catálogo', icon: ShoppingCart },   
     { to: '/ranking/recruiters', label: 'Ranking Recrutadores', icon: Medal },
 ];
