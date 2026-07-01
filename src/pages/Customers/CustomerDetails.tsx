@@ -1,28 +1,32 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft,
-    Mail,
-    Phone,
-    MapPin,
     Calendar,
-    MessageCircle,
+    CalendarClock,
+    ClipboardEdit,
+    Edit,
     ExternalLink,
     Loader2,
-    ShoppingBag,
-    Edit,
-    Store,
-    ClipboardEdit,
+    Mail,
+    MapPin,
+    MessageCircle,
     Package,
-    CalendarClock,
+    Phone,
+    ShoppingBag,
     StickyNote,
+    Store,
     UserPlus,
 } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AddObservacaoModal } from '@/components/Customers/AddObservacaoModal';
+import { CustomerLatestOrderCard } from '@/components/Customers/CustomerLatestOrderCard';
+import { EditClienteModal } from '@/components/Customers/EditClienteModal';
+import { InformSponsorModal } from '@/components/Customers/InformSponsorModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 import {
     Table,
     TableBody,
@@ -31,25 +35,20 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
-import {
-    getInitials,
-    getAvatarColor,
-    formatWhatsApp,
-    getWhatsAppLink,
-    formatDate,
-    formatDateTime,
-    formatCurrency,
-    getDateTimestamp,
-} from '@/utils/client-utils';
-import { customerService } from '@/services/customer.service';
-import { EditClienteModal } from '@/components/Customers/EditClienteModal';
-import { AddObservacaoModal } from '@/components/Customers/AddObservacaoModal';
-import { InformSponsorModal } from '@/components/Customers/InformSponsorModal';
-import { CustomerLatestOrderCard } from '@/components/Customers/CustomerLatestOrderCard';
-import { reengagementStatusMap } from '@/utils/color-ultis';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { orderStatusStyleMap } from '@/config/orderStatus';
-import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
+import { cn } from '@/lib/utils';
+import { customerService } from '@/services/customer.service';
+import {
+    formatCurrency,
+    formatDateTime,
+    formatWhatsApp,
+    getAvatarColor,
+    getDateTimestamp,
+    getInitials,
+    getWhatsAppLink,
+} from '@/utils/client-utils';
+import { reengagementStatusMap } from '@/utils/color-ultis';
 
 function buildStoreAccessUrl(token: string, apiUrl?: string) {
     if (apiUrl) return apiUrl;
@@ -240,7 +239,7 @@ export default function ClienteDetalhes() {
                                 </div>
                                 <p className="text-sm text-on-surface-variant font-mono mb-3">
                                     ID: #{user.id} · {user.login} · Cliente
-                                    desde {formatDate(user.created_at)}
+                                    desde {formatDateTime(user.created_at)}
                                 </p>
                                 {reengagement && (
                                     <div className="flex flex-wrap gap-x-5 gap-y-1">
@@ -495,7 +494,7 @@ export default function ClienteDetalhes() {
                                                     Cadastro
                                                 </p>
                                                 <p className="text-sm text-on-surface">
-                                                    {formatDate(
+                                                    {formatDateTime(
                                                         user.created_at,
                                                     )}
                                                 </p>
@@ -641,7 +640,7 @@ export default function ClienteDetalhes() {
                                                                     )}
                                                                 </TableCell>
                                                                 <TableCell className="hidden sm:table-cell text-xs text-on-surface-variant">
-                                                                    {formatDate(
+                                                                    {formatDateTime(
                                                                         order.created_at,
                                                                     )}
                                                                 </TableCell>

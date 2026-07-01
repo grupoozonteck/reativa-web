@@ -1,16 +1,16 @@
-import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock, MessageCircle, UserRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { PersonalReengagement } from '@/services/customer.service';
 import {
-    getInitials,
-    getAvatarColor,
-    formatDate,
+    formatDateTime,
     formatWhatsApp,
+    getAvatarColor,
+    getInitials,
     getWhatsAppLink,
 } from '@/utils/client-utils';
 import { statusStyleMap } from '@/utils/color-ultis';
-import type { PersonalReengagement } from '@/services/customer.service';
 
 interface TeamAttendanceCardProps {
     reengagement: PersonalReengagement;
@@ -48,7 +48,7 @@ export function TeamAttendanceCard({
                         </p>
                     </div>
                     <div className="rounded-full border border-white/5 bg-background/40 px-2.5 py-1 text-[11px] font-medium text-on-surface-variant tabular-nums">
-                        {formatDate(reengagement.created_at)}
+                        {formatDateTime(reengagement.created_at)}
                     </div>
                 </div>
 
@@ -165,7 +165,7 @@ export function TeamAttendanceCard({
                         Data
                     </span>
                     <span className="font-medium text-on-surface tabular-nums">
-                        {formatDate(reengagement.created_at)}
+                        {formatDateTime(reengagement.created_at)}
                     </span>
                 </div>
             </div>

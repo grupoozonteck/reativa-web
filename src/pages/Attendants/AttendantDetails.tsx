@@ -1,24 +1,24 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft,
-    TrendingUp,
-    ShoppingCart,
-    Users,
-    Star,
     Calendar,
-    Edit,
     Coins,
+    Edit,
     Search,
+    ShoppingCart,
+    Star,
     Trash2,
+    TrendingUp,
+    Users,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
 import {
     Table,
     TableHeader,
@@ -27,10 +27,10 @@ import {
     TableHead,
     TableCell,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { formatDate, getInitials } from '@/utils/client-utils';
 import { teamService } from '@/services/team.service';
-import { PageErrorState, PageLoadingState } from '@/components/ui/page-state';
+import { formatDateTime, getInitials } from '@/utils/client-utils';
 import { statusStyleMap, typeColors } from '@/utils/color-ultis';
 
 function formatCurrency(value: string | number | null | undefined) {
@@ -166,7 +166,7 @@ export default function AtendenteDetalhes() {
     const attendanceRows = attendant.reengagements ?? [];
     const hasDraftChanges =
         startDate !== appliedStartDate || endDate !== appliedEndDate;
-    const periodLabel = `${formatDate(appliedStartDate)} - ${formatDate(appliedEndDate)}`;
+    const periodLabel = `${formatDateTime(appliedStartDate)} - ${formatDateTime(appliedEndDate)}`;
 
     const handleApplyFilters = () => {
         setAppliedStartDate(startDate);
@@ -423,7 +423,7 @@ export default function AtendenteDetalhes() {
                     <div className="divide-y divide-white/5">
                         <InfoItem
                             label="Cadastrado em"
-                            value={formatDate(attendant.created_at)}
+                            value={formatDateTime(attendant.created_at)}
                         />
                         <InfoItem
                             label="ID interno"
@@ -464,13 +464,26 @@ export default function AtendenteDetalhes() {
                                 >
                                     <div className="min-w-0">
                                         <p className="text-sm font-medium">
-                                            {formatCurrency(commission.min_sales)} até {formatCurrency(commission.max_sales)}
+                                            {formatCurrency(
+                                                commission.min_sales,
+                                            )}{' '}
+                                            até{' '}
+                                            {formatCurrency(
+                                                commission.max_sales,
+                                            )}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            {formatPercent(commission.commission_percent ?? commission.value)} de comissão
+                                            {formatPercent(
+                                                commission.commission_percent ??
+                                                    commission.value,
+                                            )}{' '}
+                                            de comissão
                                         </p>
                                     </div>
-                                    <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                                    <Badge
+                                        variant="outline"
+                                        className="text-[10px] font-mono shrink-0"
+                                    >
                                         #{commission.id}
                                     </Badge>
                                 </div>
@@ -598,7 +611,7 @@ export default function AtendenteDetalhes() {
                                         attendanceRows.map((reengagement) => {
                                             const statusStyle =
                                                 statusStyleMap[
-                                                reengagement.status
+                                                    reengagement.status
                                                 ] ?? statusStyleMap[1];
                                             return (
                                                 <TableRow key={reengagement.id}>
@@ -635,7 +648,7 @@ export default function AtendenteDetalhes() {
                                                         </Badge>
                                                     </TableCell>
                                                     <TableCell>
-                                                        {formatDate(
+                                                        {formatDateTime(
                                                             reengagement.created_at,
                                                         )}
                                                     </TableCell>
@@ -715,7 +728,7 @@ export default function AtendenteDetalhes() {
                                                         Data
                                                     </span>
                                                     <span className="font-medium text-on-surface">
-                                                        {formatDate(
+                                                        {formatDateTime(
                                                             reengagement.created_at,
                                                         )}
                                                     </span>
@@ -783,7 +796,7 @@ export default function AtendenteDetalhes() {
                                                         '--'}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {formatDate(
+                                                    {formatDateTime(
                                                         commission.created_at,
                                                     )}
                                                 </TableCell>
@@ -862,7 +875,7 @@ export default function AtendenteDetalhes() {
                                                     Data
                                                 </span>
                                                 <span className="font-medium text-on-surface">
-                                                    {formatDate(
+                                                    {formatDateTime(
                                                         commission.created_at,
                                                     )}
                                                 </span>

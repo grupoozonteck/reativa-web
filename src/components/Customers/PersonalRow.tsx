@@ -1,18 +1,18 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { TableRow, TableCell } from '@/components/ui/table';
 import { Eye, MessageCircle, UserRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import type { PersonalReengagement } from '@/services/customer.service';
 import {
-    getInitials,
-    getAvatarColor,
+    formatDateTime,
     formatWhatsApp,
+    getAvatarColor,
+    getInitials,
     getWhatsAppLink,
-    formatDate,
 } from '@/utils/client-utils';
 import { statusStyleMap } from '@/utils/color-ultis';
-import type { PersonalReengagement } from '@/services/customer.service';
 
 interface PersonalRowProps {
     reengagement: PersonalReengagement;
@@ -127,7 +127,7 @@ export function PersonalRow({
             {/* Início */}
             <TableCell className="py-3 text-center w-[12%] px-3">
                 <span className="text-xs text-on-surface-variant tabular-nums">
-                    {formatDate(reengagement.created_at)}
+                    {formatDateTime(reengagement.created_at)}
                 </span>
             </TableCell>
 
