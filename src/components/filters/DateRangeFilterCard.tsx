@@ -54,7 +54,7 @@ export function DateRangeFilterCard({
                     className={cn(
                         'grid grid-cols-1 gap-3 md:grid-cols-2 2xl:items-end',
                         extraContent
-                            ? '2xl:grid-cols-[180px_180px_180px_220px_minmax(0,1fr)]'
+                            ? '2xl:grid-cols-[auto_180px_180px_minmax(360px,auto)_auto]'
                             : '2xl:grid-cols-[180px_180px_180px_minmax(0,1fr)]',
                     )}
                 >

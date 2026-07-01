@@ -4,16 +4,13 @@ import { useSearchParams } from 'react-router-dom';
 import {
     AlertCircle,
     Crown,
-    RefreshCw,
     Star,
-    Trophy,
     Zap,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DateRangeFilterCard } from '@/components/filters/DateRangeFilterCard';
 import { useAuth } from '@/contexts/useAuth';
 import {
     type RecruiterRankingEntry,
@@ -21,26 +18,17 @@ import {
 } from '@/services/recruiter-ranking.service';
 import { getCurrentMonthDateRange } from '@/utils/date-range';
 import {
-    formatCurrency,
+    formatCurrencyInput,
     formatDateTime,
     getAvatarColor,
     getInitials,
+    parseCurrencyInput,
 } from '@/utils/client-utils';
 import { cn } from '@/lib/utils';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { formatBRL } from '@/utils/format-ultis';
+import { RecruitersRankingFilters } from './RecruitersRankingFilters';
 
-const BRL = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-});
+
 
 const PODIUM_ORDER = [1, 0, 2];
 
@@ -91,64 +79,6 @@ function RankingSkeleton() {
             <Skeleton className="h-[360px] rounded-2xl" />
             <Skeleton className="h-[320px] rounded-2xl" />
         </div>
-    );
-}
-
-function RankingHeader({
-    participants,
-    isFetching,
-    onRefresh,
-}: {
-    participants: number;
-    isFetching: boolean;
-    onRefresh: () => void;
-}) {
-    return (
-        <motion.div
-            className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-        >
-            <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15">
-                    <Trophy className="h-5 w-5 text-amber-400" />
-                </div>
-                <div>
-                    <h1 className="text-2xl font-black leading-none tracking-tight">
-                        Ranking <span className="gradient-text">de Recrutadores</span>
-                    </h1>
-                    <div className="mt-1 flex items-center gap-2">
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            Ao vivo
-                        </span>
-                        <span className="text-xs text-muted-foreground/50">•</span>
-                        <span className="text-xs text-muted-foreground">
-                            {participants} participantes
-                        </span>
-                        <span className="text-xs text-muted-foreground/50">•</span>
-                        <span className="flex items-center gap-1 text-xs font-semibold text-amber-400">
-                            <Zap className="h-3 w-3" />
-                            Mes atual
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <Button
-                variant="outline"
-                size="sm"
-                className="h-8 shrink-0"
-                disabled={isFetching}
-                onClick={onRefresh}
-            >
-                <RefreshCw
-                    className={`mr-1.5 h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`}
-                />
-                {isFetching ? 'Atualizando...' : 'Atualizar'}
-            </Button>
-        </motion.div>
     );
 }
 
@@ -226,7 +156,7 @@ function RecruitersPodium({
                     const isFirst = config.rank === 1;
                     const mainValue =
                         rankingType === '1'
-                            ? BRL.format(recruiter.total_sale)
+                            ? formatBRL(recruiter.total_sale)
                             : `${recruiter.recruiter_quantity} recrut.`;
 
                     return (
@@ -241,58 +171,25 @@ function RecruitersPodium({
                                 stiffness: 220,
                                 delay: config.delay,
                             }}
-                            whileHover={{
-                                y: isFirst ? -8 : -5,
-                                scale: isFirst ? 1.03 : 1.02,
-                            }}
                         >
                             {isFirst && (
                                 <div className="mb-2 flex flex-col items-center gap-1 sm:gap-1.5">
-                                    <motion.div
-                                        animate={{
-                                            rotate: [-8, 8, -8],
-                                            y: [0, -3, 0],
-                                        }}
-                                        transition={{
-                                            repeat: Infinity,
-                                            duration: 2.8,
-                                            ease: 'easeInOut',
-                                        }}
-                                    >
+                                    <div>
                                         <Crown className="h-6 w-6 fill-amber-400/30 text-amber-400 sm:h-7 sm:w-7" />
-                                    </motion.div>
-                                    <motion.div
-                                        className="relative overflow-hidden rounded-full border border-amber-400/45 bg-amber-400/12 px-2.5 py-1 sm:px-3"
-                                        animate={{ y: [0, -2, 0] }}
-                                        transition={{
-                                            repeat: Infinity,
-                                            duration: 2.6,
-                                            ease: 'easeInOut',
-                                        }}
-                                    >
+                                    </div>
+                                    <div className="relative overflow-hidden rounded-full border border-amber-400/45 bg-amber-400/12 px-2.5 py-1 sm:px-3">
                                         <span className="relative z-10 flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-400 sm:gap-1.5 sm:text-xs">
                                             <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400 sm:h-3 sm:w-3" />
                                             MVP do Mes
                                         </span>
-                                    </motion.div>
+                                    </div>
                                 </div>
                             )}
 
                             <div className="relative mb-2 sm:mb-3">
                                 {isFirst && (
                                     <>
-                                        <motion.div
-                                            className="absolute -inset-6 rounded-full bg-amber-400/15 blur-2xl"
-                                            animate={{
-                                                scale: [1, 1.15, 1],
-                                                opacity: [0.45, 0.8, 0.45],
-                                            }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 2.8,
-                                                ease: 'easeInOut',
-                                            }}
-                                        />
+                                        <div className="absolute -inset-6 rounded-full bg-amber-400/15 blur-2xl" />
                                         <div className="absolute inset-0 rounded-full border-2 border-amber-400/35 animate-ripple" />
                                         <div className="absolute inset-0 rounded-full border-2 border-amber-400/20 animate-ripple-slow" />
                                         <ChampionParticles />
@@ -305,8 +202,8 @@ function RecruitersPodium({
                                         visualIndex === 1
                                             ? 'h-20 w-20 sm:h-24 sm:w-24'
                                             : visualIndex === 0
-                                              ? 'h-12 w-12 sm:h-16 sm:w-16'
-                                              : 'h-11 w-11 sm:h-14 sm:w-14',
+                                                ? 'h-12 w-12 sm:h-16 sm:w-16'
+                                                : 'h-11 w-11 sm:h-14 sm:w-14',
                                         config.ring,
                                         isFirst && 'animate-pulse-glow-amber',
                                     )}
@@ -362,8 +259,8 @@ function RecruitersPodium({
                                         visualIndex === 1
                                             ? 148
                                             : visualIndex === 0
-                                              ? 92
-                                              : 64,
+                                                ? 92
+                                                : 64,
                                 }}
                                 transition={{
                                     duration: 1,
@@ -485,7 +382,7 @@ function RecruitersList({
                                     />
                                     <MobileMetric
                                         label="Venda"
-                                        value={formatCurrency(recruiter.total_sale)}
+                                        value={formatBRL(recruiter.total_sale)}
                                     />
                                     <MobileMetric
                                         className="col-span-2"
@@ -543,7 +440,7 @@ function RecruitersList({
                                         index === 0 ? 'text-amber-400' : 'text-foreground',
                                     )}
                                 >
-                                    {BRL.format(recruiter.total_sale)}
+                                    {formatBRL(recruiter.total_sale)}
                                 </span>
 
                                 <span className="text-sm text-muted-foreground">
@@ -593,12 +490,20 @@ export default function RecruitersRanking() {
     const appliedEndDate = searchParams.get('end_date') ?? defaultRange.endDate;
     const appliedRankingType =
         searchParams.get('ranking_type') === '1' ? '1' : '0';
+    const appliedMinValue = Number(searchParams.get('min_value')) || 150;
 
     const [startDate, setStartDate] = useState(appliedStartDate);
     const [endDate, setEndDate] = useState(appliedEndDate);
     const [rankingType, setRankingType] = useState<'0' | '1'>(
         appliedRankingType,
     );
+    const [minValueDisplay, setMinValueDisplay] = useState(
+        formatCurrencyInput(String(Math.round(appliedMinValue * 100))),
+    );
+    const minValue = (() => {
+        const parsed = parseCurrencyInput(minValueDisplay);
+        return isNaN(parsed) ? 0 : parsed;
+    })();
 
     const { data, isLoading, isFetching, isError, refetch } = useQuery({
         queryKey: [
@@ -607,12 +512,14 @@ export default function RecruitersRanking() {
             appliedStartDate,
             appliedEndDate,
             appliedRankingType,
+            appliedMinValue,
         ],
         queryFn: () =>
             recruiterRankingService.getRanking({
                 start_date: appliedStartDate || undefined,
                 end_date: appliedEndDate || undefined,
                 ranking_type: Number(appliedRankingType) as 0 | 1,
+                min_value: appliedMinValue,
             }),
         enabled: !!user?.id,
         staleTime: 60 * 1000,
@@ -622,12 +529,14 @@ export default function RecruitersRanking() {
     const hasActiveFilters =
         appliedStartDate !== defaultRange.startDate ||
         appliedEndDate !== defaultRange.endDate ||
-        appliedRankingType !== '0';
+        appliedRankingType !== '0' ||
+        appliedMinValue !== 150;
 
     const hasDraftChanges =
         startDate !== appliedStartDate ||
         endDate !== appliedEndDate ||
-        rankingType !== appliedRankingType;
+        rankingType !== appliedRankingType ||
+        minValue !== appliedMinValue;
 
     const handleApplyFilters = () => {
         setSearchParams(
@@ -644,6 +553,10 @@ export default function RecruitersRanking() {
                     params.set('ranking_type', rankingType);
                 else params.delete('ranking_type');
 
+                if (minValue !== 150)
+                    params.set('min_value', String(minValue));
+                else params.delete('min_value');
+
                 return params;
             },
             { replace: true },
@@ -654,11 +567,13 @@ export default function RecruitersRanking() {
         setStartDate(defaultRange.startDate);
         setEndDate(defaultRange.endDate);
         setRankingType('0');
+        setMinValueDisplay(formatCurrencyInput(String(Math.round(150 * 100))));
         setSearchParams(
             (params) => {
                 params.delete('start_date');
                 params.delete('end_date');
                 params.delete('ranking_type');
+                params.delete('min_value');
                 return params;
             },
             { replace: true },
@@ -720,55 +635,24 @@ export default function RecruitersRanking() {
                 <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-secondary/4 blur-3xl" />
             </div>
 
-            <RankingHeader
+            <RecruitersRankingFilters
                 participants={recruiters.length}
                 isFetching={isFetching}
-                onRefresh={() => refetch()}
-            />
-
-            <DateRangeFilterCard
-                title="Periodo"
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={setStartDate}
                 onEndDateChange={setEndDate}
+                rankingType={rankingType}
+                onRankingTypeChange={(v) => setRankingType(v)}
+                minValueDisplay={minValueDisplay}
+                onMinValueChange={(v) =>
+                    setMinValueDisplay(formatCurrencyInput(v))
+                }
+                onRefresh={() => refetch()}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
-                isFetching={isFetching}
                 hasActiveFilters={hasActiveFilters}
                 hasDraftChanges={hasDraftChanges}
-                applyLabel="Filtrar"
-                startId="recruiters-ranking-start-date"
-                endId="recruiters-ranking-end-date"
-                className="border border-primary/15"
-                extraContent={
-                    <Field>
-                        <FieldLabel htmlFor="recruiters-ranking-type">
-                            Ordenar por
-                        </FieldLabel>
-                        <Select
-                            value={rankingType}
-                            onValueChange={(value) =>
-                                setRankingType(value as '0' | '1')
-                            }
-                        >
-                            <SelectTrigger
-                                id="recruiters-ranking-type"
-                                className="h-9 w-full border-none bg-surface-highest px-3 text-left focus:ring-0 md:text-sm [&>span]:line-clamp-1 [&>span]:text-left"
-                            >
-                                <SelectValue placeholder="Selecione a ordenação" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="0">
-                                    Qtd. recrutamentos
-                                </SelectItem>
-                                <SelectItem value="1">
-                                    Valor de venda
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </Field>
-                }
             />
 
             {recruiters.length > 0 ? (

@@ -4,6 +4,7 @@ export interface RecruiterRankingFilters {
     start_date?: string;
     end_date?: string;
     ranking_type?: 0 | 1;
+    min_value?: number;
 }
 
 export interface RecruiterRankingEntry {
@@ -39,7 +40,7 @@ function normalizeRecruiterRankingEntry(
         login,
         last_recruiter:
             typeof candidate.last_recruiter === 'string' &&
-            candidate.last_recruiter.length > 0
+                candidate.last_recruiter.length > 0
                 ? candidate.last_recruiter
                 : null,
     };
@@ -49,10 +50,10 @@ function normalizeRecruiterRankingResponse(payload: unknown) {
     const rawList = Array.isArray(payload)
         ? payload
         : Array.isArray((payload as { data?: unknown[] })?.data)
-          ? ((payload as { data: unknown[] }).data ?? [])
-          : Array.isArray((payload as { recruiters?: unknown[] })?.recruiters)
-            ? ((payload as { recruiters: unknown[] }).recruiters ?? [])
-            : [];
+            ? ((payload as { data: unknown[] }).data ?? [])
+            : Array.isArray((payload as { recruiters?: unknown[] })?.recruiters)
+                ? ((payload as { recruiters: unknown[] }).recruiters ?? [])
+                : [];
 
     return rawList
         .map(normalizeRecruiterRankingEntry)
@@ -69,6 +70,9 @@ export const recruiterRankingService = {
                 ...(filters.end_date && { end_date: filters.end_date }),
                 ...(filters.ranking_type !== undefined && {
                     ranking_type: filters.ranking_type,
+                }),
+                ...(filters.min_value !== undefined && {
+                    min_value: filters.min_value,
                 }),
             },
         });
